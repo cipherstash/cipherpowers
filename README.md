@@ -16,7 +16,7 @@ CipherPowers is a "batteries included" starter kit for development teams using C
 ### Prerequisites
 
 1. Install [Claude Code](https://claude.com/claude-code)
-2. Install [superpowers](https://github.com/obra/superpowers-skills) for universal skills
+2. Install [superpowers](https://github.com/obra/superpowers) - provides universal skills from [superpowers-skills](https://github.com/obra/superpowers-skills)
 
 ### Install CipherPowers
 
@@ -168,4 +168,5 @@ Fork cipherpowers to create your own team toolkit:
 
 ## Credits
 
-Built on [superpowers](https://github.com/obra/superpowers-skills) by @obra
+Built on [superpowers](https://github.com/obra/superpowers) by @obra
+- Skills from [superpowers-skills](https://github.com/obra/superpowers-skills)
