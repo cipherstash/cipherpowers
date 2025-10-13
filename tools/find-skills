@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Custom find-skills that searches both cipherpowers and superpowers
+
+set -euo pipefail
+
+# Determine script location to find cipherpowers root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CIPHERPOWERS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Check for superpowers installation
+if [ -z "${SUPERPOWERS_SKILLS_ROOT:-}" ]; then
+    SUPERPOWERS_SKILLS_ROOT="$HOME/.config/superpowers/skills"
+fi
+
+# Parse flags
+SEARCH_LOCAL=true
+SEARCH_UPSTREAM=true
+PATTERN=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --local)
+            SEARCH_UPSTREAM=false
+            shift
+            ;;
+        --upstream)
+            SEARCH_LOCAL=false
+            shift
+            ;;
+        *)
+            PATTERN="$1"
+            shift
+            ;;
+    esac
+done
+
+# Search function
+search_skills() {
+    local root=$1
+    local label=$2
+
+    if [ ! -d "$root/skills" ]; then
+        return
+    fi
+
+    if [ -z "$PATTERN" ]; then
+        # List all skills
+        find "$root/skills" -name "SKILL.md" -type f | while read -r skill; do
+            dir=$(dirname "$skill")
+            name=$(basename "$dir")
+            echo "[$label] $name"
+        done
+    else
+        # Search for pattern
+        find "$root/skills" -name "SKILL.md" -type f -exec grep -l -i "$PATTERN" {} \; | while read -r skill; do
+            dir=$(dirname "$skill")
+            name=$(basename "$dir")
+            # Show path relative to skills root
+            rel_path=${skill#$root/}
+            echo "[$label] $rel_path"
+        done
+    fi
+}
+
+# Search cipherpowers skills
+if [ "$SEARCH_LOCAL" = true ]; then
+    search_skills "$CIPHERPOWERS_ROOT" "cipherpowers"
+fi
+
+# Search superpowers skills
+if [ "$SEARCH_UPSTREAM" = true ] && [ -d "$SUPERPOWERS_SKILLS_ROOT" ]; then
+    search_skills "$SUPERPOWERS_SKILLS_ROOT" "superpowers"
+fi
