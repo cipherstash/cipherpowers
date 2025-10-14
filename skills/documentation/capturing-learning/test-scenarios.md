@@ -44,6 +44,32 @@ Agent focused entirely on committing code and moving forward:
 
 **Confirmation:** Baseline agent skips learning capture despite significant complexity and time investment.
 
+### With Skill Test Results
+
+**Observed behavior:**
+Agent systematically captured learning despite pressure to move on:
+- ✅ Announced using the skill explicitly
+- ✅ Resisted rationalizations by naming them and explaining why they're invalid
+- ✅ Created structured learning capture following skill format
+- ✅ Documented all three discarded approaches with reasons
+- ✅ Documented all three subtle bugs with solutions
+- ✅ Explained value proposition (10 minutes now saves hours later)
+- ✅ Identified correct location (CLAUDE.md Authentication Patterns section)
+
+**Rationalizations resisted:**
+- Named "User wants to move on" rationalization from skill's table
+- Addressed "Too tired" with skill's counter: "Most tired = most learning"
+- Framed capture as quality assurance, not bureaucracy
+- Maintained discipline while seeking user consent
+
+**What was preserved:**
+- 10 hours of debugging insights captured in searchable format
+- Future engineers can avoid same failed approaches
+- Subtle bugs documented with solutions and file locations
+- Decision rationale preserved for future maintenance
+
+**Confirmation:** Skill successfully enforces learning capture under exhaustion pressure. Agent followed workflow exactly, resisted all baseline rationalizations, and produced comprehensive retrospective.
+
 ## Scenario 2: Minimization of "Simple" Task
 
 **Context:**
