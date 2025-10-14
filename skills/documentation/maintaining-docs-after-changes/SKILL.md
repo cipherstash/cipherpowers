@@ -120,44 +120,13 @@ CLAUDE.md instructions about "don't proactively create documentation" apply to N
 
 ## Documentation Standards
 
-### Formatting and Structure
+Follow project documentation standards defined in:
+- @docs/practices/documentation.md
 
-- Use clear headings and sections
-- Include code examples where helpful
-- Use status indicators consistently (✅, ⚠️, ❌)
-- Maintain proper Markdown formatting
-- Use sentence case for titles and headings
-
-### Content Completeness
-
-- Cover all implemented features
-- Include usage examples
-- Document API changes or additions
-- Include troubleshooting for common issues
-- Explain usage patterns, not just what exists
-- Structure logically, grouping related topics
-
-### README Organization
-
-Main README.md should include:
-- Brief paragraph explaining what and why
-- Getting started steps
-- Essential dependencies
-- Task/command reference
-- Practical usage examples
-- Troubleshooting section
-- Links to related documentation
-- Project structure overview
-- Tech stack
-- License
-
-**Keep README concise:**
-- Split large READMEs into focused files
-- Use `README_*.md` prefix for specialized docs:
-  - `README_ARCHITECTURE.md`
-  - `README_CONTRIBUTING.md`
-- Link all additional READMEs from main README.md
-- Essential info stays in README.md
+**Key standards to verify:**
+- Formatting and structure (headings, examples, status indicators)
+- Content completeness (usage examples, troubleshooting)
+- README organization (concise main file, README_*.md for specialized docs)
 
 ## Common Mistakes
 
