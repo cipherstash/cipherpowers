@@ -47,6 +47,50 @@ Standards, guidelines, and reference materials.
 **Examples:** Real-world examples and templates
 **Purpose:** Support skills and provide team reference
 
+## Organizational Benefits
+
+This three-layer separation achieves key software engineering principles:
+
+✅ **DRY (Don't Repeat Yourself)**
+- Standards live in one place (`docs/practices/`)
+- Skills reference practices instead of duplicating them
+- Commands reference skills instead of reimplementing workflows
+- Changes propagate automatically through references
+
+✅ **SRP (Single Responsibility Principle)**
+- **Practices** define standards (WHAT to follow)
+- **Skills** define workflows (HOW to do it)
+- **Commands** dispatch to skills (WHEN to invoke)
+- Each component has exactly one reason to change
+
+✅ **Reusability**
+- Skills are universal workflows (portable, can be upstreamed to superpowers)
+- Practices are project-specific standards (customized for your team)
+- Commands add project context to universal workflows
+- Mix local and upstream skills seamlessly
+
+✅ **Testability**
+- Skills include TDD test scenarios using subagents
+- Baseline tests prove problems exist without the skill
+- With-skill tests verify effectiveness under pressure
+- Test scenarios document expected violations and how skill prevents them
+- See `skills/*/test-scenarios.md` for examples
+
+✅ **Maintainability**
+- Update standards once in practices, all skills benefit
+- Change skill workflow without touching commands
+- Add new commands without modifying skills
+- Clear boundaries prevent coupling and drift
+
+**Example: Documentation Structure**
+- `docs/practices/documentation.md` = Standards (formatting, completeness, structure)
+- `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
+- `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
+- `commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
+- `commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
+
+All five components work together without duplication. Change documentation standards once, both skills and commands use the updated version automatically.
+
 ## Integration with Superpowers
 
 **Custom find-skills tool** (`tools/find-skills`):
