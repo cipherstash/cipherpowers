@@ -12,8 +12,9 @@ Follow the "Maintaining Documentation After Code Changes" skill:
 **Documentation Standards:**
 - @docs/practices/documentation.md
 
-**Key Principle:**
-Maintaining existing documentation after code changes is NOT "proactively creating docs" - it's keeping current docs accurate. If code changed, docs MUST update.
+**Key Principles:**
+- Maintaining existing documentation after code changes is NOT "proactively creating docs" - it's keeping current docs accurate. If code changed, docs MUST update.
+- Skills provide workflow (how), practices provide standards (what).
 </context>
 
 <instructions>
