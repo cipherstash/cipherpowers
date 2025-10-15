@@ -29,10 +29,10 @@ Documented (with the why)
   - Create utility functions for common operations
 - Don't reinvent the wheel
   - Use third-party libraries, frameworks and dependencies
-- Always check formatting and style
+- YOU MUST check formatting and style
   - Run linters and formatters for your language
-  - Address linter warnings by fixing the root cause of the issue wherever possible
-  - Use disable/allow directives sparingly and only when it cannot be easily avoided
+  - Address ALL linter warnings by fixing root cause
+  - Use disable/allow directives ONLY when unavoidable
 
 
 ### Documented
@@ -61,25 +61,4 @@ Documented (with the why)
 - Objects and functions should have only one single responsibility
 - Use encapsulation to ensure loose coupling
 - Minimise dependencies between modules for flexibility
-
-
-### Error Handling
-
-Follow consistent error handling patterns throughout the codebase:
-
-**Error Types:**
-- Create specific error types for different failure scenarios
-- Use ValidationError for input validation failures
-- Use AuthenticationError for auth-related failures
-- Use ResourceNotFoundError for missing resources
-
-**Error Handling:**
-- Handle errors at appropriate boundaries
-- Log errors with sufficient context for debugging
-- Transform internal errors into user-friendly API responses
-- Never expose internal implementation details in error messages
-
-**API Error Format:**
-All API errors follow a consistent structure documented in README_API.md
-
 
