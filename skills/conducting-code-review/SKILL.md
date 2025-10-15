@@ -1,11 +1,11 @@
 ---
-name: Code Review Workflow
+name: Conducting Code Review
 description: Complete workflow for conducting thorough code reviews with test verification and structured feedback
-when_to_use: when requesting code review, before merging code, when another agent asks for code review
-version: 1.0.0
+when_to_use: when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
+version: 2.0.0
 ---
 
-# Code Review Workflow
+# Conducting Code Review
 
 ## Overview
 
@@ -56,14 +56,20 @@ mise run check
 
 #### 3. Review code against standards
 
-**Use severity levels from practices/code-review.md:**
+**Read standards from practices:**
 
-- **Level 1: Blockers** - Security vulnerabilities, critical bugs, missing tests, breaking changes
-- **Level 2: High Priority** - Architectural violations (SRP, DRY, leaky abstractions), performance issues, poor error handling
-- **Level 3: Medium Priority** - Clarity/readability issues, documentation gaps
-- **Level 4: Low Priority** - Style preferences, minor optimizations
+```bash
+# Standards live in practices, not in this skill
+@docs/practices/code-review.md
+```
 
-**Review ALL levels.** Empty sections are GOOD if you actually checked. Missing sections mean you didn't check.
+**Review ALL four severity levels:**
+1. Level 1: Blockers (from practices)
+2. Level 2: High Priority (from practices)
+3. Level 3: Medium Priority (from practices)
+4. Level 4: Low Priority (from practices)
+
+**Empty sections are GOOD if you actually checked.** Missing sections mean you didn't check.
 
 #### 4. Find active work directory
 
@@ -78,41 +84,14 @@ If no work tracking, save to root or ask user for location.
 
 #### 5. Save structured review
 
-**File naming convention (from practices/code-review.md):**
-- Format: `{YYYY-MM-DD}-review-{N}.md`
-- First review today: `2025-10-15-review.md`
-- Second review today: `2025-10-15-review-1.md`
+**File naming and template:**
 
-**Template structure:**
+See `@docs/practices/code-review.md` for:
+- File naming convention (`{YYYY-MM-DD}-review-{N}.md`)
+- Complete template structure with all sections
+- Examples of review file organization
 
-```markdown
-# Code Review - {Date}
-
-## Summary
-[1-2 sentences on overall quality and readiness]
-
-## Critical Issues (Level 1 - Blockers)
-[Issues that prevent merge - or "None found" if clean]
-
-## High Priority Issues (Level 2)
-[Must fix before merge - or "None found" if clean]
-
-## Medium Priority Issues (Level 3)
-[Must fix before merge - or "None found" if clean]
-
-## Low Priority Issues (Level 4)
-[Must fix or document why technically impossible - or "None found" if clean]
-
-## Positive Observations
-[What worked well - specific examples build team culture]
-
-## Test Results
-- Tests: [PASS/FAIL with command output if failed]
-- Checks: [PASS/FAIL with command output if failed]
-
-## Next Steps
-[Clear actions required - "Ready to merge" or "Address items above"]
-```
+**Use template exactly as specified in practices.**
 
 ## What NOT to Skip
 
@@ -128,6 +107,14 @@ If no work tracking, save to root or ask user for location.
 - "Code looks clean" → Check all severity levels anyway
 - "Simple change" → Thorough review prevents production bugs
 - "Senior developer" → Review objectively regardless of author
+
+## Related Skills
+
+**Before using this skill:**
+- Requesting Code Review: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+
+**When receiving feedback on your review:**
+- Code Review Reception: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/receiving-code-review/SKILL.md`
 
 ## Testing This Skill
 
