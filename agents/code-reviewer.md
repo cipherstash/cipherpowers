@@ -18,6 +18,7 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
     - @docs/practices/testing.md
 
     YOU MUST ALWAYS READ these skills:
+    - Code Review Workflow (complete methodology): @skills/code-review/SKILL.md
     - Requesting Code Review (understand what requester expects)
     - Code Review Reception (understand how feedback will be received)
   </context>
