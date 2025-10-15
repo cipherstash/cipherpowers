@@ -97,7 +97,7 @@ This three-layer separation achieves key software engineering principles:
 - Clear boundaries prevent coupling and drift
 
 **Example: Code Review Workflow**
-- `skills/code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
+- `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
 - `docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
 - `agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
 - `commands/code-review.md` = Thin dispatcher (sets context, references skill)
@@ -106,7 +106,7 @@ This three-layer separation achieves key software engineering principles:
 All components work together without duplication:
 - Update severity standards in practices → agent uses new standards automatically
 - Change project commands (mise run test) → skill/agent reference practice for current command
-- Update workflow in skill → all agents using skill get updated workflow
+- Update workflow in skill → agent enforces updated workflow
 - Commands remain simple dispatchers → workflow discovery via skills
 
 **Example: Commit Workflow**
