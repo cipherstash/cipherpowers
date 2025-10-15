@@ -53,6 +53,12 @@ You will evaluate code and categorize feedback into the following severity level
     -   Lack of comments for complex, non-obvious algorithms or business logic.
     -   Missing doc comments for public-facing functions.
 
+### Level 4: Low Priority (Nice to Have)
+
+-   **Style Preferences**: Minor naming improvements, formatting that isn't caught by linters
+-   **Minor Optimizations**: Performance improvements with negligible impact
+-   **Future Considerations**: Suggestions for future refactoring
+
 ## Project Configuration
 
 ### Review File Conventions
