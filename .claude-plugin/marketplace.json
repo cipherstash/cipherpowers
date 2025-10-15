@@ -1,0 +1,19 @@
+{
+  "name": "cipherpowers-dev",
+  "owner": {
+    "name": "CipherStash Organization",
+    "email": "dev@cipherstash.com"
+  },
+  "metadata": {
+    "description": "Local development marketplace for CipherPowers plugin",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "cipherpowers",
+      "source": "./plugin/claude-plugin/plugin.json",
+      "description": "Comprehensive development toolkit with skills, commands, and documentation standards",
+      "version": "0.1.0"
+    }
+  ]
+}
