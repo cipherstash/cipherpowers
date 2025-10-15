@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# Custom find-practices that searches cipherpowers and marketplace practices
+
+set -euo pipefail
+
+# Determine script location to find cipherpowers root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CIPHERPOWERS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Parse flags
+SEARCH_LOCAL=true
+SEARCH_UPSTREAM=true
+PATTERN=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --local)
+            SEARCH_UPSTREAM=false
+            shift
+            ;;
+        --upstream)
+            SEARCH_LOCAL=false
+            shift
+            ;;
+        *)
+            PATTERN="$1"
+            shift
+            ;;
+    esac
+done
+
+# Extract frontmatter field from a practice file
+extract_field() {
+    local file=$1
+    local field=$2
+
+    # Extract value from YAML frontmatter
+    awk -v field="$field" '
+        /^---$/ { in_fm = !in_fm; next }
+        in_fm && $1 == field":" {
+            sub(/^[^:]+:[[:space:]]*/, "")
+            print
+            exit
+        }
+    ' "$file"
+}
+
+# Search function
+search_practices() {
+    local root=$1
+    local label=$2
+
+    if [ ! -d "$root/docs/practices" ]; then
+        return
+    fi
+
+    if [ -z "$PATTERN" ]; then
+        # List all practices with metadata
+        find "$root/docs/practices" -name "*.md" -type f ! -name "_template.md" | sort | while read -r practice; do
+            name=$(extract_field "$practice" "name")
+            description=$(extract_field "$practice" "description")
+            when_to_use=$(extract_field "$practice" "when_to_use")
+
+            # Show path relative to docs/practices
+            rel_path=${practice#$root/docs/practices/}
+
+            if [ -n "$when_to_use" ]; then
+                echo "Use /$rel_path when $when_to_use"
+            elif [ -n "$description" ]; then
+                echo "[$label] $rel_path - $description"
+            else
+                echo "[$label] $rel_path"
+            fi
+        done
+    else
+        # Search for pattern in practices (frontmatter + content)
+        find "$root/docs/practices" -name "*.md" -type f ! -name "_template.md" -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
+            name=$(extract_field "$practice" "name")
+            description=$(extract_field "$practice" "description")
+
+            # Show path relative to docs/practices
+            rel_path=${practice#$root/docs/practices/}
+
+            if [ -n "$description" ]; then
+                echo "[$label] $rel_path - $description"
+            else
+                echo "[$label] $rel_path"
+            fi
+        done
+    fi
+}
+
+# Search cipherpowers practices
+if [ "$SEARCH_LOCAL" = true ]; then
+    search_practices "$CIPHERPOWERS_ROOT" "cipherpowers"
+fi
+
+# Search marketplace practices (if available)
+if [ "$SEARCH_UPSTREAM" = true ] && [ -n "${CIPHERPOWERS_MARKETPLACE_ROOT:-}" ] && [ -d "$CIPHERPOWERS_MARKETPLACE_ROOT" ]; then
+    search_practices "$CIPHERPOWERS_MARKETPLACE_ROOT" "marketplace"
+fi
