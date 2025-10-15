@@ -150,16 +150,18 @@ Reusable process knowledge following the superpowers framework:
 
 **2. Automation Layer** (`commands/`, `agents/`)
 
-Workflow automation:
-- Commands dispatch to agents
-- Agents follow skills for methodology
-- Project-specific orchestration
+Workflow automation using agent-centric architecture:
+- **Commands**: Thin dispatchers providing context, referencing practices
+- **Agents**: Contain complete workflows with persuasion principles (Authority, Commitment, Scarcity, Social Proof)
+- Agents reference practices for project-specific configuration
+- Agents reference skills for methodology
+- Templates: `agents/_template.md`, `docs/practices/_template.md`
 
 **3. Documentation Layer** (`docs/`)
 
 Supporting materials:
-- Standards and guidelines
-- Templates and examples
+- **Practices**: Standards (universal quality criteria) + Project Configuration (commands, conventions)
+- **Examples**: Templates and real-world usage examples
 - Team reference documentation
 
 ### Integration with Superpowers
