@@ -29,15 +29,29 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
-**Commands:** Slash commands users type (`/plan`, `/work`)
-- Provide context and instructions
-- Dispatch to agents for complex work
+**Commands:** Slash commands users type (`/plan`, `/work`, `/code-review`)
+- Thin dispatchers providing context
+- Reference practices for project-specific configuration
 - Reference skills for process guidance
+- Do NOT contain workflow logic (that's in agents)
 
-**Agents:** Specialized subagent prompts
-- Handle specific roles (work-planner, code-reviewer)
-- Follow skills for methodology
+**Agents:** Specialized subagent prompts with enforced workflows
+- Handle specific roles (work-planner, code-reviewer, rust-engineer)
+- Contain non-negotiable workflows using persuasion principles
+- Reference practices for project-specific commands and conventions
+- Reference skills for methodology
 - Receive context from commands
+
+**Agent-Centric Architecture:**
+CipherPowers uses an agent-centric model where agents contain the complete workflow:
+- **Authority Principle**: Imperative language, non-negotiable steps
+- **Commitment Principle**: Announcements and checklists create accountability
+- **Scarcity Principle**: Immediate requirements and completion criteria
+- **Social Proof Principle**: Failure modes and rationalization defenses
+
+**Templates:**
+- `agents/_template.md` - Agent structure with persuasion principles
+- `docs/practices/_template.md` - Practice structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 
@@ -82,6 +96,17 @@ This three-layer separation achieves key software engineering principles:
 - Add new commands without modifying skills
 - Clear boundaries prevent coupling and drift
 
+**Example: Code Review Workflow**
+- `docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `agents/code-reviewer.md` = Workflow with persuasion principles (non-negotiable steps, rationalization defenses)
+- `commands/code-review.md` = Thin dispatcher (sets context, invokes agent)
+- Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
+
+All components work together without duplication:
+- Update severity standards in practices → agent automatically uses new standards
+- Change project commands (mise run test) → agent references practice for current command
+- Commands remain simple dispatchers → workflow enforcement stays in agent
+
 **Example: Documentation Structure**
 - `docs/practices/documentation.md` = Standards (formatting, completeness, structure)
 - `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
@@ -124,10 +149,26 @@ When creating or editing skills in `skills/`:
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider upstream:** Universal skills may be contributed to superpowers later
 
+## Creating Agents and Practices
+
+**When creating agents:**
+1. Use `agents/_template.md` as starting point
+2. Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
+3. Reference practices for project-specific configuration (don't hardcode commands)
+4. Reference skills for methodology
+5. Make workflows non-negotiable with explicit rationalization defenses
+
+**When creating practices:**
+1. Use `docs/practices/_template.md` as starting point
+2. Separate universal standards from project-specific configuration
+3. Standards section: What quality looks like (universal principles)
+4. Project Configuration section: Commands, file conventions, tool settings
+5. Agents reference practices, not the other way around
+
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin
 2. Install superpowers for universal skills
 3. Both collections work together seamlessly
-4. Commands dispatch to skills from either location
+4. Commands dispatch to agents or main Claude with practice context
 
