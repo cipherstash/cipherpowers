@@ -1,33 +1,21 @@
 # Code Review
 
-Use the code-reviewer subagent to review the code.
+Use the code-review skill for the complete workflow, then invoke the code-reviewer agent.
 
 <instructions>
-  ## Instructions
+## Instructions
 
-  1. Review the most recently committed code
-    - Follow the requesting-code-review skill: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
-    - Follow code review principles in `docs/practices/code-review.md`
+1. **Follow the code-review skill:**
+   - Read: `@skills/code-review/SKILL.md`
+   - This skill contains the complete workflow (test verification, practice adherence, structured feedback)
 
-  2. Ensure all tests pass:
-    - Run project test command (e.g., `npm test`, `pytest`, `cargo test`)
+2. **Use the code-reviewer agent:**
+   - The agent implements the workflow from the skill
+   - Ensures non-negotiable steps with persuasion principles
+   - Agent will reference the skill automatically
 
-  3. Ensure all checks pass:
-    - Run linters and formatters
-    - Run type checking if applicable
-
-  4. Save the code review into the currently active work directory
-    - Use clear markdown format
-    - Save the file with date prefix and optional review count: `{YYYY-MM-DD}-review-{N}.md`
-    - If multiple reviews exist for the same date, append a review count
+**Why this structure?**
+- Skill = Discoverable workflow (agents can find it)
+- Agent = Enforced execution (persuasion principles prevent shortcuts)
+- Command = Thin dispatcher (provides context to agent)
 </instructions>
-
-<examples>
-  ## Example review file names:
-
-  ```
-  2025-10-03-review.md
-  2025-10-06-review.md
-  2025-10-06-review-1.md
-  ```
-</examples>
