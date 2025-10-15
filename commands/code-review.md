@@ -5,8 +5,8 @@ Use the code-review skill for the complete workflow, then invoke the code-review
 <instructions>
 ## Instructions
 
-1. **Follow the code-review skill:**
-   - Read: `@skills/code-review/SKILL.md`
+1. **Follow the conducting-code-review skill:**
+   - Read: `@skills/conducting-code-review/SKILL.md`
    - This skill contains the complete workflow (test verification, practice adherence, structured feedback)
 
 2. **Use the code-reviewer agent:**
