@@ -1,3 +1,12 @@
+---
+name: Practice Name
+description: Brief statement of goal/principle - 1-2 sentences
+when_to_use: when [specific condition or scenario requiring this practice]
+applies_to: [Optional: languages, frameworks, or contexts - e.g., "Rust", "Python", "all projects"]
+related_practices: [Optional: comma-separated list of related practice filenames]
+version: 1.0.0
+---
+
 # Practice Name
 
 [Brief statement of goal/principle - 1-2 sentences]
