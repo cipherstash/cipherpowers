@@ -97,15 +97,28 @@ This three-layer separation achieves key software engineering principles:
 - Clear boundaries prevent coupling and drift
 
 **Example: Code Review Workflow**
+- `skills/code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
 - `docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
-- `agents/code-reviewer.md` = Workflow with persuasion principles (non-negotiable steps, rationalization defenses)
-- `commands/code-review.md` = Thin dispatcher (sets context, invokes agent)
+- `agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
+- `commands/code-review.md` = Thin dispatcher (sets context, references skill)
 - Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
 
 All components work together without duplication:
-- Update severity standards in practices → agent automatically uses new standards
-- Change project commands (mise run test) → agent references practice for current command
-- Commands remain simple dispatchers → workflow enforcement stays in agent
+- Update severity standards in practices → agent uses new standards automatically
+- Change project commands (mise run test) → skill/agent reference practice for current command
+- Update workflow in skill → all agents using skill get updated workflow
+- Commands remain simple dispatchers → workflow discovery via skills
+
+**Example: Commit Workflow**
+- `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
+- `docs/practices/conventional-commits.md` = Commit message format standards
+- `docs/practices/git-guidelines.md` = Git workflow standards
+- `commands/commit.md` = Thin dispatcher (references skill)
+
+Skills enable discovery:
+- Any agent can run `find-skills "commit"` and discover workflow
+- No need to hardcode commit knowledge into every agent
+- Update workflow in skill → all agents benefit
 
 **Example: Documentation Structure**
 - `docs/practices/documentation.md` = Standards (formatting, completeness, structure)
