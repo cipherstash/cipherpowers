@@ -52,3 +52,65 @@ You will evaluate code and categorize feedback into the following severity level
 -   **Documentation Gaps**:
     -   Lack of comments for complex, non-obvious algorithms or business logic.
     -   Missing doc comments for public-facing functions.
+
+## Project Configuration
+
+### Review File Conventions
+
+**Location:**
+- Current active work directory (use project task to find: `mise run review:active`)
+- Pattern: `.work/{feature-name}/` or similar
+
+**Naming:**
+- Format: `{YYYY-MM-DD}-review-{N}.md`
+- If multiple reviews on same date, increment N
+- Examples:
+  - `2025-10-15-review.md` (first review of the day)
+  - `2025-10-15-review-1.md` (second review of the day)
+
+### Commands
+
+**Run tests:**
+- Command: `mise run test`
+- Requirement: ALL tests MUST pass
+
+**Run checks:**
+- Command: `mise run check`
+- Requirement: ALL checks MUST pass (linting, formatting, type checking)
+
+**Find active work directory:**
+- Command: `mise run review:active`
+- Returns: Path to current work directory for saving review
+
+### Review Template
+
+Save review using this structure:
+
+```markdown
+# Code Review - {Date}
+
+## Summary
+[1-2 sentences]
+
+## Critical Issues (Level 1 - Blockers)
+[Issues or "None found"]
+
+## High Priority Issues (Level 2)
+[Issues or "None found"]
+
+## Medium Priority Issues (Level 3)
+[Issues or "None found"]
+
+## Low Priority Issues (Level 4)
+[Issues or "None found"]
+
+## Positive Observations
+[Specific examples]
+
+## Test Results
+- Tests: [PASS/FAIL]
+- Checks: [PASS/FAIL]
+
+## Next Steps
+[Actions required]
+```
