@@ -1,13 +1,13 @@
 # Testing
 
-- Create unit tests for all business logic
+- YOU MUST create unit tests for all business logic
   - Structure code to enable unit tests
     - Core algorithms and calculations
     - Business rules and validation
     - Data transformations
     - State management
   - Extract business logic into small, testable functions
-  - All tests must pass before committing
+  - ALL tests MUST pass before committing
 
 - Manual testing for complex integration scenarios
   - UI/UX flows
