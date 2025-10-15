@@ -1,26 +1,24 @@
 # Commit
 
-Use the code-commiter subagent to commit the changes.
+Use the commit-workflow skill for systematic commit process.
 
 <instructions>
-  ## Instructions for commits
+## Instructions
 
-  1. Run pre-commit checks:
-    - Run linters and formatters
-    - Run tests if appropriate
-    - Ensure code builds without errors
+1. **Follow the commit-workflow skill:**
+   - Read: `@skills/commit-workflow/SKILL.md`
+   - This skill contains the complete workflow:
+     - Pre-commit checks (linters, formatters, tests)
+     - Staging and diff review
+     - Atomic commit composition
+     - Conventional commit message formatting
 
-  2. Check which files are staged with `git status`
+2. **The skill references project practices:**
+   - `@docs/practices/conventional-commits.md` - Message format
+   - `@docs/practices/git-guidelines.md` - Git workflow standards
 
-  3. If 0 files are staged, automatically add all modified and new files with `git add`
-
-  4. Perform a `git diff` to understand what changes are being committed
-
-  5. Analyze the diff to determine if multiple distinct logical changes are present
-
-  6. If multiple distinct changes are detected, suggest breaking the commit into multiple smaller commits
-
-  7. For each commit (or the single commit if not split), create a commit message using the conventional commit format
-    - Follow conventional commits: `docs/practices/conventional-commits.md`
-    - Follow git guidelines: `docs/practices/git-guidelines.md`
+**Why this structure?**
+- Skill = Discoverable workflow (agents can find it with find-skills)
+- Practices = Project-specific standards (conventional commit rules)
+- Command = Thin dispatcher (user entry point)
 </instructions>
