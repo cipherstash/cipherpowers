@@ -100,4 +100,66 @@ Ready to proceed?
 
 Wait for user confirmation before starting execution.
 
+### 4. Execute batches with agent dispatch
+
+**For each batch (3 tasks):**
+
+1. **Dispatch to agents:**
+   - For each task in batch, use the Task tool to invoke the selected agent
+   - Pass task description and relevant context
+   - Wait for agent completion
+
+2. **Verify task completion:**
+   - Check tests pass (if applicable)
+   - Check build succeeds (if applicable)
+   - Confirm task marked complete in TodoWrite
+
+3. **Handle failures:**
+   - If task fails, agent attempts auto-fix (up to 3 attempts)
+   - If still failing after 3 attempts: STOP execution
+   - Report failure to user with context
+   - Wait for user decision (fix manually, skip task, abort plan)
+
+### 5. Code review checkpoint (after each batch)
+
+**After batch completion, MANDATORY code review:**
+
+1. **Announce review:**
+   ```
+   Batch [N] complete. Tasks [X-Y] implemented.
+
+   Invoking code-reviewer agent for batch checkpoint.
+   ```
+
+2. **Invoke code-reviewer:**
+   - Use Task tool with subagent_type=code-reviewer
+   - Pass context: "Review changes from tasks [X-Y]"
+   - Code-reviewer follows: `@plugin/skills/conducting-code-review/SKILL.md`
+   - Code-reviewer references: `@plugin/practices/code-review.md`
+
+3. **Review results:**
+   - Read review file saved by code-reviewer
+   - Identify feedback at all levels (Critical, High, Medium, Low)
+
+4. **Address feedback:**
+   - For each issue, dispatch to appropriate agent to fix
+   - Re-run tests and checks after fixes
+   - Mark as resolved when fixed
+
+5. **Verify all feedback addressed:**
+   - ALL feedback must be addressed (Critical through Low)
+   - Do NOT proceed to next batch with unresolved feedback
+   - If feedback cannot be addressed: document why + user approval required
+
+6. **Report to user:**
+   ```
+   Batch [N] review complete.
+   - Critical issues: [N] (all resolved)
+   - High priority: [N] (all resolved)
+   - Medium priority: [N] (all resolved)
+   - Low priority: [N] (all resolved)
+
+   Ready for next batch.
+   ```
+
 </instructions>
