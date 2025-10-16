@@ -162,4 +162,52 @@ Wait for user confirmation before starting execution.
    Ready for next batch.
    ```
 
+### 6. Plan completion
+
+**After all batches complete and all reviews passed:**
+
+1. **Verify completion:**
+   - All tasks marked complete in TodoWrite
+   - All tests passing
+   - All checks passing
+   - All code review feedback addressed
+
+2. **Final verification:**
+   - Run `mise run test` (if project uses mise)
+   - Run `mise run check` (if project uses mise)
+   - Confirm no failures
+
+### 7. Retrospective prompt
+
+**When plan is fully complete, prompt user:**
+
+```
+All tasks complete! 🎉
+
+Plan: [plan file path]
+Tasks completed: [N]
+Batches: [N]
+Code reviews: [N]
+
+Ready to write a retrospective capturing what you learned?
+
+This will invoke the retrospective-writer agent to follow:
+- Skill: capturing-learning
+- Practice: documentation standards
+
+[Yes/No]
+```
+
+**If user confirms:**
+- Use Task tool with subagent_type=retrospective-writer
+- Pass context: "Plan: [path], Tasks: [summary]"
+- Retrospective-writer saves summary to appropriate location
+
+**If user declines:**
+```
+Execution complete. Retrospective skipped.
+
+Reminder: You can write a retrospective later with /summarise
+```
+
 </instructions>
