@@ -2,50 +2,118 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
-## When to Use This Command
+## Decision Algorithm: When to Use This Command
 
-**YOU MUST use `/execute` when:**
-- A plan file exists (any file in `docs/plans/` or similar)
-- You have multiple tasks requiring commits
-- Tasks involve implementation work (not just exploration/research)
+**BEFORE starting any work, run this algorithm:**
 
-**Use `/execute` for ANY implementation plan, regardless of perceived simplicity or task type.**
+```
+Step 1: Check: Does a file matching `docs/plans/*.md` OR `plans/*.md` exist?
+        → YES: Go to Step 2
+        → NO: Go to Step 7
 
-### Red Flags - STOP and Use /execute
+Step 2: Check: Is the task exploration/research only (no commits)?
+        → YES: Go to Step 7
+        → NO: Go to Step 3
 
-If you're thinking any of these thoughts, you MUST use `/execute` instead:
+Step 3: Check: Is the task a single atomic command (run test, check status)?
+        → YES: Go to Step 7
+        → NO: Go to Step 4
 
-| Rationalization | Reality |
-|-----------------|---------|
-| "These tasks are simple, don't need formal process" | Simple tasks compound into complex changes. Use /execute. |
-| "Just markdown edits, no code complexity" | All implementation follows same workflow. Use /execute. |
-| "Faster to do it myself directly" | Speed without quality creates rework. Use /execute. |
-| "Unnecessary overhead for straightforward work" | Overhead prevents errors that cost more time. Use /execute. |
-| "I'll be pragmatic, not dogmatic" | Process IS pragmatism. Use /execute. |
-| "Should have used /execute from start, too late now" | Stop work. Use /execute for remaining tasks. Never too late. |
+Step 4: Execute `/execute [plan-file-path]`
+        STOP reading this algorithm
+        Do not proceed to Step 5
 
-**When NOT to use `/execute`:**
-- Single command execution (run tests, check status)
-- Exploration tasks (understanding codebase, reading code)
-- Research tasks (investigating approaches, reading docs)
-- No plan file exists and task is truly atomic
+Step 5: [UNREACHABLE - if you reach here, you violated Step 4]
 
-### If You've Already Started Without /execute
+Step 6: [UNREACHABLE - if you reach here, you violated Step 4]
 
-**STOP working immediately and:**
+Step 7: Proceed without /execute (valid cases only)
+```
 
-1. Assess what you've done so far
-2. If you wrote code without tests → DELETE it
-3. If you made commits → note them for review
-4. Create or locate the plan file for remaining work
-5. Use `/execute [plan-file]` for all remaining tasks
+### Recovery Algorithm: Already Started Without /execute?
 
-**Never continue with "I'll just finish what I started"** - this compounds the error.
+**If you've already started work, run this recovery algorithm:**
 
-**The correct recovery:**
-- Stop immediately
-- Use /execute for remaining work
-- Accept that starting over with proper workflow is faster than debugging later
+```
+Step 1: Check: Have you written ANY code?
+        → YES: Go to Step 2
+        → NO: Go to Step 5
+
+Step 2: Check: Does that code have tests?
+        → YES: Go to Step 5
+        → NO: Go to Step 3
+
+Step 3: Delete the untested code
+        Execute: rm [files] OR git reset --hard
+        Go to Step 4
+
+Step 4: Check: Does a plan file exist for remaining work?
+        → YES: Execute `/execute [plan-file]`, STOP
+        → NO: Create plan file, then execute `/execute [plan-file]`, STOP
+
+Step 5: Check: Are there remaining tasks requiring commits?
+        → YES: Check if plan file exists for them
+               → YES: Execute `/execute [plan-file]`, STOP
+               → NO: Create plan file, then execute `/execute [plan-file]`, STOP
+        → NO: Continue current work
+
+Step 6: [UNREACHABLE - all paths lead to STOP]
+```
+
+## Condition Evaluation Rules
+
+**Valid conditions (these are checkable facts):**
+- Does file X exist? (boolean: yes/no)
+- Does code have tests? (boolean: yes/no)
+- Is task exploration? (boolean: yes/no)
+- Are commits required? (boolean: yes/no)
+
+**INVALID conditions (NOT in algorithm, do NOT use for decisions):**
+- "Is task simple?" → NOT A VALID CONDITION
+- "Is task just markdown?" → NOT A VALID CONDITION
+- "Is there time pressure?" → NOT A VALID CONDITION
+- "Will /execute take too long?" → NOT A VALID CONDITION
+- "Should I be pragmatic?" → NOT A VALID CONDITION
+- "Is there sunk cost?" → NOT A VALID CONDITION
+- "Am I exhausted?" → NOT A VALID CONDITION
+
+**Any reasoning beyond the algorithm conditions = algorithm violation.**
+
+## Why This is an Algorithm, Not a Suggestion
+
+1. Algorithms execute deterministically
+2. Boolean conditions cannot be argued with
+3. You cannot "choose" whether to follow an algorithm
+4. Time pressure does not change boolean evaluation
+5. Task simplicity is not tested by any condition
+6. Your preferences are not algorithm inputs
+7. "Being pragmatic" is not a valid branch condition
+
+## Self-Test: Do You Understand the Algorithm?
+
+**Answer these before proceeding with ANY work:**
+
+```
+Q1: Does file `docs/plans/my-task.md` exist?
+    If YES: What does Step 4 say to do?
+    If NO: What does Step 7 say?
+
+Q2: I wrote code 2 hours ago without tests. Recovery algorithm Step 3 says?
+
+Q3: "These are simple markdown tasks" - is this a valid algorithm condition?
+    YES / NO
+    Why?
+
+Q4: What happens if I reach Step 5 in the main algorithm?
+```
+
+**Correct answers:**
+- Q1: YES → Execute `/execute [plan-file]`, STOP. NO → Proceed without
+- Q2: "Delete the untested code"
+- Q3: NO - Task simplicity is not tested by any algorithm condition
+- Q4: Impossible - Step 4 has STOP, Step 5 is unreachable
+
+**If you got any answer wrong: RE-READ the algorithm before proceeding.**
 
 <instructions>
 ## Instructions
