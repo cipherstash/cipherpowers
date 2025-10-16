@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Plugin Architecture Overview:** CipherPowers implements a three-layer plugin architecture that separates concerns for maintainability and reusability. Skills provide reusable workflows, automation provides commands and agents, and documentation provides practices and standards.
+
 ## CipherPowers
 
 CipherPowers is a Claude Code plugin providing a comprehensive toolkit for development teams. Built on a three-layer plugin architecture, it separates skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to ensure team-wide consistency and maintainability.
@@ -275,10 +277,25 @@ When developing CipherPowers plugin components:
 - Skills follow TDD approach with test scenarios
 - Use templates (`${CLAUDE_PLUGIN_ROOT}templates/`) as starting points
 
+**Development Workflow:**
+1. Start with templates from `${CLAUDE_PLUGIN_ROOT}templates/`
+2. For skills: Follow TDD approach with test scenarios before implementation
+3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
+4. For practices: Separate universal standards from project-specific configuration
+5. Test components using discovery tools (`find-skills`, `find-practices`)
+6. Ensure proper references using environment variables
+
 **Environment Variables:**
 - Use `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths
 - Use `${SUPERPOWERS_SKILLS_ROOT}` for upstream skill references
 - These enable proper path resolution in all contexts
+
+**Plugin Structure Best Practices:**
+- Keep commands thin - they should only dispatch to agents or skills
+- Put workflow logic in agents, not commands
+- Reference practices for project-specific configuration (don't hardcode)
+- Make agent workflows non-negotiable with explicit rationalization defenses
+- Skills should be universal and potentially upstreamable to superpowers
 
 ## Team Usage
 

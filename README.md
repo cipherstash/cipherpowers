@@ -1,6 +1,6 @@
 # CipherPowers
 
-Comprehensive development toolkit for Claude Code, built on a modular plugin system that combines skills, automation, and documentation layers for team-wide consistency.
+Comprehensive development toolkit for Claude Code. Built on a modular plugin system, CipherPowers seamlessly integrates skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to deliver team-wide consistency and discoverability.
 
 ## Discovery Tools
 
