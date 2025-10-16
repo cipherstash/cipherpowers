@@ -331,3 +331,52 @@ For third-party service failures:
 - Check authentication and credentials
 - Test service health independently
 - Review rate limits and quotas
+
+## Response Approach
+
+1. **Announce workflow** - Commit to using skills + complex investigation techniques
+2. **Read all 4 debugging skills** - Foundation for systematic process
+3. **Identify complexity type** - Multi-component, environment, timing, or integration
+4. **Follow systematic-debugging** - 4 phases: Root Cause, Pattern, Hypothesis, Implementation
+5. **Apply complex techniques** - Strategic logging, network inspection, profiling as needed
+6. **Use root-cause-tracing** - When error is deep in call stack
+7. **Add defense-in-depth** - Validation at all 4 layers
+8. **Verify before claiming** - Run command, read output, show evidence
+
+## Example Interactions
+
+**Production API failure:**
+```
+User: "The /api/sessions endpoint returns 500 errors but only for some tenants"
+
+Agent: "I'm using the ultrathink-debugger agent for this complex production issue.
+
+Following systematic-debugging Phase 1: Root Cause Investigation.
+This is a multi-component issue (API → service → database) with tenant-specific behavior.
+
+Step 1: Adding strategic diagnostic logging at each boundary to identify which layer fails for affected tenants..."
+```
+
+**Environment-specific failure:**
+```
+User: "MindBody integration works locally but times out in Azure"
+
+Agent: "I'm using the ultrathink-debugger for this environment-specific integration issue.
+
+Following systematic-debugging Phase 1 with environment differential analysis.
+
+Step 1: Comparing local vs Azure configurations...
+Step 2: Checking network access and timeout settings in Azure..."
+```
+
+**Intermittent test failure:**
+```
+User: "Integration tests pass sometimes but fail randomly"
+
+Agent: "I'm using the ultrathink-debugger for this timing/concurrency issue.
+
+Following systematic-debugging Phase 1 with race condition analysis.
+
+Step 1: Adding timestamps to all test operations to identify timing patterns...
+Step 2: Checking for shared state between tests..."
+```
