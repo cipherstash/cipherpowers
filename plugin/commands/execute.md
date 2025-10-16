@@ -210,4 +210,81 @@ Execution complete. Retrospective skipped.
 Reminder: You can write a retrospective later with /summarise
 ```
 
+## Error Handling
+
+### Agent Failures
+
+**If agent reports failure:**
+1. Read agent output to understand failure
+2. Attempt auto-fix (up to 3 attempts):
+   - Re-invoke same agent with error context
+   - Agent attempts fix following its workflow
+3. If 3 attempts exhausted:
+   - STOP execution
+   - Report to user with full context
+   - Options: Manual fix, skip task, abort plan
+
+### Test/Check Failures
+
+**If tests or checks fail after implementation:**
+1. Report failure output to user
+2. Invoke appropriate agent to fix:
+   - Test failures → same agent that wrote code
+   - Check failures (lint/format) → same agent that wrote code
+3. Re-run after fix
+4. If failures persist after 3 attempts → STOP and ask user
+
+### Missing Plan File
+
+**If plan file doesn't exist:**
+```
+Error: Plan file not found: [path]
+
+Did you mean to:
+1. Create a plan first? Use /brainstorm → /write-plan
+2. Specify a different path?
+```
+
+### Empty or Malformed Plan
+
+**If plan file exists but has no tasks:**
+```
+Error: Plan file contains no tasks: [path]
+
+Please ensure the plan has properly formatted tasks with:
+- Task headers (### Task N: Name)
+- Step-by-step instructions
+- Expected outcomes
+```
+
+## Edge Cases
+
+### Single Task Plans
+
+Plans with < 3 tasks:
+- Execute as single batch
+- Still perform code review after batch
+- Still prompt for retrospective
+
+### Very Large Plans
+
+Plans with > 15 tasks:
+- Warn user about execution time
+- Suggest breaking into multiple smaller plans
+- Allow user to proceed or abort
+
+### Agent Selection Conflicts
+
+If task seems to require multiple agents:
+- Ask user which agent should be primary
+- Note in TodoWrite that secondary agent may be needed
+- User can intervene during execution if needed
+
+### Plan Updates During Execution
+
+If user updates plan file during execution:
+- Detect changes on next batch load
+- Ask user: Continue with old plan or reload new version?
+- If reload: Re-analyze agent assignments for remaining tasks
+
 </instructions>
