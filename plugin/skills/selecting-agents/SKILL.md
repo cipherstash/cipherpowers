@@ -13,6 +13,8 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 
 **This skill helps you choose** which specialized agent to use based on the task at hand.
 
+**For automatic agent selection:** When executing implementation plans, use the `/execute` command which applies this skill's logic automatically with hybrid keyword/LLM analysis. Manual selection using this skill is for ad-hoc agent dispatch outside of plan execution.
+
 ## Documentation Agents
 
 ### technical-writer

@@ -166,7 +166,7 @@ Scan task descriptions for these patterns:
 
 When keywords don't clearly indicate an agent:
 
-1. Read: `@${CLAUDE_PLUGIN_ROOT}/skills/selecting-agents/SKILL.md`
+1. Read: `@${CLAUDE_PLUGIN_ROOT}plugin/skills/selecting-agents/SKILL.md`
 2. Apply the decision guide to the task description
 3. Consider:
    - Task complexity (simple vs complex debugging)
@@ -247,8 +247,8 @@ Wait for user confirmation before starting execution.
 2. **Invoke code-reviewer:**
    - Use Task tool with subagent_type=code-reviewer
    - Pass context: "Review changes from tasks [X-Y]"
-   - Code-reviewer follows: `${CLAUDE_PLUGIN_ROOT}/skills/conducting-code-review/SKILL.md`
-   - Code-reviewer references: `${CLAUDE_PLUGIN_ROOT}/practices/code-review.md`
+   - Code-reviewer follows: `${CLAUDE_PLUGIN_ROOT}plugin/skills/conducting-code-review/SKILL.md`
+   - Code-reviewer references: `${CLAUDE_PLUGIN_ROOT}plugin/practices/code-review.md`
 
 3. **Review results:**
    - Read review file saved by code-reviewer
@@ -434,13 +434,13 @@ If user updates plan file during execution:
 
 **Skills:**
 - `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` - Core execution workflow
-- `${CLAUDE_PLUGIN_ROOT}/skills/selecting-agents/SKILL.md` - Agent selection guide
-- `${CLAUDE_PLUGIN_ROOT}/skills/documentation/capturing-learning/SKILL.md` - Retrospective workflow
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/selecting-agents/SKILL.md` - Agent selection guide
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/documentation/capturing-learning/SKILL.md` - Retrospective workflow
 
 **Practices:**
-- `${CLAUDE_PLUGIN_ROOT}/practices/code-review.md` - Review standards and severity levels
-- `${CLAUDE_PLUGIN_ROOT}/practices/testing.md` - Test requirements
-- `${CLAUDE_PLUGIN_ROOT}/practices/development.md` - Development standards
+- `${CLAUDE_PLUGIN_ROOT}plugin/practices/code-review.md` - Review standards and severity levels
+- `${CLAUDE_PLUGIN_ROOT}plugin/practices/testing.md` - Test requirements
+- `${CLAUDE_PLUGIN_ROOT}plugin/practices/development.md` - Development standards
 
 **Commands:**
 - `/code-review` - Manual code review trigger

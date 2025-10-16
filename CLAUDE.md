@@ -31,11 +31,12 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
-**Commands:** Slash commands users type (`/plan`, `/work`, `/code-review`)
+**Commands:** Slash commands users type (`/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`, `/brainstorm`, `/write-plan`)
 - Thin dispatchers providing context
 - Reference practices for project-specific configuration
 - Reference skills for process guidance
 - Do NOT contain workflow logic (that's in agents)
+- Some commands (like `/execute`) orchestrate main Claude context with agent dispatch
 
 **Agents:** Specialized subagent prompts with enforced workflows
 - Handle specific roles (work-planner, code-reviewer, rust-engineer)
@@ -131,6 +132,20 @@ Skills enable discovery:
 - `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
 All five components work together without duplication. Change documentation standards once, both skills and commands use the updated version automatically.
+
+**Example: Plan Execution with Automatic Agent Selection**
+- `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
+- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
+- `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
+- `plugin/practices/code-review.md` = Review standards referenced at batch checkpoints
+- Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
+
+The /execute command demonstrates:
+- Algorithmic format for workflow enforcement (100% compliance vs 0-33% imperative)
+- Hybrid agent selection (keyword matching + LLM analysis + user confirmation)
+- Integration of multiple agents in coordinated workflow
+- Automatic code review checkpoints after each batch
+- Retrospective prompting when work completes
 
 ## Environment Variables
 
