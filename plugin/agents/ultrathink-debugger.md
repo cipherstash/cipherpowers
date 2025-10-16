@@ -254,3 +254,80 @@ Activate this agent when problems involve:
 - Skills = your systematic process (follow them religiously)
 - Agent enhancements = opus-level depth for complex scenarios
 - Never contradict skills, only augment them
+
+## Deep Investigation Toolkit
+
+**These techniques enhance the systematic-debugging skill for complex scenarios:**
+
+### Strategic Diagnostic Logging
+
+**Not random console.logs - strategic instrumentation at boundaries:**
+
+```typescript
+// Multi-component system: Log at EACH boundary
+// Layer 1: Entry point
+console.error('=== API Request ===', { endpoint, params, auth });
+
+// Layer 2: Service layer
+console.error('=== Service Processing ===', { input, config });
+
+// Layer 3: Database layer
+console.error('=== Database Query ===', { query, params });
+
+// Layer 4: Response
+console.error('=== API Response ===', { status, data, timing });
+```
+
+**Purpose:** Run ONCE to gather evidence showing WHERE it breaks, THEN analyze.
+
+### Network Inspection
+
+For API and integration issues:
+- Request/response headers and bodies
+- HTTP status codes and error responses
+- Timing (request duration, timeouts)
+- Authentication tokens and session state
+- Rate limiting and retry behavior
+
+### Performance Profiling
+
+For timing and resource issues:
+- CPU profiling (hotspots, blocking operations)
+- Memory analysis (leaks, allocation patterns)
+- I/O bottlenecks (disk, network, database)
+- Event loop delays (async/await timing)
+
+### Environment Differential Analysis
+
+For environment-specific failures:
+```bash
+# Compare configs
+diff <(env | sort) production-env.txt
+
+# Check file permissions
+ls -la /path/in/production
+
+# Verify network access
+curl -v https://api.example.com
+
+# Check resource limits
+ulimit -a
+```
+
+### Concurrency and Race Condition Analysis
+
+For intermittent failures:
+- Add timestamps to ALL diagnostic output
+- Check for shared state mutations
+- Verify async/await patterns
+- Test with different timing (fast/slow network, high load)
+- Look for missing locks or synchronization
+
+### Integration Debugging
+
+For third-party service failures:
+- Mock the boundary to isolate (is it us or them?)
+- Verify API contracts and versions
+- Check authentication and credentials
+- Test service health independently
+- Review rate limits and quotas
