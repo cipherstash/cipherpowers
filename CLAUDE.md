@@ -50,8 +50,9 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - **Social Proof Principle**: Failure modes and rationalization defenses
 
 **Templates:**
-- `agents/_template.md` - Agent structure with persuasion principles
-- `plugin/docs/practices/_template.md` - Practice structure with standards + config pattern
+- `plugin/docs/template/agent-template.md` - Agent structure with persuasion principles
+- `plugin/docs/template/practice-template.md` - Practice structure with standards + config pattern
+- `plugin/docs/template/skill-template.md` - Practice structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 
@@ -229,14 +230,14 @@ When creating or editing skills in `skills/`:
 ## Creating Agents and Practices
 
 **When creating agents:**
-1. Use `agents/_template.md` as starting point
+1. Use `plugin/docs/template/agent-template.md` as starting point
 2. Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 3. Reference practices for project-specific configuration (don't hardcode commands)
 4. Reference skills for methodology
 5. Make workflows non-negotiable with explicit rationalization defenses
 
 **When creating practices:**
-1. Use `plugin/docs/practices/_template.md` as starting point
+1. Use `plugin/docs/template/practice-template.md` as starting point
 2. Separate universal standards from project-specific configuration
 3. Standards section: What quality looks like (universal principles)
 4. Project Configuration section: Commands, file conventions, tool settings

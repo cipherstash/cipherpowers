@@ -56,7 +56,7 @@ search_practices() {
 
     if [ -z "$PATTERN" ]; then
         # List all practices with metadata
-        find "$root/plugin/docs/practices" -name "*.md" -type f ! -name "_template.md" | sort | while read -r practice; do
+        find "$root/plugin/docs/practices" -name "*.md" -type f | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
             when_to_use=$(extract_field "$practice" "when_to_use")
@@ -74,7 +74,7 @@ search_practices() {
         done
     else
         # Search for pattern in practices (frontmatter + content)
-        find "$root/plugin/docs/practices" -name "*.md" -type f ! -name "_template.md" -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
+        find "$root/plugin/docs/practices" -name "*.md" -type f -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
 

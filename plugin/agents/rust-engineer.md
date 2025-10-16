@@ -21,6 +21,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       YOU MUST ALWAYS READ these practices:
       - @plugin/docs/practices/development.md
       - @plugin/docs/practices/testing.md
+      - @plugin/practices/rust/microsoft-rust-guidelines.md
 
       YOU MUST ALWAYS READ these skills:
       - Test-Driven Development (TDD)

@@ -40,11 +40,11 @@ Foundation for practice documentation and discovery tools."
 ## Task 2: Create Practice Template
 
 **Files:**
-- Create: `docs/practices/_template.md`
+- Create: `plugin/docs/template/practice-template.md`
 
 **Step 1: Write practice template**
 
-Create `docs/practices/_template.md`:
+Create `plugin/docs/template/practice-template.md`:
 
 ```markdown
 ---
@@ -113,13 +113,13 @@ version: 1.0.0
 
 **Step 2: Verify template format**
 
-Run: `head -30 docs/practices/_template.md`
+Run: `head -30 plugin/docs/template/practice-template.md`
 Expected: Shows frontmatter and template structure
 
 **Step 3: Commit**
 
 ```bash
-git add docs/practices/_template.md
+git add plugin/docs/template/practice-template.md
 git commit -m "docs: create practice template with frontmatter
 
 Define standard structure for practices:
@@ -199,7 +199,7 @@ search_practices() {
 
     if [ -z "$PATTERN" ]; then
         # List all practices with metadata
-        find "$root/docs/practices" -name "*.md" -type f ! -name "_template.md" | sort | while read -r practice; do
+        find "$root/docs/practices" -name "*.md" -type f | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
             when_to_use=$(extract_field "$practice" "when_to_use")
@@ -217,7 +217,7 @@ search_practices() {
         done
     else
         # Search for pattern in practices (frontmatter + content)
-        find "$root/docs/practices" -name "*.md" -type f ! -name "_template.md" -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
+        find "$root/docs/practices" -name "*.md" -type f  -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
 

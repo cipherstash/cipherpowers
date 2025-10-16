@@ -13,7 +13,7 @@
 ## Task 1: Create Agent Template
 
 **Files:**
-- Create: `agents/_template.md`
+- Create: `plugin/docs/template/agent-template.md`
 
 **Step 1: Create agent template file**
 
@@ -166,7 +166,7 @@ You are a [role description].
 **Step 2: Commit template**
 
 ```bash
-git add agents/_template.md
+git add plugin/docs/template/agent-template.md
 git commit -m "docs: add agent template with persuasion principles
 
 Add comprehensive template showing agent structure:
@@ -184,7 +184,7 @@ Based on rust-engineer.md proven structure."
 ## Task 2: Create Practice Template
 
 **Files:**
-- Create: `docs/practices/_template.md`
+- Create: `plugin/docs/template/practice-template.md`
 
 **Step 1: Create practice template file**
 
@@ -247,7 +247,7 @@ Based on rust-engineer.md proven structure."
 **Step 2: Commit template**
 
 ```bash
-git add docs/practices/_template.md
+git add plugin/docs/template/practice-template.md
 git commit -m "docs: add practice template with configuration pattern
 
 Add template showing practice structure:
