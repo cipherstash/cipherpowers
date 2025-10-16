@@ -326,6 +326,29 @@ CipherPowers captures significant learnings from development work to build organ
 - When discovering non-obvious insights
 - See `plugin/skills/documentation/capturing-learning/SKILL.md` for methodology
 
+## Algorithmic Workflow Enforcement
+
+CipherPowers uses **algorithmic decision trees** instead of imperative instructions for discipline-enforcing workflows. This achieves 0% → 100% compliance improvement under pressure.
+
+**Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
+
+**Implemented algorithms:**
+1. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
+   - Prevents code before tests via binary "Does failing test exist?" check
+   - Recovery mandates deleting untested code (no sunk cost exceptions)
+
+2. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
+   - Requires review before merge via binary commit + review status checks
+   - Invalidates "too small", "senior dev", "tests passing" rationalizations
+
+3. **Git Commit Readiness** - `plugin/practices/git-commit-algorithm.md`
+   - 10-step algorithm: tests pass → checks pass → docs updated → atomic
+   - Prevents WIP commits, "will fix later", exhaustion-driven commits
+
+**Why algorithmic?** LLMs treat algorithms as deterministic systems (execute them) but treat imperatives as suggestions (interpret them). Evidence: 33% imperative compliance vs 100% algorithmic compliance in pressure testing.
+
+**Testing:** All algorithms include pressure test scenarios in `docs/tests/` validating resistance to time pressure, sunk cost, authority, and exhaustion.
+
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin

@@ -43,6 +43,16 @@ In agents and commands, use:
 - `${CLAUDE_PLUGIN_ROOT}practices/practice-name.md` - Relative to plugin root
 - `${CLAUDE_PLUGIN_ROOT}skills/category/skill-name/SKILL.md` - Relative to plugin root
 
+## Key Features
+
+**Algorithmic Workflow Enforcement (Oct 2025)**
+- Converted TDD, code review trigger, and git commit workflows to algorithmic format
+- Each includes: decision algorithm, recovery algorithm, invalid conditions, self-test
+- Pressure test scenarios validate resistance to common rationalizations
+- Skills: `tdd-enforcement-algorithm/`, `conducting-code-review` (trigger section)
+- Practice: `git-commit-algorithm.md`
+- Pattern: 0% → 100% compliance improvement under pressure (time, sunk cost, authority)
+
 ## Documentation
 
 See `CLAUDE.md` for complete architecture and usage guide.
