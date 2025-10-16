@@ -4,6 +4,9 @@
   "description": "Comprehensive development toolkit with skills, commands, and documentation standards",
   "author": "Your Organization",
   "repository": "https://github.com/your-org/cipherpowers",
+  "environment": {
+    "CIPHERPOWERS_ROOT": "${PLUGIN_DIR}"
+  },
   "hooks": {
     "SessionStart": [
       {
