@@ -256,6 +256,30 @@ When creating or editing skills in `skills/`:
 4. Project Configuration section: Commands, file conventions, tool settings
 5. Agents reference practices, not the other way around
 
+## Plugin Development
+
+When developing CipherPowers plugin components:
+
+**Directory Structure:**
+- `plugin/commands/` - Slash commands (thin dispatchers)
+- `plugin/agents/` - Specialized subagent prompts with enforced workflows
+- `plugin/practices/` - Standards and project configuration
+- `plugin/skills/` - Organization-specific skills
+- `plugin/templates/` - Templates for agents, practices, and skills
+- `plugin/tools/` - Discovery and utility tools
+
+**Key Principles:**
+- Commands are thin dispatchers that reference agents or skills
+- Agents enforce workflows using persuasion principles (Authority, Commitment, Scarcity, Social Proof)
+- Practices separate universal standards from project-specific configuration
+- Skills follow TDD approach with test scenarios
+- Use templates (`${CLAUDE_PLUGIN_ROOT}templates/`) as starting points
+
+**Environment Variables:**
+- Use `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths
+- Use `${SUPERPOWERS_SKILLS_ROOT}` for upstream skill references
+- These enable proper path resolution in all contexts
+
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin
