@@ -322,7 +322,7 @@ If user updates plan file during execution:
 **Skills:**
 - `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` - Core execution workflow
 - `plugin/skills/selecting-agents/SKILL.md` - Agent selection guide
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/capturing-learning/SKILL.md` - Retrospective workflow
+- `plugin/skills/documentation/capturing-learning/SKILL.md` - Retrospective workflow
 
 **Practices:**
 - `plugin/practices/code-review.md` - Review standards and severity levels
