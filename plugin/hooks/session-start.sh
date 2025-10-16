@@ -3,10 +3,16 @@
 
 set -euo pipefail
 
+# Debug logging to verify hook execution
+echo "[DEBUG] SessionStart hook triggered at $(date)" >> /tmp/cipherpowers-hook.log
+
 # Determine plugin root
 # Use CLAUDE_PLUGIN_ROOT if set, otherwise compute from script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+
+# Log the computed path
+echo "[DEBUG] CLAUDE_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}" >> /tmp/cipherpowers-hook.log
 
 # Read skill files
 using_skills_content=$(cat "${CLAUDE_PLUGIN_ROOT}/skills/using-skills/SKILL.md" 2>&1 || echo "Error reading using-skills")
