@@ -3,8 +3,10 @@
 
 set -euo pipefail
 
-# CLAUDE_PLUGIN_ROOT is already set by the plugin loader
-# Use it to reference all plugin paths
+# Determine plugin root
+# Use CLAUDE_PLUGIN_ROOT if set, otherwise compute from script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # Read skill files
 using_skills_content=$(cat "${CLAUDE_PLUGIN_ROOT}skills/using-skills/SKILL.md" 2>&1 || echo "Error reading using-skills")
