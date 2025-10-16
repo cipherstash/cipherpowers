@@ -1,8 +1,8 @@
 ---
 name: Conducting Code Review
 description: Complete workflow for conducting thorough code reviews with test verification and structured feedback
-when_to_use: when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
-version: 2.0.0
+when_to_use: when you have uncommitted changes OR completed work OR about to merge, to determine if code review is required. Also when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
+version: 3.0.0
 ---
 
 # Conducting Code Review
@@ -10,6 +10,59 @@ version: 2.0.0
 ## Overview
 
 Systematic code review process ensuring correctness, security, and maintainability through test verification, practice adherence, and structured feedback.
+
+## Decision Algorithm: When Code Review is Required
+
+Use this algorithm to determine if code review is required before merge/PR/completion:
+
+```
+Step 1: Check: Have you made commits to a feature branch?
+        → YES: Go to Step 2
+        → NO: Go to Step 6 (no review needed yet)
+
+Step 2: Check: Have these commits been reviewed?
+        → YES: Go to Step 6 (already reviewed)
+        → NO: Go to Step 3
+
+Step 3: Check: Are you about to merge, create PR, or mark work complete?
+        → YES: Go to Step 4
+        → NO: Go to Step 6 (continue working)
+
+Step 4: Request code review
+        Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+        STOP - do not merge/PR/complete until review done
+
+Step 5: [UNREACHABLE - if you reach here, you violated Step 4]
+
+Step 6: Continue (no commits OR already reviewed OR still working)
+```
+
+### INVALID Conditions for Skipping Review
+
+These rationalizations are **NOT VALID ALGORITHM CONDITIONS:**
+
+- "Are changes too small?" → NOT A VALID CONDITION
+- "Am I a senior developer?" → NOT A VALID CONDITION
+- "Is there time pressure?" → NOT A VALID CONDITION
+- "Did I review it myself?" → NOT A VALID CONDITION
+- "Is this a hotfix?" → NOT A VALID CONDITION (still needs review)
+- "Are tests passing?" → NOT A VALID CONDITION (tests ≠ review)
+
+**All of these mean:** Run the algorithm. Follow what it says.
+
+### Self-Test: Review Trigger
+
+**Q1: I committed 3 changes, ready to merge. What does Step 4 say?**
+
+Answer: Request code review, STOP, do not merge until reviewed
+
+**Q2: "These are just documentation changes, too small for review" - is this valid?**
+
+Answer: NO. Listed under INVALID conditions
+
+**Q3: Tests are all passing. Do I still need review?**
+
+Answer: YES. "Are tests passing?" is NOT A VALID CONDITION
 
 ## Quick Reference
 
