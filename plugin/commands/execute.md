@@ -288,3 +288,48 @@ If user updates plan file during execution:
 - If reload: Re-analyze agent assignments for remaining tasks
 
 </instructions>
+
+## Why This Structure?
+
+**Command (not agent):**
+- Main Claude orchestrates → maintains full conversation context
+- Specialized agents → focused workflows with enforcement
+- Clear handoffs → each agent completes its scope and returns
+
+**Hybrid agent selection:**
+- Keywords → fast and deterministic for obvious cases
+- LLM analysis → intelligent handling of ambiguous tasks
+- User confirmation → keeps human in the loop for unclear cases
+
+**Per-batch code review:**
+- Tests provide task-level verification (correctness)
+- Code review provides batch-level validation (architecture, maintainability)
+- Prevents compounding errors across batches
+- Matches execute-plan checkpoint pattern
+
+**Automatic agent dispatch:**
+- Reduces cognitive load (user doesn't pick agents per-task)
+- Enforces consistency (right agent for task type)
+- References selecting-agents skill (same logic, automated)
+
+**Retrospective prompt:**
+- Captures learning while context is fresh
+- Optional (user controls when/if to document)
+- Integrates with existing retrospective-writer agent
+
+## Related
+
+**Skills:**
+- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` - Core execution workflow
+- `plugin/skills/selecting-agents/SKILL.md` - Agent selection guide
+- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/capturing-learning/SKILL.md` - Retrospective workflow
+
+**Practices:**
+- `plugin/practices/code-review.md` - Review standards and severity levels
+- `plugin/practices/testing.md` - Test requirements
+- `plugin/practices/development.md` - Development standards
+
+**Commands:**
+- `/code-review` - Manual code review trigger
+- `/summarise` - Manual retrospective trigger
+- `/brainstorm` → `/write-plan` - Plan creation workflow
