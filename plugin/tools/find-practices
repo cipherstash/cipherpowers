@@ -3,9 +3,10 @@
 
 set -euo pipefail
 
-# Determine script location to find cipherpowers root
+# Determine script location to find plugin root
+# Use CLAUDE_PLUGIN_ROOT if set, otherwise compute from script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CIPHERPOWERS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # Parse flags
 SEARCH_LOCAL=true
@@ -50,19 +51,19 @@ search_practices() {
     local root=$1
     local label=$2
 
-    if [ ! -d "$root/plugin/docs/practices" ]; then
+    if [ ! -d "$root/practices" ]; then
         return
     fi
 
     if [ -z "$PATTERN" ]; then
         # List all practices with metadata
-        find "$root/plugin/docs/practices" -name "*.md" -type f | sort | while read -r practice; do
+        find "$root/practices" -name "*.md" -type f | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
             when_to_use=$(extract_field "$practice" "when_to_use")
 
-            # Show path relative to plugin/docs/practices
-            rel_path=${practice#$root/plugin/docs/practices/}
+            # Show path relative to practices/
+            rel_path=${practice#$root/practices/}
 
             if [ -n "$when_to_use" ]; then
                 echo "Use /$rel_path when $when_to_use"
@@ -74,12 +75,12 @@ search_practices() {
         done
     else
         # Search for pattern in practices (frontmatter + content)
-        find "$root/plugin/docs/practices" -name "*.md" -type f -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
+        find "$root/practices" -name "*.md" -type f -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
             name=$(extract_field "$practice" "name")
             description=$(extract_field "$practice" "description")
 
-            # Show path relative to plugin/docs/practices
-            rel_path=${practice#$root/plugin/docs/practices/}
+            # Show path relative to practices/
+            rel_path=${practice#$root/practices/}
 
             if [ -n "$description" ]; then
                 echo "[$label] $rel_path - $description"
@@ -92,7 +93,7 @@ search_practices() {
 
 # Search cipherpowers practices
 if [ "$SEARCH_LOCAL" = true ]; then
-    search_practices "$CIPHERPOWERS_ROOT" "cipherpowers"
+    search_practices "$CLAUDE_PLUGIN_ROOT" "cipherpowers"
 fi
 
 # Search marketplace practices (if available)
