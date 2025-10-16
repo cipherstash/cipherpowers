@@ -129,28 +129,92 @@ Skills enable discovery:
 
 All five components work together without duplication. Change documentation standards once, both skills and commands use the updated version automatically.
 
+## Environment Variables
+
+**CIPHERPOWERS_ROOT**: Path to the cipherpowers plugin installation
+- Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
+- Use in agents/commands for practice references: `@${CIPHERPOWERS_ROOT}/plugin/docs/practices/name.md`
+- Also used by `find-practices` tool for discovery
+
+**SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
+- Provided by superpowers plugin
+- Use for universal skill references: `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md`
+
+**CIPHERPOWERS_MARKETPLACE_ROOT**: (Optional) Path to marketplace installation for shared practices
+- Set if using cipherpowers as a local marketplace
+- Enables `--upstream` flag in `find-practices`
+
+## Directory Structure
+
+CipherPowers uses two documentation directories with different purposes:
+
+**`./docs/` - Project Documentation**
+- Documentation about cipherpowers itself (the project)
+- Planning documents, analysis, research
+- Historical records and development notes
+- NOT shipped with plugin
+- Lives in project repository root
+
+**`./plugin/docs/` - Plugin Documentation**
+- Documentation shipped with the plugin to users
+- Practices (coding standards, conventions)
+- Examples and templates
+- IS shipped with plugin
+- Lives in plugin/ subdirectory
+
+**Key distinction:**
+- `./docs/plans/` = Plans for building cipherpowers
+- `./plugin/docs/practices/` = Standards for users of cipherpowers
+
 ## Integration with Superpowers
 
-**Custom find-skills tool** (`tools/find-skills`):
-- Searches `${CIPHERPOWERS_ROOT}/skills/` (org-specific)
-- Searches `${SUPERPOWERS_SKILLS_ROOT}` (universal skills)
+**Custom find-skills tool** (`plugin/tools/find-skills`):
+- Searches `${CIPHERPOWERS_ROOT}/plugin/skills/` (org-specific)
+- Searches `${SUPERPOWERS_SKILLS_ROOT}/skills/` (universal skills)
 - Provides unified discovery across both collections
 - Flags: `--local`, `--upstream`, or default (both)
 
-**Skill references:**
-Commands and agents reference skills from either collection transparently using standard paths.
+**Custom find-practices tool** (`plugin/tools/find-practices`):
+- Searches `${CIPHERPOWERS_ROOT}/plugin/docs/practices/` (local practices)
+- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/docs/practices/` (marketplace practices, if available)
+- Extracts YAML frontmatter (name, description, when_to_use)
+- Flags: `--local`, `--upstream`, or default (both)
 
-## Using the find-skills Tool
+**References:**
+Commands and agents reference skills and practices transparently using standard paths.
 
-The custom `tools/find-skills` script provides unified discovery:
+## Using the Discovery Tools
+
+**find-skills**: Discover available skills
 
 ```bash
-# From repository root
-./tools/find-skills "search pattern"
+# From repository root or via relative path
+./plugin/tools/find-skills "search pattern"
 
 # With scope flags
-./tools/find-skills --local "pattern"      # cipherpowers only
-./tools/find-skills --upstream "pattern"   # superpowers only
+./plugin/tools/find-skills --local "pattern"      # cipherpowers only
+./plugin/tools/find-skills --upstream "pattern"   # superpowers only
+```
+
+**find-practices**: Discover available practices
+
+```bash
+# From repository root or via relative path
+./plugin/tools/find-practices "search pattern"
+
+# With scope flags
+./plugin/tools/find-practices --local "pattern"      # cipherpowers only
+./plugin/tools/find-practices --upstream "pattern"   # marketplace only
+```
+
+**Direct references**: When you know the exact path
+
+```markdown
+# In agents or commands
+@${CIPHERPOWERS_ROOT}/plugin/docs/practices/code-review.md
+@${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md
+@plugin/docs/practices/code-review.md  # Relative to plugin root
+@skills/conducting-code-review/SKILL.md  # Relative to plugin root
 ```
 
 ## Working with Skills in this Repository
