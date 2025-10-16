@@ -2,6 +2,51 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
+## When to Use This Command
+
+**YOU MUST use `/execute` when:**
+- A plan file exists (any file in `docs/plans/` or similar)
+- You have multiple tasks requiring commits
+- Tasks involve implementation work (not just exploration/research)
+
+**Use `/execute` for ANY implementation plan, regardless of perceived simplicity or task type.**
+
+### Red Flags - STOP and Use /execute
+
+If you're thinking any of these thoughts, you MUST use `/execute` instead:
+
+| Rationalization | Reality |
+|-----------------|---------|
+| "These tasks are simple, don't need formal process" | Simple tasks compound into complex changes. Use /execute. |
+| "Just markdown edits, no code complexity" | All implementation follows same workflow. Use /execute. |
+| "Faster to do it myself directly" | Speed without quality creates rework. Use /execute. |
+| "Unnecessary overhead for straightforward work" | Overhead prevents errors that cost more time. Use /execute. |
+| "I'll be pragmatic, not dogmatic" | Process IS pragmatism. Use /execute. |
+| "Should have used /execute from start, too late now" | Stop work. Use /execute for remaining tasks. Never too late. |
+
+**When NOT to use `/execute`:**
+- Single command execution (run tests, check status)
+- Exploration tasks (understanding codebase, reading code)
+- Research tasks (investigating approaches, reading docs)
+- No plan file exists and task is truly atomic
+
+### If You've Already Started Without /execute
+
+**STOP working immediately and:**
+
+1. Assess what you've done so far
+2. If you wrote code without tests → DELETE it
+3. If you made commits → note them for review
+4. Create or locate the plan file for remaining work
+5. Use `/execute [plan-file]` for all remaining tasks
+
+**Never continue with "I'll just finish what I started"** - this compounds the error.
+
+**The correct recovery:**
+- Stop immediately
+- Use /execute for remaining work
+- Accept that starting over with proper workflow is faster than debugging later
+
 <instructions>
 ## Instructions
 
