@@ -21,19 +21,45 @@ selecting_agents_content=$(cat "${CLAUDE_PLUGIN_ROOT}/skills/selecting-agents/SK
 # Run find-practices to show all available practices
 find_practices_output=$("${CLAUDE_PLUGIN_ROOT}/tools/find-practices" 2>&1 || echo "Error running find-practices")
 
-# Escape outputs for JSON (replace backslashes, quotes, add newlines)
-using_skills_escaped=$(echo "$using_skills_content" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
-selecting_agents_escaped=$(echo "$selecting_agents_content" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
-find_practices_escaped=$(echo "$find_practices_output" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
+# Output context directly (not as JSON)
+cat <<'EOF'
+<EXTREMELY_IMPORTANT>
 
-# Output context injection as JSON
+**CipherPowers Skills:**
+
+**The content below is from skills/using-skills/SKILL.md:**
+
+EOF
+
+echo "$using_skills_content"
+
+cat <<'EOF'
+
+---
+
+**The content below is from skills/selecting-agents/SKILL.md:**
+
+EOF
+
+echo "$selecting_agents_content"
+
+cat <<'EOF'
+
+---
+
+**Available practices (output of find-practices):**
+
+EOF
+
+echo "$find_practices_output"
+
 cat <<EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "SessionStart",
-    "additionalContext": "<EXTREMELY_IMPORTANT>\n\n**CipherPowers Skills:**\n\n**The content below is from skills/using-skills/SKILL.md:**\n\n${using_skills_escaped}\n\n---\n\n**The content below is from skills/selecting-agents/SKILL.md:**\n\n${selecting_agents_escaped}\n\n---\n\n**Available practices (output of find-practices):**\n\n${find_practices_escaped}\n\n**Tool paths:**\n- find-skills: ${CLAUDE_PLUGIN_ROOT}/tools/find-skills\n- find-practices: ${CLAUDE_PLUGIN_ROOT}/tools/find-practices\n\n</EXTREMELY_IMPORTANT>"
-  }
-}
+
+**Tool paths:**
+- find-skills: ${CLAUDE_PLUGIN_ROOT}/tools/find-skills
+- find-practices: ${CLAUDE_PLUGIN_ROOT}/tools/find-practices
+
+</EXTREMELY_IMPORTANT>
 EOF
 
 exit 0
