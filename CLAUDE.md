@@ -297,6 +297,20 @@ When developing CipherPowers plugin components:
 - Make agent workflows non-negotiable with explicit rationalization defenses
 - Skills should be universal and potentially upstreamable to superpowers
 
+## Learning and Retrospectives
+
+CipherPowers captures significant learnings from development work to build organizational knowledge:
+
+**Key Learnings:**
+- [Algorithmic vs Imperative Command Enforcement](docs/learning/2025-10-16-algorithmic-command-enforcement.md) - Discovered agents follow algorithms (100% compliance) better than imperatives (0-33% compliance). Use boolean decision trees for discipline-enforcing workflows.
+
+**When to capture learning:**
+- After completing significant features
+- When multiple approaches were tried
+- When work took longer than expected
+- When discovering non-obvious insights
+- See `plugin/skills/documentation/capturing-learning/SKILL.md` for methodology
+
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin
