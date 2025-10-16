@@ -1,3 +1,11 @@
+---
+name: Conventional Commits
+description: A lightweight convention for commit messages that creates an explicit commit history and enables automated tools for versioning and changelog generation.
+when_to_use: when writing commit messages to communicate the nature of changes clearly and enable automated semantic versioning
+related_practices: git-guidelines.md
+version: 1.0.0
+---
+
 <!--
 [meta]
 source = "https://www.conventionalcommits.org/en/"

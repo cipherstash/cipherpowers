@@ -1,3 +1,11 @@
+---
+name: Git Guidelines
+description: Guidelines for branch names, commit practices, and change management to maintain clear, atomic, and well-organized version control history.
+when_to_use: when creating branches, making commits, or organizing changes in git to ensure consistency and clarity
+related_practices: conventional-commits.md, workflow.md
+version: 1.0.0
+---
+
 ## Guidelines for git branch names
 
 - **Descriptive**: Names should reflect the branch's purpose or task

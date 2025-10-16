@@ -1,3 +1,12 @@
+---
+name: Testing
+description: Create comprehensive unit tests for all business logic, test behavior over implementation, and ensure all tests pass before committing changes.
+when_to_use: when writing or modifying code to ensure correctness through automated testing and verification
+applies_to: all projects
+related_practices: code-review.md, development.md
+version: 1.0.0
+---
+
 # Testing
 
 - YOU MUST create unit tests for all business logic

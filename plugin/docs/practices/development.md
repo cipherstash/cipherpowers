@@ -1,3 +1,11 @@
+---
+name: Development Practices
+description: Create software that is simple, consistent, and documented to ensure modularity, maintainability, and extensibility.
+when_to_use: when writing code to ensure it follows core principles of simplicity, consistency, and clear documentation
+applies_to: all projects
+related_practices: documentation.md, testing.md
+version: 1.0.0
+---
 
 # Development Practices
 

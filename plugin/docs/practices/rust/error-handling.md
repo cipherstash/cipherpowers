@@ -1,3 +1,10 @@
+---
+name: Rust Error Handling
+description: Follow consistent error handling patterns using thiserror with specific error types for different failure scenarios and appropriate error boundaries.
+when_to_use: when handling errors in Rust code to ensure consistent, user-friendly, and debuggable error management
+applies_to: Rust
+version: 1.0.0
+---
 
 ### Error Handling
 

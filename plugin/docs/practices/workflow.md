@@ -1,3 +1,12 @@
+---
+name: Development Workflow
+description: Sequence development work in small increments through analysis, planning, implementation, verification, review, and summarization with organized work directories.
+when_to_use: when organizing and tracking development work from initial research through final documentation
+applies_to: all projects
+related_practices: git-guidelines.md, code-review.md
+version: 1.0.0
+---
+
 # Development Workflow
 
 ## Overview

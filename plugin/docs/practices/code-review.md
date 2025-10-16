@@ -1,3 +1,11 @@
+---
+name: Code Reviews
+description: Foster a culture of high-quality, maintainable, and secure code through structured reviews that prioritize feedback based on impact and provide clear, actionable suggestions.
+when_to_use: when reviewing code changes before merge to ensure correctness, clarity, security, and maintainability
+related_practices: testing.md, development.md
+version: 1.0.0
+---
+
 # Code Reviews
 
 The goal of code reviews is not to simply find errors, but to foster a culture of high-quality, maintainable, and secure code. Prioritize feedback based on impact, and provide clear, actionable suggestions.

@@ -1,3 +1,12 @@
+---
+name: Documentation Practices
+description: Maintain clear, consistent, and complete documentation with proper formatting, structure, and examples to help users understand the code.
+when_to_use: when creating or updating documentation to ensure it is well-structured, comprehensive, and user-friendly
+applies_to: all projects
+related_practices: development.md
+version: 1.0.0
+---
+
 # Documentation practices
 
 ##  Documentation formatting and structure
