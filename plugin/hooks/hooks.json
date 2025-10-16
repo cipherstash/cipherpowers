@@ -1,0 +1,10 @@
+{
+    "hooks": {
+        "SessionStart": [
+            {
+                "type": "skill",
+                "path": "./skills/using-skills/SKILL.md"
+            }
+        ]
+    }
+}
