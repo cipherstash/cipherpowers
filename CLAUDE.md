@@ -51,7 +51,7 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 
 **Templates:**
 - `agents/_template.md` - Agent structure with persuasion principles
-- `docs/practices/_template.md` - Practice structure with standards + config pattern
+- `plugin/docs/practices/_template.md` - Practice structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 
@@ -66,7 +66,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`docs/practices/`)
+- Standards live in one place (`plugin/docs/practices/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -98,7 +98,7 @@ This three-layer separation achieves key software engineering principles:
 
 **Example: Code Review Workflow**
 - `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
-- `docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `plugin/docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
 - `agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
 - `commands/code-review.md` = Thin dispatcher (sets context, references skill)
 - Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
@@ -111,8 +111,8 @@ All components work together without duplication:
 
 **Example: Commit Workflow**
 - `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
-- `docs/practices/conventional-commits.md` = Commit message format standards
-- `docs/practices/git-guidelines.md` = Git workflow standards
+- `plugin/docs/practices/conventional-commits.md` = Commit message format standards
+- `plugin/docs/practices/git-guidelines.md` = Git workflow standards
 - `commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
@@ -121,7 +121,7 @@ Skills enable discovery:
 - Update workflow in skill → all agents benefit
 
 **Example: Documentation Structure**
-- `docs/practices/documentation.md` = Standards (formatting, completeness, structure)
+- `plugin/docs/practices/documentation.md` = Standards (formatting, completeness, structure)
 - `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
 - `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
 - `commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
@@ -172,7 +172,7 @@ When creating or editing skills in `skills/`:
 5. Make workflows non-negotiable with explicit rationalization defenses
 
 **When creating practices:**
-1. Use `docs/practices/_template.md` as starting point
+1. Use `plugin/docs/practices/_template.md` as starting point
 2. Separate universal standards from project-specific configuration
 3. Standards section: What quality looks like (universal principles)
 4. Project Configuration section: Commands, file conventions, tool settings

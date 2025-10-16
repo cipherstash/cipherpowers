@@ -10,5 +10,5 @@ Your goal is to ensure that the project documentation is current, collated, corr
 <context>
 ## Context
 Read the documentation practices:
-- @docs/practices/documentation.md
+- @plugin/docs/practices/documentation.md
 </context>

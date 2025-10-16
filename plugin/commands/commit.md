@@ -14,8 +14,8 @@ Use the commit-workflow skill for systematic commit process.
      - Conventional commit message formatting
 
 2. **The skill references project practices:**
-   - `@docs/practices/conventional-commits.md` - Message format
-   - `@docs/practices/git-guidelines.md` - Git workflow standards
+   - `@plugin/docs/practices/conventional-commits.md` - Message format
+   - `@plugin/docs/practices/git-guidelines.md` - Git workflow standards
 
 **Why this structure?**
 - Skill = Discoverable workflow (agents can find it with find-skills)

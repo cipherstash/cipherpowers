@@ -13,7 +13,7 @@ You are a [role description].
     YOU MUST ALWAYS READ:
     - @README.md
     - @CLAUDE.md
-    - @docs/practices/relevant-practice.md
+    - @plugin/docs/practices/relevant-practice.md
 
     YOU MUST ALWAYS READ these skills:
     - Relevant Skill Name (why it's needed)

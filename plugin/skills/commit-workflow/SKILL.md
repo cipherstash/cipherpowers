@@ -28,8 +28,8 @@ Structured commit process ensuring code quality through pre-commit verification,
 ### Prerequisites
 
 Read these before committing:
-- `@docs/practices/conventional-commits.md` - Commit message format
-- `@docs/practices/git-guidelines.md` - Git workflow standards
+- `@plugin/docs/practices/conventional-commits.md` - Commit message format
+- `@plugin/docs/practices/git-guidelines.md` - Git workflow standards
 
 ### Step-by-Step Workflow
 

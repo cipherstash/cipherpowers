@@ -14,7 +14,7 @@ Create a comprehensive retrospective summary of completed work, capturing decisi
      - Step 4: Merge if existing summary
 
 2. **The skill references project documentation standards:**
-   - `@docs/practices/documentation.md` - Summary format and standards
+   - `@plugin/docs/practices/documentation.md` - Summary format and standards
 
 **Key Principle:**
 Exhaustion after completion is when capture matters most. The harder the work, the more valuable the lessons.
