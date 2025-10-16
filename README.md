@@ -21,10 +21,10 @@ Comprehensive development toolkit for Claude Code.
 ## Direct References
 
 In agents and commands, use:
-- `@${CIPHERPOWERS_ROOT}/plugin/docs/practices/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Skill reference
-- `@plugin/docs/practices/practice-name.md` - Relative to plugin root
-- `@skills/category/skill-name/SKILL.md` - Relative to plugin root
+- `${CLAUDE_PLUGIN_ROOT}practices/practice-name.md` - Relative to plugin root
+- `${CLAUDE_PLUGIN_ROOT}skills/category/skill-name/SKILL.md` - Relative to plugin root
 
 ## Documentation
 

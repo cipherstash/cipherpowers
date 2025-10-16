@@ -15,7 +15,7 @@ Systematic code review process ensuring correctness, security, and maintainabili
 
 **Before starting:**
 1. Read upstream skill: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
-2. Read project practices: `@plugin/docs/practices/code-review.md`
+2. Read project practices: `${CLAUDE_PLUGIN_ROOT}practices/code-review.md`
 
 **Core workflow:**
 1. Review most recent commit(s)
@@ -29,7 +29,7 @@ Systematic code review process ensuring correctness, security, and maintainabili
 
 Read these before conducting review:
 - `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md` - Understand requester expectations
-- `@plugin/docs/practices/code-review.md` - Standards, severity levels, project commands
+- `${CLAUDE_PLUGIN_ROOT}practices/code-review.md` - Standards, severity levels, project commands
 
 ### Step-by-Step Workflow
 
@@ -60,7 +60,7 @@ mise run check
 
 ```bash
 # Standards live in practices, not in this skill
-@plugin/docs/practices/code-review.md
+${CLAUDE_PLUGIN_ROOT}practices/code-review.md
 ```
 
 **Review ALL four severity levels:**
@@ -86,7 +86,7 @@ If no work tracking, save to root or ask user for location.
 
 **File naming and template:**
 
-See `@plugin/docs/practices/code-review.md` for:
+See `${CLAUDE_PLUGIN_ROOT}practices/code-review.md` for:
 - File naming convention (`{YYYY-MM-DD}-review-{N}.md`)
 - Complete template structure with all sections
 - Examples of review file organization

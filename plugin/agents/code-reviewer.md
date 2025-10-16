@@ -20,9 +20,9 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
        - Conducting Code Review: @skills/conducting-code-review/SKILL.md
 
     3. **Project Standards** (what quality looks like):
-       - Code Review Standards: @plugin/docs/practices/code-review.md
-       - Development Standards: @plugin/docs/practices/development.md
-       - Testing Standards: @plugin/docs/practices/testing.md
+       - Code Review Standards: ${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+       - Development Standards: ${CLAUDE_PLUGIN_ROOT}practices/development.md
+       - Testing Standards: ${CLAUDE_PLUGIN_ROOT}practices/testing.md
 
     4. **Project Context**:
        - README.md: @README.md

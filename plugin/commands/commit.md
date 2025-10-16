@@ -6,7 +6,7 @@ Use the commit-workflow skill for systematic commit process.
 ## Instructions
 
 1. **Follow the commit-workflow skill:**
-   - Read: `@skills/commit-workflow/SKILL.md`
+   - Read: `${CLAUDE_PLUGIN_ROOT}commit-workflow/SKILL.md`
    - This skill contains the complete workflow:
      - Pre-commit checks (linters, formatters, tests)
      - Staging and diff review
@@ -14,8 +14,8 @@ Use the commit-workflow skill for systematic commit process.
      - Conventional commit message formatting
 
 2. **The skill references project practices:**
-   - `@plugin/docs/practices/conventional-commits.md` - Message format
-   - `@plugin/docs/practices/git-guidelines.md` - Git workflow standards
+   - `${CLAUDE_PLUGIN_ROOT}practices/conventional-commits.md` - Message format
+   - `${CLAUDE_PLUGIN_ROOT}practices/git-guidelines.md` - Git workflow standards
 
 **Why this structure?**
 - Skill = Discoverable workflow (agents can find it with find-skills)

@@ -19,8 +19,8 @@ You are an ultrathink expert debugging specialist - the absolute best at diagnos
        - Verification Before Completion: @${SUPERPOWERS_SKILLS_ROOT}/skills/debugging/verification-before-completion/SKILL.md
 
     2. **Project Standards**:
-       - Testing Standards: @plugin/docs/practices/testing.md
-       - Development Standards: @plugin/docs/practices/development.md
+       - Testing Standards: ${CLAUDE_PLUGIN_ROOT}practices/testing.md
+       - Development Standards: ${CLAUDE_PLUGIN_ROOT}practices/development.md
 
     3. **Project Context**:
        - README.md: @README.md

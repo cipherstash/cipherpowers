@@ -50,9 +50,9 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - **Social Proof Principle**: Failure modes and rationalization defenses
 
 **Templates:**
-- `plugin/docs/template/agent-template.md` - Agent structure with persuasion principles
-- `plugin/docs/template/practice-template.md` - Practice structure with standards + config pattern
-- `plugin/docs/template/skill-template.md` - Practice structure with standards + config pattern
+- `plugin/templates/agent-template.md` - Agent structure with persuasion principles
+- `plugin/templates/practice-template.md` - Practice structure with standards + config pattern
+- `plugin/templates/skill-template.md` - Practice structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 
@@ -67,7 +67,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`plugin/docs/practices/`)
+- Standards live in one place (`plugin/practices/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -99,9 +99,9 @@ This three-layer separation achieves key software engineering principles:
 
 **Example: Code Review Workflow**
 - `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
-- `plugin/docs/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
-- `agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
-- `commands/code-review.md` = Thin dispatcher (sets context, references skill)
+- `plugin/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
+- `plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
 - Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
 
 All components work together without duplication:
@@ -112,9 +112,9 @@ All components work together without duplication:
 
 **Example: Commit Workflow**
 - `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
-- `plugin/docs/practices/conventional-commits.md` = Commit message format standards
-- `plugin/docs/practices/git-guidelines.md` = Git workflow standards
-- `commands/commit.md` = Thin dispatcher (references skill)
+- `plugin/practices/conventional-commits.md` = Commit message format standards
+- `plugin/practices/git-guidelines.md` = Git workflow standards
+- `plugin/commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
 - Any agent can run `find-skills "commit"` and discover workflow
@@ -122,19 +122,19 @@ Skills enable discovery:
 - Update workflow in skill → all agents benefit
 
 **Example: Documentation Structure**
-- `plugin/docs/practices/documentation.md` = Standards (formatting, completeness, structure)
+- `plugin/practices/documentation.md` = Standards (formatting, completeness, structure)
 - `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
 - `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
-- `commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
-- `commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
+- `plugin/commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
+- `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
 All five components work together without duplication. Change documentation standards once, both skills and commands use the updated version automatically.
 
 ## Environment Variables
 
-**CIPHERPOWERS_ROOT**: Path to the cipherpowers plugin installation
+**CLAUDE_PLUGIN_ROOT**: Path to the cipherpowers plugin installation
 - Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
-- Use in agents/commands for practice references: `@${CIPHERPOWERS_ROOT}/plugin/docs/practices/name.md`
+- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/practices/name.md`
 - Also used by `find-practices` tool for discovery
 
 **SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
@@ -147,7 +147,7 @@ All five components work together without duplication. Change documentation stan
 
 ## Directory Structure
 
-CipherPowers uses two documentation directories with different purposes:
+CipherPowers uses a clear separation between project documentation and plugin content:
 
 **`./docs/` - Project Documentation**
 - Documentation about cipherpowers itself (the project)
@@ -156,28 +156,41 @@ CipherPowers uses two documentation directories with different purposes:
 - NOT shipped with plugin
 - Lives in project repository root
 
-**`./plugin/docs/` - Plugin Documentation**
-- Documentation shipped with the plugin to users
-- Practices (coding standards, conventions)
-- Examples and templates
-- IS shipped with plugin
-- Lives in plugin/ subdirectory
+**`./plugin/` - Plugin Content**
+- All content shipped with the plugin to users
+- **`plugin/practices/`** - Coding standards, conventions, guidelines
+- **`plugin/templates/`** - Templates for agents, practices, skills
+- **`plugin/agents/`** - Specialized subagent prompts
+- **`plugin/commands/`** - Slash commands
+- **`plugin/skills/`** - Organization-specific skills
+- **`plugin/tools/`** - Discovery and utility tools
 
 **Key distinction:**
 - `./docs/plans/` = Plans for building cipherpowers
-- `./plugin/docs/practices/` = Standards for users of cipherpowers
+- `./plugin/practices/` = Standards for users of cipherpowers
+
+**Referencing paths**
+n Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. This variable is intended to point to the root directory of the plugin, allowing commands to access scripts and resources relative to the plugin's location.
+Command Structure
+
+You MUST ALWAYS use the following structure to reference paths:
+
+    ${CLAUDE_PLUGIN_ROOT}path/to/file
+
+    ${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+
 
 ## Integration with Superpowers
 
-**Custom find-skills tool** (`plugin/tools/find-skills`):
-- Searches `${CIPHERPOWERS_ROOT}/plugin/skills/` (org-specific)
+**Custom find-skills tool** (`${CLAUDE_PLUGIN_ROOT}tools/find-skills`):
+- Searches `${CLAUDE_PLUGIN_ROOT}skills/` (org-specific)
 - Searches `${SUPERPOWERS_SKILLS_ROOT}/skills/` (universal skills)
 - Provides unified discovery across both collections
 - Flags: `--local`, `--upstream`, or default (both)
 
-**Custom find-practices tool** (`plugin/tools/find-practices`):
-- Searches `${CIPHERPOWERS_ROOT}/plugin/docs/practices/` (local practices)
-- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/docs/practices/` (marketplace practices, if available)
+**Custom find-practices tool** (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
+- Searches `${CLAUDE_PLUGIN_ROOT}plugin/practices/` (local practices)
+- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/practices/` (marketplace practices, if available)
 - Extracts YAML frontmatter (name, description, when_to_use)
 - Flags: `--local`, `--upstream`, or default (both)
 
@@ -212,10 +225,10 @@ Commands and agents reference skills and practices transparently using standard 
 
 ```markdown
 # In agents or commands
-@${CIPHERPOWERS_ROOT}/plugin/docs/practices/code-review.md
-@${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md
-@plugin/docs/practices/code-review.md  # Relative to plugin root
-@skills/conducting-code-review/SKILL.md  # Relative to plugin root
+${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md
+${CLAUDE_PLUGIN_ROOT}practices/code-review.md  # Relative to plugin root
+${CLAUDE_PLUGIN_ROOT}conducting-code-review/SKILL.md  # Relative to plugin root
 ```
 
 ## Working with Skills in this Repository
@@ -230,14 +243,14 @@ When creating or editing skills in `skills/`:
 ## Creating Agents and Practices
 
 **When creating agents:**
-1. Use `plugin/docs/template/agent-template.md` as starting point
+1. Use `${CLAUDE_PLUGIN_ROOT}templates/agent-template.md` as starting point
 2. Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 3. Reference practices for project-specific configuration (don't hardcode commands)
 4. Reference skills for methodology
 5. Make workflows non-negotiable with explicit rationalization defenses
 
 **When creating practices:**
-1. Use `plugin/docs/template/practice-template.md` as starting point
+1. Use `${CLAUDE_PLUGIN_ROOT}templates/practice-template.md` as starting point
 2. Separate universal standards from project-specific configuration
 3. Standards section: What quality looks like (universal principles)
 4. Project Configuration section: Commands, file conventions, tool settings

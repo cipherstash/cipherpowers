@@ -121,7 +121,7 @@ CLAUDE.md instructions about "don't proactively create documentation" apply to N
 ## Documentation Standards
 
 Follow project documentation standards defined in:
-- @plugin/docs/practices/documentation.md
+- ${CLAUDE_PLUGIN_ROOT}practices/documentation.md
 
 **Key standards to verify:**
 - Formatting and structure (headings, examples, status indicators)

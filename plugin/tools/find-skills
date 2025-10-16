@@ -3,9 +3,10 @@
 
 set -euo pipefail
 
-# Determine script location to find cipherpowers root
+# Determine script location to find plugin root
+# Use CLAUDE_PLUGIN_ROOT if set, otherwise compute from script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CIPHERPOWERS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # Check for superpowers installation
 if [ -z "${SUPERPOWERS_SKILLS_ROOT:-}" ]; then
@@ -64,7 +65,7 @@ search_skills() {
 
 # Search cipherpowers skills
 if [ "$SEARCH_LOCAL" = true ]; then
-    search_skills "$CIPHERPOWERS_ROOT" "cipherpowers"
+    search_skills "$CLAUDE_PLUGIN_ROOT" "cipherpowers"
 fi
 
 # Search superpowers skills
