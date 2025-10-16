@@ -4,6 +4,10 @@
             {
                 "type": "skill",
                 "path": "./skills/using-skills/SKILL.md"
+            },
+            {
+                "type": "skill",
+                "path": "./skills/selecting-agents/SKILL.md"
             }
         ]
     }
