@@ -22,7 +22,7 @@ CipherPowers requires the superpowers plugin. Install it first:
 
 1. **Clone CipherPowers repository:**
    ```bash
-   git clone https://github.com/your-org/cipherpowers.git ~/.config/claude/plugins/cipherpowers
+   git clone https://github.com/cipherstash/cipherpowers.git ~/.config/claude/plugins/cipherpowers
    ```
 
 2. **Verify superpowers is installed:**
@@ -51,6 +51,8 @@ This will trigger a structured code review using the code-reviewer agent.
 
 ## Available Commands
 
+### CipherPowers Commands
+
 **Plan Execution:**
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
 
@@ -62,9 +64,14 @@ This will trigger a structured code review using the code-reviewer agent.
 - `/doc-review` - Sync documentation with code changes
 - `/summarise` - Capture learning and create retrospectives
 
+### Superpowers Commands (Required Dependency)
+
+CipherPowers integrates with these superpowers commands:
+
 **Planning:**
-- `/brainstorm` - Refine ideas using Socratic method
-- `/write-plan` - Create detailed implementation plans
+- `/brainstorm` - Refine ideas using Socratic method (superpowers)
+- `/write-plan` - Create detailed implementation plans (superpowers)
+- `/execute-plan` - Execute plans in batches with review checkpoints (superpowers)
 
 ## Discovery Tools
 
@@ -119,7 +126,13 @@ In agents and commands, use:
 
 ## Documentation
 
-See `CLAUDE.md` for complete architecture and usage guide.
+**Quick Start:** This README covers installation and basic usage.
+
+**Deep Dive:** See `CLAUDE.md` for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
+- Understand the three-layer architecture (skills, automation, documentation)
+- Create custom agents, commands, or practices
+- Learn about algorithmic workflow enforcement
+- Contribute to CipherPowers development
 
 ## License
 
