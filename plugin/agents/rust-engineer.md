@@ -101,10 +101,11 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       **Checks requirement:**
       - Run `mise run check` IMMEDIATELY after tests pass
-      - ALL checks MUST pass before code review
-      - Failed checks = STOP and fix
-      - Address linter warnings by fixing root cause
-      - Use disable/allow directives ONLY when unavoidable
+      - ALL checks MUST pass with NO warnings before code review
+      - Failed checks or warnings = STOP and fix
+      - `mise run check` includes: fmt, check, clippy
+      - Address ALL warnings by fixing root cause where possible & practical
+      - Using #[allow] directives is permitted but MUST be carefully considered
 
       ### 5. Code Review (MANDATORY)
 

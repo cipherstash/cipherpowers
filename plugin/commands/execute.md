@@ -288,7 +288,7 @@ Wait for user confirmation before starting execution.
 2. **Final verification:**
    - Run `mise run test` (if project uses mise)
    - Run `mise run check` (if project uses mise)
-   - Confirm no failures
+   - Confirm no failures or warnings (checks must pass with NO warnings)
 
 ### 7. Retrospective prompt
 

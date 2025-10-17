@@ -47,8 +47,14 @@ version: 1.0.0
 - Command: `mise run check`
 - What it runs: Linters, formatters, type checkers with project configuration
 - Requirement: ALL checks MUST pass before code review
-- Includes: formatting, linting, clippy (Rust), type checking
+- Includes: formatting (fmt), linting (check), clippy (Rust), type checking
 - Never use language-specific commands directly (e.g., `cargo clippy`) - check task may include more
+
+**Warning resolution:**
+- ALL warnings from `mise run check` MUST be addressed (not just errors)
+- Fix root cause where possible and practical
+- Using #[allow] or similar directives is permitted but MUST be carefully considered
+- Document why allowing warnings when root cause fix is not practical
 
 ### Test Organization
 

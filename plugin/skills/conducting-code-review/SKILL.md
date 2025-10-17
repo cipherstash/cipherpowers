@@ -101,11 +101,14 @@ Read these before conducting review:
 # Run all tests - ALL must pass
 mise run test
 
-# Run all checks (linting, formatting, types) - ALL must pass
+# Run all checks (fmt, check, clippy) - ALL must pass with NO warnings
 mise run check
 ```
 
-**Document results:** Note any failures explicitly in review output.
+**Document results:**
+- Note any failures or warnings explicitly in review output
+- ALL warnings MUST be addressed by resolving root cause where possible & practical
+- Using #[allow] directives permitted but MUST be carefully considered
 
 #### 3. Review code against standards
 

@@ -38,7 +38,7 @@ Read these before committing:
 **Execute quality checks:**
 
 ```bash
-# Run linters and formatters (project-specific command)
+# Run linters and formatters (includes fmt, check, clippy)
 mise run check
 
 # Run tests if appropriate for changes
@@ -48,7 +48,10 @@ mise run test
 mise run build  # if project has build step
 ```
 
-**Fix any failures before proceeding.**
+**Fix any failures or warnings before proceeding:**
+- ALL warnings from `mise run check` MUST be addressed
+- Fix root cause where possible and practical
+- Using #[allow] directives permitted but MUST be carefully considered
 
 #### 2. Check staging status
 

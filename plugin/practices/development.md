@@ -38,9 +38,10 @@ Documented (with the why)
 - Don't reinvent the wheel
   - Use third-party libraries, frameworks and dependencies
 - YOU MUST check formatting and style
-  - Run linters and formatters for your language
-  - Address ALL linter warnings by fixing root cause
-  - Use disable/allow directives ONLY when unavoidable
+  - Run project checks: `mise run check` (includes fmt, check, clippy)
+  - Address ALL warnings by fixing root cause where possible & practical
+  - Using #[allow] or disable directives is permitted but MUST be carefully considered
+  - Never use language-specific commands directly - use project command
 
 
 ### Documented

@@ -29,9 +29,9 @@ Step 3: Check: Do ALL tests pass?
         → YES: Go to Step 4
         → NO: Go to Step 9 (failing tests - fix before commit)
 
-Step 4: Check: Does `mise run check` pass (linting, formatting, types)?
+Step 4: Check: Does `mise run check` pass with NO warnings (fmt, check, clippy)?
         → YES: Go to Step 5
-        → NO: Go to Step 9 (checks failing - fix before commit)
+        → NO: Go to Step 9 (checks failing or warnings present - fix before commit)
 
 Step 5: Check: Is documentation updated for user-facing changes?
         → YES: Go to Step 6
@@ -142,7 +142,12 @@ Answer: NO → Go to Step 10 (split into multiple commits)
 
 **Commands referenced:**
 - `mise run test` - Run all tests (must pass for Step 3)
-- `mise run check` - Run linting, formatting, types (must pass for Step 4)
+- `mise run check` - Run fmt, check, clippy (must pass with NO warnings for Step 4)
+
+**Check requirements:**
+- ALL warnings from `mise run check` MUST be resolved
+- Fix root cause where possible and practical
+- Using #[allow] directives permitted but MUST be carefully considered
 
 **Adjust for your project:**
 If using different commands (npm, cargo, etc.), update Step 4 condition to match your project's check command.

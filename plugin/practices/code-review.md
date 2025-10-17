@@ -90,7 +90,9 @@ You will evaluate code and categorize feedback into the following severity level
 
 **Run checks:**
 - Command: `mise run check`
-- Requirement: ALL checks MUST pass (linting, formatting, type checking)
+- Requirement: ALL checks MUST pass (formatting, linting, clippy)
+- ALL warnings MUST be addressed by resolving root cause where possible & practical
+- Using #[allow] directives permitted but MUST be carefully considered
 
 **Find active work directory:**
 - Command: `mise run review:active`
