@@ -1,5 +1,7 @@
 # Algorithmic vs Imperative Command Enforcement
 
+> **Note:** This discovery has been extracted into a reusable skill at `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`. This document provides the complete retrospective with test methodology, time investment, and decision history. For applying the technique to new workflows, see the skill.
+
 **Date:** 2025-10-16
 
 **Work:** Implementation and pressure testing of `/execute` command
