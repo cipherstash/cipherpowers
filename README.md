@@ -28,32 +28,87 @@ CipherPowers requires the superpowers plugin. Install it first:
 2. **Verify superpowers is installed:**
    ```bash
    # In a Claude Code session, check that superpowers commands work:
-   # /brainstorm, /write-plan, /execute-plan should be available
+   # /execute-plan or /superpowers:brainstorm should be available
    ```
 
 3. **Verify CipherPowers installation:**
    ```bash
    # Start Claude Code in any project
-   # Type /code-review to verify CipherPowers commands are available
+   # Type /brainstorm or /code-review to verify CipherPowers commands are available
    ```
 
 ## Getting Started
 
 Once installed, CipherPowers provides specialized slash commands in Claude Code:
 
-**Try your first command:**
+**Try the planning workflow:**
+```
+# Start with an idea
+/brainstorm
+
+# Create an implementation plan
+/plan
+
+# Execute the plan with automatic agent selection
+/execute [plan-file-path]
+```
+
+**Or trigger code quality checks directly:**
 ```
 # In any Claude Code session
 /code-review
 ```
 
-This will trigger a structured code review using the code-reviewer agent.
+## Recommended Workflow
+
+For best results when implementing new features or tackling complex tasks, follow this three-step workflow:
+
+### 1. Brainstorm (`/brainstorm`)
+**When:** You have an idea but need to refine requirements and explore design options.
+
+**What it does:**
+- Interactive Socratic dialogue to clarify your thinking
+- Explores edge cases, constraints, and trade-offs
+- Refines vague ideas into concrete designs
+- Results in a clear understanding ready for planning
+
+**Skip if:** You already have a fully-detailed design spec.
+
+### 2. Plan (`/plan`)
+**When:** After brainstorming, when you're ready to break down the implementation.
+
+**What it does:**
+- Creates structured implementation plan with bite-sized tasks
+- Each task sized for 3-task execution batches
+- Includes step-by-step instructions and expected outcomes
+- Saves plan to `docs/plans/` or `plans/` directory
+
+**Skip if:** The task is trivial (single file, < 10 lines of code).
+
+### 3. Execute (`/execute [plan-file]`)
+**When:** You have a plan file and are ready to implement.
+
+**What it does:**
+- Automatically selects specialized agents for each task type
+- Executes in 3-task batches with code review checkpoints
+- Ensures all feedback addressed before proceeding
+- Prompts for retrospective when complete
+
+**Why this matters:**
+- Prevents scope creep and forgotten requirements
+- Catches issues early through batch-level code review
+- Maintains consistency across large implementations
+- Captures learning for future reference
+
+**Alternative:** For simple tasks without a plan, work directly in the session and use `/code-review` and `/commit` manually.
 
 ## Available Commands
 
 ### CipherPowers Commands
 
-**Plan Execution:**
+**Planning Workflow:**
+- `/brainstorm` - Refine ideas using Socratic method (invokes superpowers brainstorming)
+- `/plan` - Create detailed implementation plans (invokes superpowers plan writing)
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
 
 **Code Quality:**
@@ -66,12 +121,10 @@ This will trigger a structured code review using the code-reviewer agent.
 
 ### Superpowers Commands (Required Dependency)
 
-CipherPowers integrates with these superpowers commands:
+CipherPowers provides wrapper commands for superpowers workflows. The following superpowers command is also available:
 
-**Planning:**
-- `/brainstorm` - Refine ideas using Socratic method (superpowers)
-- `/write-plan` - Create detailed implementation plans (superpowers)
-- `/execute-plan` - Execute plans in batches with review checkpoints (superpowers)
+**Direct Superpowers Access:**
+- `/execute-plan` - Execute plans in batches with review checkpoints (superpowers base workflow, use `/execute` for enhanced CipherPowers version)
 
 ## Discovery Tools
 

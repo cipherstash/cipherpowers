@@ -354,7 +354,7 @@ Reminder: You can write a retrospective later with /summarise
 Error: Plan file not found: [path]
 
 Did you mean to:
-1. Create a plan first? Use /brainstorm → /write-plan
+1. Create a plan first? Use /brainstorm → /plan
 2. Specify a different path?
 ```
 
@@ -445,4 +445,4 @@ If user updates plan file during execution:
 **Commands:**
 - `/code-review` - Manual code review trigger
 - `/summarise` - Manual retrospective trigger
-- `/brainstorm` → `/write-plan` - Plan creation workflow
+- `/brainstorm` → `/plan` - Plan creation workflow

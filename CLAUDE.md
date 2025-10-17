@@ -32,8 +32,9 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
 **Commands:** Slash commands users type
-- CipherPowers commands: `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
-- Integrates with superpowers commands: `/brainstorm`, `/write-plan`, `/execute-plan`
+- CipherPowers commands: `/brainstorm`, `/plan`, `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
+- CipherPowers provides wrappers for superpowers `/brainstorm` and `/plan` workflows
+- Integrates with superpowers `/execute-plan` command (direct access)
 - Thin dispatchers providing context
 - Reference practices for project-specific configuration
 - Reference skills for process guidance
