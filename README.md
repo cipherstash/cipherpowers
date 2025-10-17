@@ -1,8 +1,55 @@
 # CipherPowers
 
-Comprehensive development toolkit for Claude Code, delivered as a modular plugin system. CipherPowers seamlessly integrates three layers: skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to deliver team-wide consistency and discoverability through the Claude Code plugin architecture.
+Comprehensive development toolkit for Claude Code that enforces consistent workflows across your team. CipherPowers provides reusable skills, specialized agents, and project standards through a modular plugin architecture, ensuring everyone follows the same practices for code review, testing, documentation, and planning.
 
-## Key Commands
+## Prerequisites
+
+Before installing CipherPowers, you need:
+
+1. **Claude Code CLI** - Install from [claude.ai/code](https://claude.ai/code)
+2. **Superpowers Plugin** - CipherPowers builds on the superpowers plugin for universal skills
+
+### Installing Superpowers Dependency
+
+CipherPowers requires the superpowers plugin. Install it first:
+
+```bash
+# Add superpowers plugin to your Claude Code configuration
+# Follow instructions at: https://github.com/clavcode/superpowers
+```
+
+## Installation
+
+1. **Clone CipherPowers repository:**
+   ```bash
+   git clone https://github.com/your-org/cipherpowers.git ~/.config/claude/plugins/cipherpowers
+   ```
+
+2. **Verify superpowers is installed:**
+   ```bash
+   # In a Claude Code session, check that superpowers commands work:
+   # /brainstorm, /write-plan, /execute-plan should be available
+   ```
+
+3. **Verify CipherPowers installation:**
+   ```bash
+   # Start Claude Code in any project
+   # Type /code-review to verify CipherPowers commands are available
+   ```
+
+## Getting Started
+
+Once installed, CipherPowers provides specialized slash commands in Claude Code:
+
+**Try your first command:**
+```
+# In any Claude Code session
+/code-review
+```
+
+This will trigger a structured code review using the code-reviewer agent.
+
+## Available Commands
 
 **Plan Execution:**
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
@@ -53,6 +100,27 @@ In agents and commands, use:
 - Practice: `git-commit-algorithm.md`
 - Pattern: 0% → 100% compliance improvement under pressure (time, sunk cost, authority)
 
+## Troubleshooting
+
+**Commands not appearing in Claude Code:**
+- Verify CipherPowers is cloned to `~/.config/claude/plugins/cipherpowers`
+- Restart Claude Code session
+- Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
+
+**Superpowers commands not working:**
+- Verify superpowers plugin is installed first
+- Check `${SUPERPOWERS_SKILLS_ROOT}` environment variable is set
+- Superpowers must be installed before CipherPowers
+
+**Discovery tools not finding skills:**
+- Ensure you're running from repository root
+- Use `./plugin/tools/find-skills` with proper path
+- Check both plugins are installed correctly
+
 ## Documentation
 
 See `CLAUDE.md` for complete architecture and usage guide.
+
+## License
+
+[Add your license here]
