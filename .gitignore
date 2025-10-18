@@ -15,3 +15,6 @@ Thumbs.db
 
 # Local customization (for teams forking)
 settings.local.json
+
+# Git worktrees
+.worktrees/
