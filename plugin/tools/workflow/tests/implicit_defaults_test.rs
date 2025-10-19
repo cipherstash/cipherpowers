@@ -21,10 +21,7 @@ echo "reached step 2"
 "#;
 
     let steps = parser::parse_workflow(workflow).unwrap();
-    let mut runner = runner::WorkflowRunner::new(
-        steps,
-        execution_mode::ExecutionMode::Enforcement,
-    );
+    let mut runner = runner::WorkflowRunner::new(steps, execution_mode::ExecutionMode::Enforcement);
     let result = runner.run().unwrap();
 
     assert_eq!(result, runner::ExecutionResult::Success);
@@ -48,16 +45,10 @@ echo "should not see this"
 "#;
 
     let steps = parser::parse_workflow(workflow).unwrap();
-    let mut runner = runner::WorkflowRunner::new(
-        steps,
-        execution_mode::ExecutionMode::Enforcement,
-    );
+    let mut runner = runner::WorkflowRunner::new(steps, execution_mode::ExecutionMode::Enforcement);
     let result = runner.run().unwrap();
 
-    assert_eq!(
-        result,
-        runner::ExecutionResult::Stopped { message: None }
-    );
+    assert_eq!(result, runner::ExecutionResult::Stopped { message: None });
 }
 
 #[test]
@@ -85,10 +76,7 @@ echo "reached step 3"
 "#;
 
     let steps = parser::parse_workflow(workflow).unwrap();
-    let mut runner = runner::WorkflowRunner::new(
-        steps,
-        execution_mode::ExecutionMode::Guided,
-    );
+    let mut runner = runner::WorkflowRunner::new(steps, execution_mode::ExecutionMode::Guided);
     let result = runner.run().unwrap();
 
     assert_eq!(result, runner::ExecutionResult::Success);
@@ -107,10 +95,7 @@ exit 1
 "#;
 
     let steps = parser::parse_workflow(workflow).unwrap();
-    let mut runner = runner::WorkflowRunner::new(
-        steps,
-        execution_mode::ExecutionMode::Enforcement,
-    );
+    let mut runner = runner::WorkflowRunner::new(steps, execution_mode::ExecutionMode::Enforcement);
     let result = runner.run().unwrap();
 
     assert_eq!(
@@ -143,7 +128,7 @@ echo "reached despite failure"
     let steps = parser::parse_workflow(workflow).unwrap();
     let mut runner = runner::WorkflowRunner::new(
         steps,
-        execution_mode::ExecutionMode::Guided,  // Need Guided mode to allow Continue
+        execution_mode::ExecutionMode::Guided, // Need Guided mode to allow Continue
     );
     let result = runner.run().unwrap();
 
@@ -157,10 +142,7 @@ fn test_using_helpers() {
         step_with_fail_stop(2, "Checked step", "exit 0", "should not stop"),
     ];
 
-    let mut runner = runner::WorkflowRunner::new(
-        steps,
-        execution_mode::ExecutionMode::Enforcement,
-    );
+    let mut runner = runner::WorkflowRunner::new(steps, execution_mode::ExecutionMode::Enforcement);
     let result = runner.run().unwrap();
     assert_eq!(result, runner::ExecutionResult::Success);
 }
@@ -170,8 +152,8 @@ fn test_using_helpers() {
 /// capturing stdout in unit tests (parallel test execution, thread safety).
 #[test]
 fn test_debug_mode_shows_evaluation() {
-    use std::process::Command;
     use std::fs;
+    use std::process::Command;
 
     // Create a temporary workflow file
     let workflow_content = r#"
@@ -187,7 +169,9 @@ exit 0
     // Run the workflow binary with --debug flag
     let output = Command::new("cargo")
         .args(["run", "--quiet", "--", "--debug", temp_path])
-        .current_dir("/Users/tobyhede/src/cipherpowers/.worktrees/workflow-executor/plugin/tools/workflow")
+        .current_dir(
+            "/Users/tobyhede/src/cipherpowers/.worktrees/workflow-executor/plugin/tools/workflow",
+        )
         .output()
         .expect("Failed to execute workflow");
 
@@ -197,18 +181,27 @@ exit 0
     fs::remove_file(temp_path).ok();
 
     // Verify debug output contains expected messages
-    assert!(stdout.contains("Checking: exit code (0 = Pass, non-zero = Fail)"),
-            "Debug output should show Pass/Fail criteria. Got:\n{}", stdout);
-    assert!(stdout.contains("Result: Pass (exit 0)"),
-            "Debug output should show evaluation result. Got:\n{}", stdout);
-    assert!(stdout.contains("Action: Continue"),
-            "Debug output should show action taken. Got:\n{}", stdout);
+    assert!(
+        stdout.contains("Checking: exit code (0 = Pass, non-zero = Fail)"),
+        "Debug output should show Pass/Fail criteria. Got:\n{}",
+        stdout
+    );
+    assert!(
+        stdout.contains("Result: Pass (exit 0)"),
+        "Debug output should show evaluation result. Got:\n{}",
+        stdout
+    );
+    assert!(
+        stdout.contains("Action: Continue"),
+        "Debug output should show action taken. Got:\n{}",
+        stdout
+    );
 }
 
 #[test]
 fn test_debug_mode_shows_fail_evaluation() {
-    use std::process::Command;
     use std::fs;
+    use std::process::Command;
 
     // Create a temporary workflow file
     let workflow_content = r#"
@@ -224,7 +217,9 @@ exit 1
     // Run the workflow binary with --debug flag
     let output = Command::new("cargo")
         .args(["run", "--quiet", "--", "--debug", temp_path])
-        .current_dir("/Users/tobyhede/src/cipherpowers/.worktrees/workflow-executor/plugin/tools/workflow")
+        .current_dir(
+            "/Users/tobyhede/src/cipherpowers/.worktrees/workflow-executor/plugin/tools/workflow",
+        )
         .output()
         .expect("Failed to execute workflow");
 
@@ -234,10 +229,19 @@ exit 1
     fs::remove_file(temp_path).ok();
 
     // Verify debug output contains expected messages for failure
-    assert!(stdout.contains("Checking: exit code (0 = Pass, non-zero = Fail)"),
-            "Debug output should show Pass/Fail criteria. Got:\n{}", stdout);
-    assert!(stdout.contains("Result: Fail (exit 1)"),
-            "Debug output should show failure result. Got:\n{}", stdout);
-    assert!(stdout.contains("Action: STOP"),
-            "Debug output should show STOP action. Got:\n{}", stdout);
+    assert!(
+        stdout.contains("Checking: exit code (0 = Pass, non-zero = Fail)"),
+        "Debug output should show Pass/Fail criteria. Got:\n{}",
+        stdout
+    );
+    assert!(
+        stdout.contains("Result: Fail (exit 1)"),
+        "Debug output should show failure result. Got:\n{}",
+        stdout
+    );
+    assert!(
+        stdout.contains("Action: STOP"),
+        "Debug output should show STOP action. Got:\n{}",
+        stdout
+    );
 }

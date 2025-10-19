@@ -2,8 +2,6 @@ use crate::models::*;
 use anyhow::Result;
 use std::process::Command as ProcessCommand;
 
-// TODO: Remove #[allow(dead_code)] once execution engine (Task 7+) uses these
-#[allow(dead_code)]
 pub struct CommandOutput {
     pub stdout: String,
     pub stderr: String,
@@ -11,7 +9,6 @@ pub struct CommandOutput {
     pub success: bool,
 }
 
-#[allow(dead_code)]
 pub fn execute_command(cmd: &Command) -> Result<CommandOutput> {
     let output = ProcessCommand::new("sh")
         .arg("-c")

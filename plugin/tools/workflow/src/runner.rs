@@ -24,7 +24,7 @@ pub struct WorkflowRunner {
     current_step: usize,
     iterations: usize,
     max_iterations: usize,
-    #[allow(dead_code)]  // Reserved for future use (enforcement vs guided mode)
+    #[allow(dead_code)] // Reserved for future use (enforcement vs guided mode)
     mode: ExecutionMode,
     debug: bool,
 }
@@ -104,7 +104,8 @@ impl WorkflowRunner {
                 }
 
                 // Evaluate conditionals
-                let action = self.evaluate_conditionals(&step.conditionals, &output)?
+                let action = self
+                    .evaluate_conditionals(&step.conditionals, &output)?
                     .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
 
                 if self.debug {
@@ -117,7 +118,9 @@ impl WorkflowRunner {
                                 println!("→ [DEBUG] Action: STOP");
                             }
                         }
-                        Action::GoToStep { number } => println!("→ [DEBUG] Action: Go to Step {}", number),
+                        Action::GoToStep { number } => {
+                            println!("→ [DEBUG] Action: Go to Step {}", number)
+                        }
                     }
                 }
 
@@ -171,17 +174,17 @@ impl WorkflowRunner {
         // If no conditionals specified, use implicit defaults
         if conditionals.is_empty() {
             return if output.success {
-                Action::Continue  // Implicit: Pass → Continue
+                Action::Continue // Implicit: Pass → Continue
             } else {
-                Action::Stop { message: None }  // Implicit: Fail → STOP
+                Action::Stop { message: None } // Implicit: Fail → STOP
             };
         }
 
         // If conditionals exist but none matched, use defaults
         if output.success {
-            Action::Continue  // Implicit: Pass → Continue
+            Action::Continue // Implicit: Pass → Continue
         } else {
-            Action::Stop { message: None }  // Implicit: Fail → STOP
+            Action::Stop { message: None } // Implicit: Fail → STOP
         }
     }
 
