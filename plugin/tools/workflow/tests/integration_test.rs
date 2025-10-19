@@ -80,3 +80,44 @@ fn test_guided_example_syntax_valid() {
     assert!(content.contains("Pass: Go to Step") || content.contains("Fail: Go to Step"),
             "Guided example should have GoTo conditional");
 }
+
+#[test]
+fn test_simple_example_executable() {
+    use std::process::{Command, Stdio};
+    use std::io::Write;
+
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let example_path = Path::new(manifest_dir).join("examples/simple.md");
+
+    // Build the workflow binary first
+    let build_status = Command::new("cargo")
+        .args(&["build", "--release"])
+        .current_dir(manifest_dir)
+        .status()
+        .expect("Failed to build workflow");
+
+    assert!(build_status.success(), "Build failed");
+
+    // Run the simple example
+    let binary_path = Path::new(manifest_dir)
+        .join("target/release/workflow");
+
+    let mut child = Command::new(binary_path)
+        .arg(example_path)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("Failed to spawn simple example");
+
+    // Provide 'y' answer to the prompt
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin.write_all(b"y\n").expect("Failed to write to stdin");
+    }
+
+    let output = child.wait_with_output().expect("Failed to wait for simple example");
+
+    // Should complete successfully (all echo commands succeed)
+    assert!(output.status.success(), "Simple example failed: {:?}",
+            String::from_utf8_lossy(&output.stderr));
+}
