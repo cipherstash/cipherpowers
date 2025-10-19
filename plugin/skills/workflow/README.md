@@ -35,17 +35,16 @@ Skills for using and creating markdown-based executable workflows.
 
 ## Discovery
 
-```bash
-# Find workflow skills
-./plugin/tools/find-skills "workflow"
+Skills are automatically discovered by Claude Code's native Skill tool.
 
-# Find execution guidance
-./plugin/tools/find-skills "executing"
-./plugin/tools/find-skills "enforcement"
+**In conversation:**
+- `Skill(command: "cipherpowers:executing-workflows")`
+- `Skill(command: "cipherpowers:creating-workflows")`
 
-# Find creation guidance
-./plugin/tools/find-skills "creating workflow"
-./plugin/tools/find-skills "syntax"
+**Direct references in agents/commands:**
+```markdown
+@${CLAUDE_PLUGIN_ROOT}/skills/workflow/executing-workflows/SKILL.md
+@${CLAUDE_PLUGIN_ROOT}/skills/workflow/creating-workflows/SKILL.md
 ```
 
 ## Related
