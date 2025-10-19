@@ -237,43 +237,68 @@ Wait for user confirmation before starting execution.
 
 **After batch completion, MANDATORY code review:**
 
-1. **Announce review:**
-   ```
-   Batch [N] complete. Tasks [X-Y] implemented.
+**Step 1: Dispatch code-reviewer agent**
 
-   Invoking code-reviewer agent for batch checkpoint.
-   ```
+Reviews all changes in batch using code review practice.
 
-2. **Invoke code-reviewer:**
-   - Use Task tool with subagent_type=code-reviewer
-   - Pass context: "Review changes from tasks [X-Y]"
-   - Code-reviewer follows: `${CLAUDE_PLUGIN_ROOT}plugin/skills/conducting-code-review/SKILL.md`
-   - Code-reviewer references: `${CLAUDE_PLUGIN_ROOT}plugin/practices/code-review.md`
+Dispatch: code-reviewer agent
+Input: Changed files in batch
+Output: Review file at `{work-dir}/{YYYY-MM-DD}-review.md`
 
-3. **Review results:**
-   - Read review file saved by code-reviewer
-   - Identify feedback at all levels (Critical, High, Medium, Low)
+**Step 2: Dispatch gatekeeper agent**
 
-4. **Address feedback:**
-   - For each issue, dispatch to appropriate agent to fix
-   - Re-run tests and checks after fixes
-   - Mark as resolved when fixed
+Validates review feedback against plan, gets user decisions on scope.
 
-5. **Verify all feedback addressed:**
-   - ALL feedback must be addressed (Critical through Low)
-   - Do NOT proceed to next batch with unresolved feedback
-   - If feedback cannot be addressed: document why + user approval required
+Dispatch: gatekeeper agent
+Input:
+- Plan file: `{work-dir}/plan.md` or `docs/plans/{YYYY-MM-DD}-{feature}.md`
+- Review file: `{work-dir}/{YYYY-MM-DD}-review.md` (from code-reviewer)
+- Batch number: {N}
 
-6. **Report to user:**
-   ```
-   Batch [N] review complete.
-   - Critical issues: [N] (all resolved)
-   - High priority: [N] (all resolved)
-   - Medium priority: [N] (all resolved)
-   - Low priority: [N] (all resolved)
+Output: Annotated review file with [FIX]/[WONTFIX]/[DEFERRED] tags
 
-   Ready for next batch.
-   ```
+**Step 3: Read annotated review**
+
+Parse the gatekeeper's annotated review file.
+
+Extract count of [FIX] items (items that must be addressed now).
+
+**Step 4: Handle validation results**
+
+**If gatekeeper reports "plan revision needed":**
+- Pause execution
+- Show user the deferred items
+- Ask: "Plan revision needed based on deferred feedback. Update plan and resume, or continue?"
+- Wait for user decision (5 minute timeout)
+- **Timeout behavior:** If no response within 5 minutes, mark workflow as FAILED and halt execution
+
+**If 0 items marked [FIX]:**
+- Announce: "Batch {N} review clean - no blocking issues to fix"
+- Proceed to batch {N+1}
+
+**If >0 items marked [FIX]:**
+- Dispatch fixing agent with:
+  - Annotated review file path
+  - Instruction: "Fix ONLY items marked [FIX]. Do not address [DEFERRED] or [WONTFIX] items."
+- After fixes applied:
+  - Run tests: `mise run test`
+  - Run checks: `mise run check`
+  - If pass → Continue to batch {N+1}
+  - If fail → Repeat from Step 1 (new review cycle with incremented review filename)
+
+**Step 5: Track deferred items**
+
+Maintain running list of deferred items across all batches (stored in plan's Deferred section by gatekeeper).
+
+After final batch, show summary:
+```
+Execution Complete
+
+Total deferred items: {N} BLOCKING + {M} NON-BLOCKING
+See plan file Deferred section for details.
+
+Next: Address deferred items or create follow-up tasks?
+```
 
 ### 6. Plan completion
 
