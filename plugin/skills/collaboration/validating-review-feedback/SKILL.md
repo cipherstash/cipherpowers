@@ -51,6 +51,8 @@ For each categorization, note brief reasoning:
 - Out-of-scope: "SRP refactoring not in plan scope"
 - Unclear: "Review recommends documentation alternative - needs user decision"
 
+**Note on NON-BLOCKING items:** All NON-BLOCKING items are automatically marked [DEFERRED] without user consultation (see Phase 4 Step 3), as they are by definition not required for merge. User can choose to address them in a follow-up or ignore them entirely.
+
 ### Phase 3: Present Misalignments to User
 
 **When:** Any BLOCKING items categorized as out-of-scope or unclear
@@ -199,6 +201,10 @@ Plan updated with deferred items: {plan-file-path}
 
 ## Error Handling
 
+**Missing required inputs (plan or review path):**
+- Error immediately with clear message: "Cannot validate without both plan file path and review file path"
+- Do not attempt to proceed with partial inputs
+
 **No BLOCKING items found:**
 - Still tag all NON-BLOCKING as [DEFERRED]
 - Return summary indicating clean review
@@ -220,7 +226,7 @@ Plan updated with deferred items: {plan-file-path}
 
 **Called by:**
 - Gatekeeper agent (enforces this workflow)
-- /execute command (via gatekeeper dispatch)
+- /execute command (via Gatekeeper dispatch)
 
 **Requires:**
 - Plan file path (from orchestrator)

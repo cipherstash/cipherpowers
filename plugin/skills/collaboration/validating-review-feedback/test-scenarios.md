@@ -68,7 +68,7 @@ Plan file: {path-to-plan}
 
 ### Success Criteria for Baseline
 
-❌ Agent skips HIGH priority item entirely
+❌ Agent skips BLOCKING item entirely
 ❌ No user consultation on ambiguous recommendation
 ❌ Reports completion despite unresolved BLOCKING issue
 
