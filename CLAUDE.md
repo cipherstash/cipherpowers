@@ -325,6 +325,8 @@ CipherPowers captures significant learnings from development work to build organ
 **Key Learnings:**
 - [Algorithmic vs Imperative Command Enforcement](docs/learning/2025-10-16-algorithmic-command-enforcement.md) - Discovered agents follow algorithms (100% compliance) better than imperatives (0-33% compliance). Use boolean decision trees for discipline-enforcing workflows.
 - [Workflow Executor Implementation](docs/learning/2025-10-19-workflow-executor.md) - Built Rust CLI tool for executing markdown workflows. Key insights: TDD prevented debugging time, batch reviews caught 12+ issues early, labeled loops solved GoToStep bug, security by documentation approach.
+- [Remove Obsolete find-skills Discovery System](docs/learning/2025-10-19-remove-find-skills.md) - Removed bash script discovery system in favor of Claude Code's native Skill tool. Key insights: Per-batch code reviews caught 7 blockers early, native auto-discovery eliminated 300+ lines of code, comprehensive grep verification necessary but not sufficient.
+- [Simplify Workflow Syntax](docs/learning/2025-10-19-simplify-workflow-syntax.md) - Simplified workflow syntax from verbose arrow conditionals to clean Pass/Fail labels. Key insights: Clean breaks reduce complexity (660 lines removed), implicit defaults reduce cognitive load (90% of steps use minimal syntax), per-batch code reviews add 30% time but prevent 2-3x debugging time, TDD prevents debugging entirely.
 
 **When to capture learning:**
 - After completing significant features
