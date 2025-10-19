@@ -6,6 +6,9 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
     let parser = Parser::new(markdown);
     let mut steps = Vec::new();
     let mut current_step: Option<Step> = None;
+    let mut in_code_block = false;
+    let mut code_block_content = String::new();
+    let mut code_block_lang = String::new();
 
     for event in parser {
         match event {
@@ -14,8 +17,31 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                     steps.push(step);
                 }
             }
+            Event::Start(Tag::CodeBlock(kind)) => {
+                in_code_block = true;
+                code_block_content.clear();
+                if let pulldown_cmark::CodeBlockKind::Fenced(lang) = kind {
+                    code_block_lang = lang.to_string();
+                }
+            }
+            Event::End(Tag::CodeBlock(_)) => {
+                in_code_block = false;
+                if code_block_lang.starts_with("bash") {
+                    let quiet = code_block_lang.contains("quiet");
+                    if let Some(step) = current_step.as_mut() {
+                        step.commands.push(Command {
+                            code: code_block_content.trim().to_string(),
+                            quiet,
+                        });
+                    }
+                }
+                code_block_content.clear();
+                code_block_lang.clear();
+            }
             Event::Text(text) => {
-                if let Some(captures) = extract_step_header(&text) {
+                if in_code_block {
+                    code_block_content.push_str(&text);
+                } else if let Some(captures) = extract_step_header(&text) {
                     current_step = Some(Step {
                         number: captures.0,
                         description: captures.1,
@@ -76,5 +102,31 @@ More description
         assert_eq!(steps[0].description, "First step");
         assert_eq!(steps[1].number, 2);
         assert_eq!(steps[1].description, "Second step");
+    }
+
+    #[test]
+    fn test_parse_commands_in_steps() {
+        let markdown = r#"
+# Step 1: Run tests
+
+```bash
+mise run test
+```
+
+# Step 2: Check status
+
+```bash quiet
+git status
+```
+"#;
+
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].commands.len(), 1);
+        assert_eq!(steps[0].commands[0].code, "mise run test");
+        assert_eq!(steps[0].commands[0].quiet, false);
+
+        assert_eq!(steps[1].commands.len(), 1);
+        assert_eq!(steps[1].commands[0].code, "git status");
+        assert_eq!(steps[1].commands[0].quiet, true);
     }
 }
