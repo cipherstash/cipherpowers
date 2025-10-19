@@ -70,27 +70,27 @@ mise run test
 
 ## Recovery Algorithm: Already Wrote Code Without Tests?
 
-# Step 1: Check for implementation code
+# Step 7: Check for implementation code
 
 **Prompt:** Have you written ANY implementation code?
 
-Fail: Go to Step 5
+Fail: Go to Step 11
 
-# Step 2: Check for tests
+# Step 8: Check for tests
 
 **Prompt:** Does that code have tests that failed first?
 
-Pass: Go to Step 5
+Pass: Go to Step 11
 
-# Step 3: Delete untested code
+# Step 9: Delete untested code
 
 **Prompt:** Delete the untested code. Execute: git reset --hard OR rm [files]. Do not keep as "reference".
 
 STOP
 
-# Step 4: [UNREACHABLE - Step 3 has STOP]
+# Step 10: [UNREACHABLE - Step 9 has STOP]
 
-# Step 5: Continue
+# Step 11: Continue
 
 **Prompt:** Tests exist OR no code written - continue
 
