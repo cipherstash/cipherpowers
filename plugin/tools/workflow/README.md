@@ -99,7 +99,7 @@ workflow --guided docs/work/2025-10-19-feature/plan.md
 
 ## Workflow Syntax
 
-Workflows are standard markdown with simple conventions:
+Workflows use simple markdown conventions.
 
 ### Steps (Headers)
 
@@ -110,6 +110,8 @@ Workflows are standard markdown with simple conventions:
 
 ### Commands (Code Blocks)
 
+One code block per step (enforced):
+
 ```markdown
 # Step 1: Run tests
 
@@ -118,34 +120,77 @@ mise run test
 ```
 ```
 
-By default, commands show full output. Add `quiet` flag to only show failures:
+Add `quiet` flag to suppress output on success:
 
 ```markdown
 ```bash quiet
-git diff --check
+git status --porcelain
 ```
 ```
 
-### Conditionals (Arrow Notation)
+### Conditionals (Pass/Fail Labels)
+
+**New simplified syntax:**
 
 ```markdown
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests)
-→ If output empty: STOP (nothing to commit)
-→ If output contains "error": STOP
-→ Otherwise: Continue
-→ Exit 0: Go to Step 5
+# Step 1: Run tests
+
+Fail: STOP (fix tests before committing)
+
+```bash
+mise run test
+```
 ```
 
-**Enforcement mode:**
-- `STOP` conditionals work as written
-- `Continue` and `Go to Step X` are ignored (automatic progression)
-- Use for algorithmic enforcement
+**Convention:**
+- Exit code 0 = Pass
+- Exit code non-zero = Fail
 
-**Guided mode:**
-- All conditionals work as written
-- Full control flow enabled
-- Use when flexibility needed
+**Defaults (implicit):**
+- Pass → Continue
+- Fail → STOP
+
+**Override when needed:**
+
+```markdown
+# Override: allow failure
+Fail: Continue
+
+# Override: change success behavior
+Pass: Go to Step 5
+```
+
+**Available actions:** `Continue`, `STOP`, `STOP (message)`, `Go to Step N`
+
+**Minimal syntax (no conditionals = use defaults):**
+
+```markdown
+# Step 1: Run tests
+
+```bash
+mise run test
+```
+
+# Step 2: Check formatting
+
+```bash
+mise run fmt -- --check
+```
+```
+
+Behavior: Any failure stops workflow automatically.
+
+**Complex conditions:** Use wrapper scripts to control exit codes
+
+```markdown
+# Step 1: Check for changes
+
+Fail: STOP (nothing to commit)
+
+```bash
+mise run check-has-changes  # Script returns 0 if changes, 1 if empty
+```
+```
 
 ### Prompts (Bold)
 
@@ -153,19 +198,18 @@ git diff --check
 **Prompt:** Do all functions have tests?
 ```
 
-Prompts always wait for y/n input. Answering 'n' or pressing Enter stops the workflow.
+Prompts wait for y/n input. Answering 'n' or Enter stops workflow (exit 2).
 
-### Example Workflow
+### Complete Example
 
 ```markdown
 # Step 1: Check for changes
 
-```bash
-git status --porcelain
-```
+Fail: STOP (nothing to commit)
 
-→ If output empty: STOP (nothing to commit)
-→ Otherwise: Continue
+```bash quiet
+mise run check-has-changes
+```
 
 # Step 2: Verify test coverage
 
@@ -173,14 +217,21 @@ git status --porcelain
 
 # Step 3: Run tests
 
+Fail: STOP (fix tests before committing)
+
 ```bash
 mise run test
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests first)
+# Step 4: Check formatting
 
-# Step 4: Commit
+Fail: STOP (run mise fmt to format code)
+
+```bash quiet
+mise run fmt -- --check
+```
+
+# Step 5: Commit
 
 ```bash
 git commit
