@@ -130,29 +130,52 @@ impl WorkflowRunner {
         output: &CommandOutput,
     ) -> Result<Option<Action>> {
         for conditional in conditionals {
-            match conditional {
+            let matched_action = match conditional {
                 Conditional::ExitCode { code, action } => {
                     if output.exit_code == *code {
-                        return Ok(Some(action.clone()));
+                        Some(action.clone())
+                    } else {
+                        None
                     }
                 }
                 Conditional::ExitNotZero { action } => {
                     if output.exit_code != 0 {
-                        return Ok(Some(action.clone()));
+                        Some(action.clone())
+                    } else {
+                        None
                     }
                 }
                 Conditional::OutputEmpty { action } => {
                     if output.stdout.trim().is_empty() {
-                        return Ok(Some(action.clone()));
+                        Some(action.clone())
+                    } else {
+                        None
                     }
                 }
                 Conditional::OutputContains { text, action } => {
                     if output.stdout.contains(text) || output.stderr.contains(text) {
-                        return Ok(Some(action.clone()));
+                        Some(action.clone())
+                    } else {
+                        None
                     }
                 }
-                Conditional::Otherwise { action } => {
-                    return Ok(Some(action.clone()));
+                Conditional::Otherwise { action } => Some(action.clone()),
+            };
+
+            // If we matched a conditional, check if it's allowed in current mode
+            if let Some(action) = matched_action {
+                let is_allowed = match &action {
+                    Action::Continue => self.mode.allows_continue(),
+                    Action::Stop { .. } => self.mode.allows_stop(),
+                    Action::GoToStep { .. } => self.mode.allows_goto(),
+                };
+
+                if is_allowed {
+                    return Ok(Some(action));
+                } else {
+                    // In enforcement mode, Continue/GoTo are ignored - continue to next conditional
+                    println!("→ Conditional matched but ignored in enforcement mode: {:?}", action);
+                    continue;
                 }
             }
         }
@@ -286,6 +309,8 @@ mod tests {
 
     #[test]
     fn test_action_goto_step() {
+        use crate::execution_mode::ExecutionMode;
+
         let steps = vec![
             Step {
                 number: 1,
@@ -316,7 +341,7 @@ mod tests {
             },
         ];
 
-        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
     }
@@ -350,6 +375,8 @@ mod tests {
 
     #[test]
     fn test_invalid_goto_step() {
+        use crate::execution_mode::ExecutionMode;
+
         let steps = vec![Step {
             number: 1,
             description: "Test invalid goto".to_string(),
@@ -364,7 +391,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
         let result = runner.run();
         assert!(result.is_err());
         let err = result.unwrap_err();
@@ -448,6 +475,8 @@ mod tests {
 
     #[test]
     fn test_infinite_loop_protection() {
+        use crate::execution_mode::ExecutionMode;
+
         let steps = vec![Step {
             number: 1,
             description: "Infinite loop test".to_string(),
@@ -462,7 +491,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
         let result = runner.run();
         assert!(result.is_err());
         let err = result.unwrap_err();
@@ -488,6 +517,71 @@ mod tests {
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_enforcement_mode_ignores_continue_and_goto() {
+        use crate::execution_mode::ExecutionMode;
+
+        let steps = vec![
+            Step {
+                number: 1,
+                description: "Step with Continue".to_string(),
+                commands: vec![Command {
+                    code: "echo 'test'".to_string(),
+                    quiet: false,
+                }],
+                prompts: vec![],
+                conditionals: vec![
+                    Conditional::ExitCode {
+                        code: 0,
+                        action: Action::Continue, // Should be ignored
+                    },
+                    Conditional::ExitCode {
+                        code: 1,
+                        action: Action::Stop {
+                            message: Some("failed".to_string()),
+                        },
+                    },
+                ],
+            },
+            Step {
+                number: 2,
+                description: "Second step".to_string(),
+                commands: vec![],
+                prompts: vec![],
+                conditionals: vec![],
+            },
+        ];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+
+        // Should complete both steps (Continue was ignored, didn't stop early)
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_guided_mode_respects_continue() {
+        use crate::execution_mode::ExecutionMode;
+
+        let steps = vec![Step {
+            number: 1,
+            description: "Step with Continue".to_string(),
+            commands: vec![Command {
+                code: "echo 'test'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitCode {
+                code: 0,
+                action: Action::Continue,
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
     }
