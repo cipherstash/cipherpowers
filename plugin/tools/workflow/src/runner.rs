@@ -131,6 +131,23 @@ impl WorkflowRunner {
     ) -> Result<Option<Action>> {
         for conditional in conditionals {
             let matched_action = match conditional {
+                // New syntax (will be implemented properly in Task 5)
+                Conditional::Pass { action } => {
+                    if output.success {
+                        Some(action.clone())
+                    } else {
+                        None
+                    }
+                }
+                Conditional::Fail { action } => {
+                    if !output.success {
+                        Some(action.clone())
+                    } else {
+                        None
+                    }
+                }
+                // Legacy syntax (deprecated)
+                #[allow(deprecated)]
                 Conditional::ExitCode { code, action } => {
                     if output.exit_code == *code {
                         Some(action.clone())
@@ -138,6 +155,7 @@ impl WorkflowRunner {
                         None
                     }
                 }
+                #[allow(deprecated)]
                 Conditional::ExitNotZero { action } => {
                     if output.exit_code != 0 {
                         Some(action.clone())
@@ -145,6 +163,7 @@ impl WorkflowRunner {
                         None
                     }
                 }
+                #[allow(deprecated)]
                 Conditional::OutputEmpty { action } => {
                     if output.stdout.trim().is_empty() {
                         Some(action.clone())
@@ -152,6 +171,7 @@ impl WorkflowRunner {
                         None
                     }
                 }
+                #[allow(deprecated)]
                 Conditional::OutputContains { text, action } => {
                     if output.stdout.contains(text) || output.stderr.contains(text) {
                         Some(action.clone())
@@ -159,6 +179,7 @@ impl WorkflowRunner {
                         None
                     }
                 }
+                #[allow(deprecated)]
                 Conditional::Otherwise { action } => Some(action.clone()),
             };
 
@@ -174,7 +195,10 @@ impl WorkflowRunner {
                     return Ok(Some(action));
                 } else {
                     // In enforcement mode, Continue/GoTo are ignored - continue to next conditional
-                    println!("→ Conditional matched but ignored in enforcement mode: {:?}", action);
+                    println!(
+                        "→ Conditional matched but ignored in enforcement mode: {:?}",
+                        action
+                    );
                     continue;
                 }
             }
@@ -183,14 +207,17 @@ impl WorkflowRunner {
     }
 
     fn find_step_index(&self, number: usize) -> Result<usize> {
-        self.steps.iter().position(|s| s.number == number).ok_or_else(|| {
-            let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number).collect();
-            anyhow::anyhow!(
-                "Step {} not found in workflow. Available steps: {:?}",
-                number,
-                available_steps
-            )
-        })
+        self.steps
+            .iter()
+            .position(|s| s.number == number)
+            .ok_or_else(|| {
+                let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number).collect();
+                anyhow::anyhow!(
+                    "Step {} not found in workflow. Available steps: {:?}",
+                    number,
+                    available_steps
+                )
+            })
     }
 }
 
@@ -202,6 +229,7 @@ pub enum ExecutionResult {
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod tests {
     use super::*;
 

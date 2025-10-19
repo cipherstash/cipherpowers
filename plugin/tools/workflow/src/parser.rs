@@ -163,7 +163,8 @@ fn parse_conditional(text: &str) -> Option<Conditional> {
     // Parse action
     let action = parse_action(action_str)?;
 
-    // Parse condition type
+    // Parse condition type (legacy syntax, will be replaced in Task 3)
+    #[allow(deprecated)]
     if condition == "Exit 0" {
         Some(Conditional::ExitCode { code: 0, action })
     } else if condition == "Exit ≠ 0" || condition == "Exit != 0" {
@@ -329,6 +330,7 @@ Some other text
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_parse_conditionals() {
         let markdown = r#"
 # Step 1: Run tests
@@ -364,6 +366,7 @@ mise run test
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_parse_arbitrary_exit_codes() {
         let markdown = r#"
 # Step 1: Test
@@ -401,6 +404,7 @@ mise run test
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_parse_conditionals_with_ascii_arrow() {
         let markdown = r#"
 # Step 1: Test
@@ -427,6 +431,7 @@ mise run test
     }
 
     #[test]
+    #[allow(deprecated)]
     fn test_parse_output_contains_with_quotes() {
         let markdown = r#"
 # Step 1: Test
