@@ -176,6 +176,21 @@ fn extract_step_header(text: &str) -> Option<(usize, String)> {
 
 fn parse_conditional(text: &str) -> Option<Conditional> {
     let trimmed = text.trim();
+
+    // New syntax: Pass/Fail labels (no arrow prefix)
+    if trimmed.starts_with("Pass:") {
+        let action_str = trimmed.strip_prefix("Pass:")?.trim();
+        let action = parse_action(action_str)?;
+        return Some(Conditional::Pass { action });
+    }
+
+    if trimmed.starts_with("Fail:") {
+        let action_str = trimmed.strip_prefix("Fail:")?.trim();
+        let action = parse_action(action_str)?;
+        return Some(Conditional::Fail { action });
+    }
+
+    // Legacy syntax: arrow-based conditionals (deprecated)
     if !trimmed.starts_with("→") && !trimmed.starts_with("->") {
         return None;
     }
@@ -198,7 +213,7 @@ fn parse_conditional(text: &str) -> Option<Conditional> {
     // Parse action
     let action = parse_action(action_str)?;
 
-    // Parse condition type (legacy syntax, will be replaced in Task 3)
+    // Parse legacy condition types
     #[allow(deprecated)]
     if condition == "Exit 0" {
         Some(Conditional::ExitCode { code: 0, action })
@@ -603,5 +618,53 @@ mise run test
             }
             _ => panic!("Expected OutputContains conditional"),
         }
+    }
+
+    #[test]
+    fn test_parse_pass_fail_conditionals() {
+        let markdown = r#"
+# Step 1: Run tests
+
+Pass: Continue
+Fail: STOP (fix tests)
+
+```bash
+mise run test
+```
+"#;
+
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 2);
+
+        match &steps[0].conditionals[0] {
+            Conditional::Pass { action } => {
+                assert_eq!(*action, Action::Continue);
+            }
+            _ => panic!("Expected Pass conditional"),
+        }
+
+        match &steps[0].conditionals[1] {
+            Conditional::Fail { action } => match action {
+                Action::Stop { message } => {
+                    assert_eq!(message.as_deref(), Some("fix tests"));
+                }
+                _ => panic!("Expected Stop action"),
+            },
+            _ => panic!("Expected Fail conditional"),
+        }
+    }
+
+    #[test]
+    fn test_parse_minimal_syntax_no_conditionals() {
+        let markdown = r#"
+# Step 1: Run tests
+
+```bash
+mise run test
+```
+"#;
+
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 0);
     }
 }
