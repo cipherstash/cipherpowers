@@ -100,26 +100,17 @@ impl WorkflowRunner {
                     .evaluate_conditionals(&step.conditionals, &output)?
                     .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
 
-                debug!(?action, "Determined action");
-
-                match action {
-                    Action::Continue => {
-                        // Only show if debug mode
-                        // Silent continue in normal mode for clean UX
+                let control = self.execute_action(action, step.number)?;
+                match control {
+                    StepControl::Next => {
+                        // Continue to next step
                     }
-                    Action::Stop { message } => {
-                        if let Some(msg) = message {
-                            println!("→ Action: STOP ({})", msg);
-                            return Ok(ExecutionResult::Stopped { message: Some(msg) });
-                        } else {
-                            println!("→ Action: STOP");
-                            return Ok(ExecutionResult::Stopped { message: None });
-                        }
-                    }
-                    Action::GoToStep { number } => {
-                        println!("→ Action: Go to Step {}", number);
-                        self.current_step = self.find_step_index(number, step.number)?;
+                    StepControl::JumpTo(index) => {
+                        self.current_step = index;
                         continue 'workflow_loop;
+                    }
+                    StepControl::Terminate(result) => {
+                        return Ok(result);
                     }
                 }
             }
@@ -188,6 +179,29 @@ impl WorkflowRunner {
         Ok(None)
     }
 
+    fn execute_action(&self, action: Action, from_step: usize) -> Result<StepControl> {
+        debug!(?action, "Executing action");
+
+        match action {
+            Action::Continue => Ok(StepControl::Next),
+
+            Action::Stop { message } => {
+                if let Some(msg) = &message {
+                    println!("→ Action: STOP ({})", msg);
+                } else {
+                    println!("→ Action: STOP");
+                }
+                Ok(StepControl::Terminate(ExecutionResult::Stopped { message }))
+            }
+
+            Action::GoToStep { number } => {
+                println!("→ Action: Go to Step {}", number);
+                let index = self.find_step_index(number, from_step)?;
+                Ok(StepControl::JumpTo(index))
+            }
+        }
+    }
+
     fn find_step_index(&self, target: usize, from_step: usize) -> Result<usize> {
         self.steps
             .iter()
@@ -213,7 +227,6 @@ pub enum ExecutionResult {
 
 /// Control flow decision for a single step execution
 #[derive(Debug, PartialEq)]
-#[allow(dead_code)] // Will be used in next task (Task 4: Extract execute_action)
 enum StepControl {
     /// Continue to next step (current_step + 1)
     Next,
@@ -336,5 +349,96 @@ mod tests {
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Stopped { message: None });
+    }
+
+    #[test]
+    fn test_execute_action_continue() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let action = Action::Continue;
+
+        let control = runner.execute_action(action, 1).unwrap();
+        assert_eq!(control, StepControl::Next);
+    }
+
+    #[test]
+    fn test_execute_action_goto() {
+        let steps = vec![
+            Step {
+                number: 1,
+                description: "Step 1".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+            Step {
+                number: 2,
+                description: "Step 2".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+        ];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let action = Action::GoToStep { number: 2 };
+
+        let control = runner.execute_action(action, 1).unwrap();
+        assert_eq!(control, StepControl::JumpTo(1)); // Index 1 for step number 2
+    }
+
+    #[test]
+    fn test_execute_action_goto_invalid() {
+        // Test error case: invalid GoToStep number
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let action = Action::GoToStep { number: 99 }; // Step doesn't exist
+
+        let result = runner.execute_action(action, 1);
+        assert!(result.is_err());
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("Step 99 does not exist")
+        );
+    }
+
+    #[test]
+    fn test_execute_action_stop() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let action = Action::Stop {
+            message: Some("Test stop".to_string()),
+        };
+
+        let control = runner.execute_action(action, 1).unwrap();
+        assert_eq!(
+            control,
+            StepControl::Terminate(ExecutionResult::Stopped {
+                message: Some("Test stop".to_string())
+            })
+        );
     }
 }
