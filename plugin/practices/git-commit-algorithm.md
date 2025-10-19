@@ -14,53 +14,6 @@ Algorithmic enforcement of commit readiness prevents premature commits with fail
 
 **Core principle:** Commits must pass deterministic quality checks. No exceptions for time pressure, exhaustion, or "will fix later" rationalizations.
 
-## Decision Algorithm: When to Commit
-
-```
-Step 1: Check: Have you made code changes?
-        → YES: Go to Step 2
-        → NO: Go to Step 8 (nothing to commit)
-
-Step 2: Check: Do ALL new/modified functions have tests?
-        → YES: Go to Step 3
-        → NO: Go to Step 9 (incomplete - write tests first)
-
-Step 3: Check: Do ALL tests pass?
-        → YES: Go to Step 4
-        → NO: Go to Step 9 (failing tests - fix before commit)
-
-Step 4: Check: Does `mise run check` pass (linting, formatting, types)?
-        → YES: Go to Step 5
-        → NO: Go to Step 9 (checks failing - fix before commit)
-
-Step 5: Check: Is documentation updated for user-facing changes?
-        → YES: Go to Step 6
-        → NO: Go to Step 9 (missing docs - update before commit)
-
-Step 6: Check: Do changes serve a single atomic purpose?
-        → YES: Go to Step 7
-        → NO: Go to Step 10 (split into multiple commits)
-
-Step 7: Commit is ready
-        Stage files: git add [files]
-        Commit: git commit (use conventional-commits.md format)
-        STOP
-
-Step 8: No changes to commit (continue working)
-        STOP
-
-Step 9: Commit NOT ready - complete work first
-        Fix identified issue (tests, checks, docs)
-        Return to Step 1
-        STOP
-
-Step 10: Split changes into multiple commits
-        Stage related files only: git add [subset]
-        Commit atomic change: git commit
-        Return to Step 1 for remaining changes
-        STOP
-```
-
 ## Executable Workflow
 
 Run with: `workflow plugin/practices/git-commit-algorithm.md`
@@ -103,13 +56,31 @@ mise run check
 
 **Prompt:** Do changes serve a single atomic purpose?
 
-# Step 7: Commit changes
-
-Fail: STOP (commit failed - check message format)
+# Step 7: Create commit
 
 ```bash
-git commit
+git add -p  # Review changes
+git commit  # Use conventional-commits.md format
 ```
+
+# Step 8: No changes to commit
+
+```bash
+echo "No changes to commit - continue working"
+exit 0
+```
+
+# Step 9: Fix issues before committing
+
+**Prompt:** Address the failing condition, then return to Step 1
+
+# Step 10: Split into multiple commits
+
+```bash
+git add -p  # Stage specific changes
+```
+
+Pass: Go to Step 7
 
 ## INVALID Conditions for Committing Early
 
