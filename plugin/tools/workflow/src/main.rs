@@ -14,17 +14,13 @@ struct Args {
     /// Path to workflow markdown file
     workflow_file: String,
 
+    /// Enable guided mode (allows Continue/GoTo conditionals)
+    #[arg(long)]
+    guided: bool,
+
     /// Show steps without executing
     #[arg(long)]
     dry_run: bool,
-
-    /// Start from specific step number
-    #[arg(long)]
-    start_step: Option<usize>,
-
-    /// Verbose output
-    #[arg(long, short)]
-    verbose: bool,
 
     /// List all steps
     #[arg(long)]
@@ -108,6 +104,8 @@ fn main() -> Result<()> {
 
 #[cfg(test)]
 mod integration_tests {
+    use super::*;
+
     #[test]
     fn test_end_to_end_workflow() {
         let workflow = r#"
@@ -126,5 +124,37 @@ echo "test output"
         let result = runner.run().unwrap();
 
         assert_eq!(result, crate::runner::ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_end_to_end_workflow_with_stop() {
+        let workflow = r#"
+# Step 1: Test failure
+
+```bash
+exit 1
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (Command failed as expected)
+"#;
+
+        let steps = crate::parser::parse_workflow(workflow).unwrap();
+        let mut runner = crate::runner::WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+
+        assert_eq!(
+            result,
+            crate::runner::ExecutionResult::Stopped {
+                message: Some("Command failed as expected".to_string())
+            }
+        );
+    }
+
+    #[test]
+    fn test_guided_mode_flag_parsing() {
+        // This will compile once we add the flag
+        let args = Args::parse_from(vec!["workflow", "--guided", "test.md"]);
+        assert!(args.guided);
     }
 }
