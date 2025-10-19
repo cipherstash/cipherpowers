@@ -1,3 +1,4 @@
+use crate::execution_mode::ExecutionMode;
 use crate::executor::{execute_command, CommandOutput};
 use crate::models::*;
 use anyhow::Result;
@@ -7,21 +8,23 @@ pub struct WorkflowRunner {
     current_step: usize,
     iterations: usize,
     max_iterations: usize,
+    mode: ExecutionMode,
 }
 
 impl WorkflowRunner {
-    pub fn new(steps: Vec<Step>) -> Self {
+    pub fn new(steps: Vec<Step>, mode: ExecutionMode) -> Self {
         let max_iterations = steps.len() * 10; // Allow reasonable looping
         Self {
             steps,
             current_step: 0,
             iterations: 0,
             max_iterations,
+            mode,
         }
     }
 
     pub fn run(&mut self) -> Result<ExecutionResult> {
-        while self.current_step < self.steps.len() {
+        'workflow_loop: while self.current_step < self.steps.len() {
             self.iterations += 1;
             if self.iterations > self.max_iterations {
                 return Err(anyhow::anyhow!(
@@ -32,7 +35,12 @@ impl WorkflowRunner {
 
             let step = &self.steps[self.current_step];
 
-            println!("\n→ Step {}: {}", step.number, step.description);
+            println!(
+                "\n→ Step {}/{}: {}",
+                step.number,
+                self.steps.len(),
+                step.description
+            );
 
             // Execute commands
             for command in &step.commands {
@@ -77,7 +85,7 @@ impl WorkflowRunner {
                     Some(Action::GoToStep { number }) => {
                         println!("→ Condition matched: Go to Step {}", number);
                         self.current_step = self.find_step_index(number)?;
-                        continue;
+                        continue 'workflow_loop;
                     }
                     None => {
                         // No matching conditional found
@@ -152,10 +160,14 @@ impl WorkflowRunner {
     }
 
     fn find_step_index(&self, number: usize) -> Result<usize> {
-        self.steps
-            .iter()
-            .position(|s| s.number == number)
-            .ok_or_else(|| anyhow::anyhow!("Step {} not found", number))
+        self.steps.iter().position(|s| s.number == number).ok_or_else(|| {
+            let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number).collect();
+            anyhow::anyhow!(
+                "Step {} not found in workflow. Available steps: {:?}",
+                number,
+                available_steps
+            )
+        })
     }
 }
 
@@ -186,7 +198,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
     }
@@ -209,7 +221,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(
             result,
@@ -234,7 +246,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
     }
@@ -262,7 +274,7 @@ mod tests {
             ],
         }];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(
             result,
@@ -304,7 +316,7 @@ mod tests {
             },
         ];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
     }
@@ -326,7 +338,7 @@ mod tests {
             }],
         }];
 
-        let mut runner = WorkflowRunner::new(steps);
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         let result = runner.run().unwrap();
         assert_eq!(
             result,
@@ -334,5 +346,149 @@ mod tests {
                 message: Some("Command failed as expected".to_string())
             }
         );
+    }
+
+    #[test]
+    fn test_invalid_goto_step() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test invalid goto".to_string(),
+            commands: vec![Command {
+                code: "echo 'test'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitCode {
+                code: 0,
+                action: Action::GoToStep { number: 99 },
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run();
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("Step 99 not found"));
+    }
+
+    #[test]
+    fn test_multiple_conditionals_first_match_wins() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test conditional order".to_string(),
+            commands: vec![Command {
+                code: "echo 'ERROR: test'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![
+                Conditional::OutputContains {
+                    text: "ERROR".to_string(),
+                    action: Action::Stop {
+                        message: Some("Found ERROR".to_string()),
+                    },
+                },
+                Conditional::ExitCode {
+                    code: 0,
+                    action: Action::Continue,
+                },
+            ],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+        // First conditional should match
+        assert_eq!(
+            result,
+            ExecutionResult::Stopped {
+                message: Some("Found ERROR".to_string())
+            }
+        );
+    }
+
+    #[test]
+    fn test_no_conditionals_success_continues() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test no conditionals".to_string(),
+            commands: vec![Command {
+                code: "echo 'success'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_no_conditionals_failure_errors() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test no conditionals with failure".to_string(),
+            commands: vec![Command {
+                code: "exit 1".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run();
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err
+            .to_string()
+            .contains("Command failed with exit code 1 but no conditional matched"));
+    }
+
+    #[test]
+    fn test_infinite_loop_protection() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Infinite loop test".to_string(),
+            commands: vec![Command {
+                code: "echo 'loop'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitCode {
+                code: 0,
+                action: Action::GoToStep { number: 1 },
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run();
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("Exceeded maximum iterations"));
+    }
+
+    #[test]
+    fn test_runner_with_enforcement_mode() {
+        use crate::execution_mode::ExecutionMode;
+
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            commands: vec![Command {
+                code: "echo 'test'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitCode {
+                code: 0,
+                action: Action::Continue, // Should be ignored in enforcement mode
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
     }
 }

@@ -75,7 +75,13 @@ fn main() -> Result<()> {
     println!("→ Workflow: {}", args.workflow_file);
     println!("→ Steps: {}", steps.len());
 
-    let mut runner = runner::WorkflowRunner::new(steps);
+    let mode = if args.guided {
+        execution_mode::ExecutionMode::Guided
+    } else {
+        execution_mode::ExecutionMode::Enforcement
+    };
+
+    let mut runner = runner::WorkflowRunner::new(steps, mode);
     let result = match runner.run() {
         Ok(res) => res,
         Err(e) => {
@@ -121,7 +127,10 @@ echo "test output"
 "#;
 
         let steps = crate::parser::parse_workflow(workflow).unwrap();
-        let mut runner = crate::runner::WorkflowRunner::new(steps);
+        let mut runner = crate::runner::WorkflowRunner::new(
+            steps,
+            crate::execution_mode::ExecutionMode::Enforcement,
+        );
         let result = runner.run().unwrap();
 
         assert_eq!(result, crate::runner::ExecutionResult::Success);
@@ -141,7 +150,10 @@ exit 1
 "#;
 
         let steps = crate::parser::parse_workflow(workflow).unwrap();
-        let mut runner = crate::runner::WorkflowRunner::new(steps);
+        let mut runner = crate::runner::WorkflowRunner::new(
+            steps,
+            crate::execution_mode::ExecutionMode::Enforcement,
+        );
         let result = runner.run().unwrap();
 
         assert_eq!(
