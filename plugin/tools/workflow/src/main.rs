@@ -1,5 +1,8 @@
 use clap::Parser;
 
+mod models;
+mod parser;
+
 #[derive(Parser, Debug)]
 #[command(name = "workflow")]
 #[command(about = "Execute markdown-based workflows", long_about = None)]
