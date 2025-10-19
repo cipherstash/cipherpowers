@@ -225,59 +225,33 @@ You MUST ALWAYS use the following structure to reference paths:
 
 ## Integration with Superpowers
 
-**Custom find-skills tool** (`${CLAUDE_PLUGIN_ROOT}tools/find-skills`):
-- Searches `${CLAUDE_PLUGIN_ROOT}skills/` (org-specific)
-- Searches `${SUPERPOWERS_SKILLS_ROOT}/skills/` (universal skills)
-- Provides unified discovery across both collections
-- Flags: `--local`, `--upstream`, or default (both)
+CipherPowers integrates seamlessly with the superpowers plugin through Claude Code's native skills system.
 
-**Custom find-practices tool** (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
+**Skill Discovery:**
+- Skills from both plugins are automatically discovered
+- Use the Skill tool in conversations: `Skill(command: "plugin-name:skill-name")`
+- No manual discovery scripts needed
+
+**Practices Discovery:**
+Custom `find-practices` tool (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
 - Searches `${CLAUDE_PLUGIN_ROOT}plugin/practices/` (local practices)
 - Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/practices/` (marketplace practices, if available)
 - Extracts YAML frontmatter (name, description, when_to_use)
 - Flags: `--local`, `--upstream`, or default (both)
 
-**References:**
-Commands and agents reference skills and practices transparently using standard paths.
-
-## Using the Discovery Tools
-
-**find-skills**: Discover available skills
-
+**Usage:**
 ```bash
-# From repository root or via relative path
-./plugin/tools/find-skills "search pattern"
-
-# Examples
-./plugin/tools/find-skills "workflow"          # Find workflow skills
-./plugin/tools/find-skills "executing"         # Find execution guidance
-./plugin/tools/find-skills "code review"       # Find review skills
-
-# With scope flags
-./plugin/tools/find-skills --local "pattern"      # cipherpowers only
-./plugin/tools/find-skills --upstream "pattern"   # superpowers only
+# Find practices
+./plugin/tools/find-practices "pattern"
+./plugin/tools/find-practices --local "pattern"    # cipherpowers only
+./plugin/tools/find-practices --upstream "pattern" # marketplace only
 ```
 
-**find-practices**: Discover available practices
-
-```bash
-# From repository root or via relative path
-./plugin/tools/find-practices "search pattern"
-
-# With scope flags
-./plugin/tools/find-practices --local "pattern"      # cipherpowers only
-./plugin/tools/find-practices --upstream "pattern"   # marketplace only
-```
-
-**Direct references**: When you know the exact path
-
-```markdown
-# In agents or commands
-${CLAUDE_PLUGIN_ROOT}practices/code-review.md
-${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md
-${CLAUDE_PLUGIN_ROOT}practices/code-review.md  # Relative to plugin root
-${CLAUDE_PLUGIN_ROOT}conducting-code-review/SKILL.md  # Relative to plugin root
-```
+**Direct References:**
+Commands and agents reference skills and practices using environment variables:
+- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
+- `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
+- Skills are invoked via Skill tool, not direct file references
 
 ## Working with Skills in this Repository
 
