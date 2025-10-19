@@ -6,7 +6,7 @@ Use the commit-workflow skill for systematic commit process.
 ## Instructions
 
 1. **Follow the commit-workflow skill:**
-   - Read: `${CLAUDE_PLUGIN_ROOT}commit-workflow/SKILL.md`
+   - Read: `${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md`
    - This skill contains the complete workflow:
      - Pre-commit checks (linters, formatters, tests)
      - Staging and diff review
