@@ -27,7 +27,6 @@ pub struct WorkflowRunner {
     current_step: usize,
     iterations: usize,
     max_iterations: usize,
-    #[allow(dead_code)] // Reserved for future use (enforcement vs guided mode)
     mode: ExecutionMode,
 }
 
@@ -111,16 +110,40 @@ impl WorkflowRunner {
         output: &CommandOutput,
     ) -> Result<Option<Action>> {
         for conditional in conditionals {
-            match conditional {
+            let matched_action = match conditional {
                 Conditional::Pass { action } => {
                     if output.success {
-                        return Ok(Some(action.clone()));
+                        Some(action)
+                    } else {
+                        None
                     }
                 }
                 Conditional::Fail { action } => {
                     if !output.success {
-                        return Ok(Some(action.clone()));
+                        Some(action)
+                    } else {
+                        None
                     }
+                }
+            };
+
+            // If we matched a conditional, check if it's allowed in current mode
+            if let Some(action) = matched_action {
+                let is_allowed = match action {
+                    Action::Continue => self.mode.allows_continue(),
+                    Action::Stop { .. } => self.mode.allows_stop(),
+                    Action::GoToStep { .. } => self.mode.allows_goto(),
+                };
+
+                if is_allowed {
+                    return Ok(Some(action.clone()));
+                } else {
+                    // In enforcement mode, Continue/GoTo are ignored
+                    debug!(
+                        "Conditional matched but ignored in enforcement mode: {:?}",
+                        action
+                    );
+                    continue; // Try next conditional
                 }
             }
         }
@@ -609,6 +632,7 @@ mod tests {
 
     #[test]
     fn test_determine_action_explicit_pass() {
+        // Test explicit Pass conditional in Guided mode (allows GoTo)
         let steps = vec![Step {
             number: 1,
             description: "Test".to_string(),
@@ -619,7 +643,7 @@ mod tests {
             }],
         }];
 
-        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
         let output = CommandOutput {
             stdout: String::new(),
             stderr: String::new(),
@@ -666,5 +690,172 @@ mod tests {
             .determine_action(&runner.steps[0], &output_fail)
             .unwrap();
         assert_eq!(action, Action::Stop { message: None });
+    }
+
+    #[test]
+    fn test_enforcement_mode_ignores_goto_conditional() {
+        // Test that enforcement mode ignores GoTo conditionals in evaluate_conditionals
+        let steps = vec![
+            Step {
+                number: 1,
+                description: "Test".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![Conditional::Pass {
+                    action: Action::GoToStep { number: 3 },
+                }],
+            },
+            Step {
+                number: 2,
+                description: "Should be visited in enforcement mode".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+            Step {
+                number: 3,
+                description: "Final step".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+        ];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+
+        // In enforcement mode, GoTo should be ignored and return None
+        // so implicit defaults apply (Pass → Continue)
+        let output = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+
+        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        // In enforcement mode: GoTo ignored, defaults to Continue
+        assert_eq!(action, Action::Continue);
+    }
+
+    #[test]
+    fn test_enforcement_mode_allows_stop_conditional() {
+        // Test that enforcement mode allows STOP conditionals
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![Conditional::Pass {
+                action: Action::Stop {
+                    message: Some("Intentional stop".to_string()),
+                },
+            }],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let output = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+
+        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        // STOP should be allowed in enforcement mode
+        assert_eq!(
+            action,
+            Action::Stop {
+                message: Some("Intentional stop".to_string())
+            }
+        );
+    }
+
+    #[test]
+    fn test_guided_mode_allows_goto_conditional() {
+        // Test that guided mode allows GoTo conditionals
+        let steps = vec![
+            Step {
+                number: 1,
+                description: "Test".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![Conditional::Pass {
+                    action: Action::GoToStep { number: 3 },
+                }],
+            },
+            Step {
+                number: 2,
+                description: "Should be skipped in guided mode".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+            Step {
+                number: 3,
+                description: "Final step".to_string(),
+                command: None,
+                prompts: vec![],
+                conditionals: vec![],
+            },
+        ];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
+        let output = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+
+        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        // In guided mode: GoTo should be allowed
+        assert_eq!(action, Action::GoToStep { number: 3 });
+    }
+
+    #[test]
+    fn test_enforcement_mode_integration() {
+        // Integration test: full workflow execution in enforcement mode
+        // Verifies that GoTo is ignored and all steps execute sequentially
+        let steps = vec![
+            Step {
+                number: 1,
+                description: "Step 1 with GoTo".to_string(),
+                command: Some(Command {
+                    code: "exit 0".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditionals: vec![Conditional::Pass {
+                    action: Action::GoToStep { number: 3 },
+                }],
+            },
+            Step {
+                number: 2,
+                description: "Step 2 - must be visited".to_string(),
+                command: Some(Command {
+                    code: "exit 0".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditionals: vec![],
+            },
+            Step {
+                number: 3,
+                description: "Step 3".to_string(),
+                command: Some(Command {
+                    code: "exit 0".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditionals: vec![],
+            },
+        ];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+
+        // In enforcement mode, should visit all 3 steps sequentially (GoTo ignored)
+        assert_eq!(runner.current_step, 3); // All steps visited
+        assert_eq!(result, ExecutionResult::Success);
     }
 }
