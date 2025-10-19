@@ -211,6 +211,18 @@ pub enum ExecutionResult {
     UserCancelled,
 }
 
+/// Control flow decision for a single step execution
+#[derive(Debug, PartialEq)]
+#[allow(dead_code)] // Will be used in next task (Task 4: Extract execute_action)
+enum StepControl {
+    /// Continue to next step (current_step + 1)
+    Next,
+    /// Jump to specific step index
+    JumpTo(usize),
+    /// Terminate workflow with final result
+    Terminate(ExecutionResult),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -262,6 +274,31 @@ mod tests {
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
         // If we can construct without set_debug(), field is gone
         drop(runner); // Explicit to show we just need construction
+    }
+
+    #[test]
+    fn test_step_control_enum_exists() {
+        // Test that StepControl enum and its variants exist
+        let next = StepControl::Next;
+        let jump = StepControl::JumpTo(5);
+        let term = StepControl::Terminate(ExecutionResult::Success);
+
+        // Pattern match to verify all variants handled
+        match next {
+            StepControl::Next => {}
+            StepControl::JumpTo(_) => panic!("Should be Next"),
+            StepControl::Terminate(_) => panic!("Should be Next"),
+        }
+
+        match jump {
+            StepControl::JumpTo(n) => assert_eq!(n, 5),
+            _ => panic!("Should be JumpTo"),
+        }
+
+        match term {
+            StepControl::Terminate(ExecutionResult::Success) => {}
+            _ => panic!("Should be Terminate(Success)"),
+        }
     }
 
     #[test]
