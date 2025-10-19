@@ -126,36 +126,21 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 **Direct Superpowers Access:**
 - `/execute-plan` - Execute plans in batches with review checkpoints (superpowers base workflow, use `/execute` for enhanced CipherPowers version)
 
-## Discovery Tools
+## Skills and Practices
 
-**Skills:**
+**Skills:** Automatically discovered by Claude Code. All skills in `plugin/skills/` are available via the Skill tool.
 
-Skills are automatically discovered by Claude Code's native Skill tool. No manual discovery needed.
+**Practices:** Use the find-practices tool to discover available practices:
 
-In conversation, Claude uses skills via:
-- `Skill(command: "cipherpowers:conducting-code-review")`
-- `Skill(command: "superpowers:brainstorming")`
-
-To reference skills directly in agents/commands:
-```markdown
-@${CLAUDE_PLUGIN_ROOT}/skills/category/skill-name/SKILL.md
-@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md
-```
-
-**Find Practices:**
 ```bash
 ./plugin/tools/find-practices "pattern"
 ./plugin/tools/find-practices --local "pattern"    # cipherpowers only
 ./plugin/tools/find-practices --upstream "pattern" # marketplace only
 ```
 
-## Direct References
-
-In agents and commands, use:
+**Direct references in agents/commands:**
 - `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
-- `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Skill reference
-- `${CLAUDE_PLUGIN_ROOT}practices/practice-name.md` - Relative to plugin root
-- `${CLAUDE_PLUGIN_ROOT}skills/category/skill-name/SKILL.md` - Relative to plugin root
+- `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 
 ## Key Features
 
