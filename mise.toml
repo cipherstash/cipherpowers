@@ -1,0 +1,74 @@
+# CipherPowers mise configuration
+# Wrapper scripts for workflow conditionals
+
+[tasks.check-has-changes]
+description = "Check if there are changes to commit (exit 0 if changes, 1 if empty)"
+run = """
+if [[ -n $(git status --porcelain) ]]; then
+  exit 0  # Has changes - proceed
+else
+  exit 1  # No changes - stop
+fi
+"""
+
+[tasks.check-tests-exist]
+description = "Check if all new/modified functions have tests"
+run = """
+# Get list of modified files
+files=$(git diff --cached --name-only)
+
+# Check for new functions without tests
+for file in $files; do
+  if [[ "$file" == *.rs ]] || [[ "$file" == *.py ]] || [[ "$file" == *.js ]]; then
+    # Simple heuristic: if file has functions but no test markers
+    if grep -qE 'fn |def |function' "$file" 2>/dev/null; then
+      # Check if corresponding test file exists
+      test_file="${file/src/tests}"
+      test_file="${test_file%.rs}_test.rs"
+      if [[ ! -f "$test_file" ]]; then
+        echo "Missing tests for $file"
+        exit 1
+      fi
+    fi
+  fi
+done
+exit 0
+"""
+
+[tasks.check-docs-updated]
+description = "Check if documentation is updated for user-facing changes"
+run = """
+# Check if any src files modified
+src_modified=$(git diff --cached --name-only | grep -E '(src/|lib/)' | wc -l)
+
+# Check if any docs modified
+docs_modified=$(git diff --cached --name-only | grep -E '(README|docs/|\\.md$)' | wc -l)
+
+# If src modified but no docs, might need docs
+if [[ $src_modified -gt 0 ]] && [[ $docs_modified -eq 0 ]]; then
+  echo "Warning: Source files modified but no documentation updated"
+  echo "If this change is user-facing, please update docs"
+  exit 1  # Fail by default, user can override
+fi
+exit 0
+"""
+
+[tasks.check-atomic-commit]
+description = "Check if changes serve a single atomic purpose"
+run = """
+# Check file count
+files=$(git diff --cached --name-only | wc -l)
+if [[ $files -gt 15 ]]; then
+  echo "Large commit with $files files - consider splitting"
+  exit 1
+fi
+
+# Check different subsystems modified
+subsystems=$(git diff --cached --name-only | cut -d'/' -f1 | sort -u | wc -l)
+if [[ $subsystems -gt 3 ]]; then
+  echo "Commit touches $subsystems different subsystems - consider splitting"
+  exit 1
+fi
+
+exit 0
+"""
