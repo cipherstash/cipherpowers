@@ -62,3 +62,21 @@ fn test_enforcement_example_executable() {
     assert!(output.status.success(), "Enforcement example failed: {:?}",
             String::from_utf8_lossy(&output.stderr));
 }
+
+#[test]
+fn test_guided_example_syntax_valid() {
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let example_path = Path::new(manifest_dir).join("examples/guided.md");
+
+    let content = fs::read_to_string(&example_path).unwrap();
+
+    // Verify Pass/Fail syntax present (not arrow syntax)
+    assert!(content.contains("Pass:") || content.contains("Fail:"),
+            "Guided example should use Pass/Fail syntax");
+    assert!(!content.contains("→ Exit 0:"),
+            "Guided example should not use arrow syntax");
+
+    // Verify it has GoTo conditional (not just text mention)
+    assert!(content.contains("Pass: Go to Step") || content.contains("Fail: Go to Step"),
+            "Guided example should have GoTo conditional");
+}
