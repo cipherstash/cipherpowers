@@ -18,7 +18,7 @@ Use the commit-workflow skill for systematic commit process.
    - `${CLAUDE_PLUGIN_ROOT}practices/git-guidelines.md` - Git workflow standards
 
 **Why this structure?**
-- Skill = Discoverable workflow (agents can find it with find-skills)
+- Skill = Discoverable workflow (automatically available via Skill tool)
 - Practices = Project-specific standards (conventional commit rules)
 - Command = Thin dispatcher (user entry point)
 </instructions>
