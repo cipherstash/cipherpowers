@@ -65,10 +65,8 @@ impl WorkflowRunner {
 
                 debug!("Checking: {}", DEBUG_EVALUATION_CRITERIA);
 
-                // Evaluate conditionals
-                let action = self
-                    .evaluate_conditionals(&step.conditionals, &output)?
-                    .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
+                // Determine action from conditionals or defaults
+                let action = self.determine_action(step, &output)?;
 
                 let control = self.execute_action(action, step.number)?;
                 match control {
@@ -135,6 +133,16 @@ impl WorkflowRunner {
             }
         }
         Ok(None)
+    }
+
+    fn determine_action(&self, step: &Step, output: &CommandOutput) -> Result<Action> {
+        // Evaluate explicit conditionals first
+        if let Some(action) = self.evaluate_conditionals(&step.conditionals, output)? {
+            return Ok(action);
+        }
+
+        // Apply implicit defaults
+        Ok(self.apply_defaults(output, &step.conditionals))
     }
 
     fn check_iteration_limit(&self, step: &Step) -> Result<()> {
@@ -577,5 +585,62 @@ mod tests {
         let result = runner.check_iteration_limit(&runner.steps[0]);
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("Exceeded maximum iterations"));
+    }
+
+    #[test]
+    fn test_determine_action_explicit_pass() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![
+                Conditional::Pass { action: Action::GoToStep { number: 2 } }
+            ],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let output = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+
+        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        assert_eq!(action, Action::GoToStep { number: 2 });
+    }
+
+    #[test]
+    fn test_determine_action_implicit_defaults() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![], // No explicit conditionals
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+
+        // Success → Continue
+        let output_success = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+        let action = runner.determine_action(&runner.steps[0], &output_success).unwrap();
+        assert_eq!(action, Action::Continue);
+
+        // Failure → STOP
+        let output_fail = CommandOutput {
+            stdout: String::new(),
+            stderr: String::new(),
+            exit_code: 1,
+            success: false,
+        };
+        let action = runner.determine_action(&runner.steps[0], &output_fail).unwrap();
+        assert_eq!(action, Action::Stop { message: None });
     }
 }
