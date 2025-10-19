@@ -32,7 +32,7 @@ fn test_enforcement_example_executable() {
 
     // Build the workflow binary first
     let build_status = Command::new("cargo")
-        .args(&["build", "--release"])
+        .args(["build", "--release"])
         .current_dir(manifest_dir)
         .status()
         .expect("Failed to build workflow");
@@ -91,7 +91,7 @@ fn test_simple_example_executable() {
 
     // Build the workflow binary first
     let build_status = Command::new("cargo")
-        .args(&["build", "--release"])
+        .args(["build", "--release"])
         .current_dir(manifest_dir)
         .status()
         .expect("Failed to build workflow");
