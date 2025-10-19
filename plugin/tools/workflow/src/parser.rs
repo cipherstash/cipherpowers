@@ -11,6 +11,9 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
     let mut in_code_block = false;
     let mut code_block_content = String::new();
     let mut code_block_lang = String::new();
+    let mut in_strong = false;
+    let mut strong_content = String::new();
+    let mut capturing_prompt = false;
 
     for event in parser {
         match event {
@@ -44,9 +47,34 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                 code_block_content.clear();
                 code_block_lang.clear();
             }
+            Event::Start(Tag::Strong) => {
+                in_strong = true;
+                strong_content.clear();
+            }
+            Event::End(Tag::Strong) => {
+                in_strong = false;
+                // Check if this was "Prompt:"
+                if strong_content.trim() == "Prompt:" {
+                    capturing_prompt = true;
+                }
+                strong_content.clear();
+            }
             Event::Text(text) => {
                 if in_code_block {
                     code_block_content.push_str(&text);
+                } else if in_strong {
+                    strong_content.push_str(&text);
+                } else if capturing_prompt {
+                    // Capture the prompt text
+                    let prompt_text = text.trim().to_string();
+                    if !prompt_text.is_empty() {
+                        if let Some(step) = current_step.as_mut() {
+                            step.prompts.push(Prompt {
+                                text: prompt_text,
+                            });
+                        }
+                    }
+                    capturing_prompt = false;
                 } else if let Some(captures) = extract_step_header(&text) {
                     current_step = Some(Step {
                         number: captures.0,
@@ -206,5 +234,20 @@ echo test
         let steps = parse_workflow(markdown).unwrap();
         assert_eq!(steps[0].commands.len(), 1);
         assert_eq!(steps[0].commands[0].quiet, true);
+    }
+
+    #[test]
+    fn test_parse_prompts() {
+        let markdown = r#"
+# Step 1: Verify tests
+
+**Prompt:** Do all functions have tests?
+
+Some other text
+"#;
+
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].prompts.len(), 1);
+        assert_eq!(steps[0].prompts[0].text, "Do all functions have tests?");
     }
 }
