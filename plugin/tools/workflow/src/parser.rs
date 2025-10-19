@@ -69,9 +69,7 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                     let prompt_text = text.trim().to_string();
                     if !prompt_text.is_empty() {
                         if let Some(step) = current_step.as_mut() {
-                            step.prompts.push(Prompt {
-                                text: prompt_text,
-                            });
+                            step.prompts.push(Prompt { text: prompt_text });
                         }
                     }
                     capturing_prompt = false;
@@ -351,14 +349,12 @@ mise run test
         }
 
         match &steps[0].conditionals[1] {
-            Conditional::ExitNotZero { action } => {
-                match action {
-                    Action::Stop { message } => {
-                        assert_eq!(message.as_deref(), Some("fix tests"));
-                    }
-                    _ => panic!("Expected Stop action"),
+            Conditional::ExitNotZero { action } => match action {
+                Action::Stop { message } => {
+                    assert_eq!(message.as_deref(), Some("fix tests"));
                 }
-            }
+                _ => panic!("Expected Stop action"),
+            },
             _ => panic!("Expected ExitNotZero conditional"),
         }
     }
