@@ -301,7 +301,274 @@ git commit
 - Prompts (manual verification)
 - Flow control (STOP with messages, Continue)
 
-## Related Skills
+## Examples by Type
+
+### Simple Sequential Workflow
+
+For linear processes with no branching:
+
+```markdown
+# Step 1: Setup
+
+```bash
+mise install
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (setup failed)
+
+# Step 2: Build
+
+```bash
+mise run build
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (build failed)
+
+# Step 3: Test
+
+```bash
+mise run test
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (tests failed)
+```
+
+**Use for:** CI/CD steps, setup processes, verification workflows
+
+### Workflow with Prompts
+
+For processes requiring human judgment:
+
+```markdown
+# Step 1: Generate documentation
+
+```bash
+mise run docs
+```
+
+# Step 2: Review documentation
+
+**Prompt:** Is the documentation complete and accurate?
+
+# Step 3: Publish documentation
+
+```bash
+mise run publish-docs
+```
+```
+
+**Use for:** Release processes, review workflows, quality checks
+
+### Workflow with Conditional Flow (Guided Mode)
+
+For processes with dynamic paths:
+
+```markdown
+# Step 1: Check if migration needed
+
+```bash quiet
+ls migrations/*.sql 2>/dev/null | wc -l
+```
+
+→ If output empty: Go to Step 3
+→ Otherwise: Continue
+
+# Step 2: Run migrations
+
+```bash
+mise run migrate
+```
+
+# Step 3: Start application
+
+```bash
+mise run start
+```
+```
+
+**Use for:** Conditional setup, smart workflows, context-aware processes
+
+### Complex Enforcement Workflow
+
+Real example - git commit algorithm:
+
+```markdown
+# Step 1: Verify changes exist
+
+```bash quiet
+git status --porcelain
+```
+
+→ If output empty: STOP (nothing to commit)
+→ Otherwise: Continue
+
+# Step 2: Check tests pass
+
+```bash
+mise run test
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (fix tests before committing)
+
+# Step 3: Verify test coverage
+
+**Prompt:** Do ALL new/modified functions have tests?
+
+# Step 4: Check formatting
+
+```bash quiet
+mise run fmt -- --check
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (run mise fmt to format code)
+
+# Step 5: Check for debugging code
+
+```bash quiet
+git diff --cached | grep -E 'console\.log|debugger|TODO'
+```
+
+→ If output empty: Continue
+→ Otherwise: STOP (remove debugging code)
+
+# Step 6: Verify atomic commit
+
+**Prompt:** Does this commit represent ONE logical change?
+
+# Step 7: Create commit
+
+```bash
+git commit
+```
+```
+
+**Use for:** Git workflows, code review triggers, TDD enforcement
+
+## Testing Workflows
+
+Before using a workflow, verify it works:
+
+### 1. Dry Run
+
+Preview execution without running commands:
+
+```bash
+workflow --dry-run path/to/workflow.md
+```
+
+**Checks:**
+- All steps parsed correctly
+- Commands visible
+- Prompts identified
+- No syntax errors
+
+### 2. List Steps
+
+Verify structure:
+
+```bash
+workflow --list path/to/workflow.md
+```
+
+**Checks:**
+- Correct number of steps
+- Step numbers sequential
+- Commands counted correctly
+
+### 3. Test Execution
+
+Run in test environment:
+
+```bash
+# Create test scenario
+cd /tmp/test-workflow
+git init
+
+# Run workflow
+workflow path/to/workflow.md
+
+# Verify behavior matches expectations
+```
+
+### 4. Test Both Modes
+
+If workflow has Continue/GoTo, test both modes:
+
+```bash
+# Test enforcement (should ignore Continue/GoTo)
+workflow workflow.md
+
+# Test guided (should respect Continue/GoTo)
+workflow --guided workflow.md
+```
+
+**Verify:**
+- Enforcement executes all steps sequentially
+- Guided follows control flow as designed
+- STOP works in both modes
+
+## Common Patterns
+
+### Pattern: Early Exit on Missing Precondition
+
+```markdown
+# Step 1: Check precondition
+
+```bash quiet
+test -f required-file.txt
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (required-file.txt not found)
+```
+
+### Pattern: Multiple Checks Before Action
+
+```markdown
+# Step 1: Check condition A
+# Step 2: Check condition B
+# Step 3: Check condition C
+# Step 4: Perform action (only if all checks passed)
+```
+
+### Pattern: Confirmation Before Destructive Action
+
+```markdown
+# Step 1: Show what will be deleted
+
+```bash
+ls files-to-delete/
+```
+
+# Step 2: Confirm deletion
+
+**Prompt:** Proceed with deletion?
+
+# Step 3: Delete files
+
+```bash
+rm -rf files-to-delete/
+```
+```
+
+## Remember
+
+- **Document the process, not just the happy path** - include error cases
+- **Meaningful STOP messages** - tell user what to fix
+- **Test workflows before using** - dry-run, list, test execution
+- **Keep it simple** - complex logic in agent, simple steps in workflow
+- **Executable documentation** - real commands, not pseudocode
+- **Consider both modes** - design for enforcement OR guided, document which
+
+## References
 
 - **Executing workflows:** `@${CLAUDE_PLUGIN_ROOT}skills/workflow/executing-workflows/SKILL.md`
 - **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}practices/workflow.md`
+- **Workflow tool README:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/README.md`
+- **Example workflows:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/examples/`
+- **Git commit algorithm:** `@${CLAUDE_PLUGIN_ROOT}practices/git-commit-algorithm.md`
