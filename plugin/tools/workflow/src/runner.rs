@@ -43,7 +43,7 @@ impl WorkflowRunner {
             );
 
             // Execute commands
-            for command in &step.commands {
+            if let Some(command) = &step.command {
                 println!("→ Executing: {}", command.code);
 
                 let output = execute_command(command)?;
@@ -238,10 +238,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Echo test".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'step 1'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitCode {
                 code: 0,
@@ -259,10 +259,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test output matching".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'ERROR: Something failed'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::OutputContains {
                 text: "ERROR".to_string(),
@@ -287,10 +287,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test empty output".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo -n ''".to_string(), // Produces empty output
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::OutputEmpty {
                 action: Action::Continue,
@@ -307,10 +307,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test otherwise fallback".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "exit 42".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![
                 Conditional::ExitCode {
@@ -343,10 +343,10 @@ mod tests {
             Step {
                 number: 1,
                 description: "First step".to_string(),
-                commands: vec![Command {
+                command: Some(Command {
                     code: "echo 'step 1'".to_string(),
                     quiet: false,
-                }],
+            }),
                 prompts: vec![],
                 conditionals: vec![Conditional::ExitCode {
                     code: 0,
@@ -356,14 +356,14 @@ mod tests {
             Step {
                 number: 2,
                 description: "Skipped step".to_string(),
-                commands: vec![],
+                command: None,
                 prompts: vec![],
                 conditionals: vec![],
             },
             Step {
                 number: 3,
                 description: "Final step".to_string(),
-                commands: vec![],
+                command: None,
                 prompts: vec![],
                 conditionals: vec![],
             },
@@ -379,10 +379,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test stop with message".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "exit 1".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitNotZero {
                 action: Action::Stop {
@@ -408,10 +408,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test invalid goto".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'test'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitCode {
                 code: 0,
@@ -431,10 +431,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test conditional order".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'ERROR: test'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![
                 Conditional::OutputContains {
@@ -466,10 +466,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test no conditionals".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'success'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![],
         }];
@@ -484,10 +484,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test no conditionals with failure".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "exit 1".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![],
         }];
@@ -508,10 +508,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Infinite loop test".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'loop'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitCode {
                 code: 0,
@@ -533,10 +533,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Test".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'test'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitCode {
                 code: 0,
@@ -557,10 +557,10 @@ mod tests {
             Step {
                 number: 1,
                 description: "Step with Continue".to_string(),
-                commands: vec![Command {
+                command: Some(Command {
                     code: "echo 'test'".to_string(),
                     quiet: false,
-                }],
+            }),
                 prompts: vec![],
                 conditionals: vec![
                     Conditional::ExitCode {
@@ -578,7 +578,7 @@ mod tests {
             Step {
                 number: 2,
                 description: "Second step".to_string(),
-                commands: vec![],
+                command: None,
                 prompts: vec![],
                 conditionals: vec![],
             },
@@ -598,10 +598,10 @@ mod tests {
         let steps = vec![Step {
             number: 1,
             description: "Step with Continue".to_string(),
-            commands: vec![Command {
+            command: Some(Command {
                 code: "echo 'test'".to_string(),
                 quiet: false,
-            }],
+            }),
             prompts: vec![],
             conditionals: vec![Conditional::ExitCode {
                 code: 0,

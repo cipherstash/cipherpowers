@@ -9,7 +9,7 @@ pub struct Workflow {
 pub struct Step {
     pub number: usize,
     pub description: String,
-    pub commands: Vec<Command>,
+    pub command: Option<Command>,
     pub prompts: Vec<Prompt>,
     pub conditionals: Vec<Conditional>,
 }
