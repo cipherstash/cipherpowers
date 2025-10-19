@@ -43,8 +43,11 @@ cargo install --path plugin/tools/workflow
 ## Usage
 
 ```bash
-# Run a workflow
+# Run workflow in enforcement mode (sequential, STOP only)
 workflow path/to/workflow.md
+
+# Run workflow in guided mode (enables Continue/GoTo)
+workflow --guided path/to/workflow.md
 
 # Dry run (show steps without executing)
 workflow --dry-run workflow.md
@@ -52,6 +55,47 @@ workflow --dry-run workflow.md
 # List all steps
 workflow --list workflow.md
 ```
+
+## Execution Modes
+
+### Enforcement Mode (default)
+
+Sequential execution with no skipping:
+- Steps execute in order (1 → 2 → 3...)
+- Only `STOP` conditionals are respected
+- `Continue` and `Go to Step X` are ignored
+- Automatic progression between steps
+
+Use for algorithmic workflows requiring 100% compliance (e.g., git-commit-algorithm).
+
+```bash
+workflow plugin/practices/git-commit-algorithm.md
+```
+
+### Guided Mode (--guided)
+
+Flexible execution with full control flow:
+- All conditionals enabled (Continue, GoTo, STOP)
+- Agent/user can adapt based on context
+- Workflow serves as guide, not rigid script
+
+Use for repeatable processes where judgment calls are needed (e.g., execute-plan).
+
+```bash
+workflow --guided docs/work/2025-10-19-feature/plan.md
+```
+
+### Why Two Modes?
+
+**Enforcement prevents rationalization:**
+- Agents can't skip steps under pressure
+- Algorithmic decisions execute deterministically
+- 100% compliance vs 33% with imperative instructions
+
+**Guided enables flexibility:**
+- Agent still uses tool (prevents "I don't need the workflow" rationalization)
+- Can adapt to context while following process
+- Same workflow syntax works in both modes
 
 ## Workflow Syntax
 
@@ -92,6 +136,16 @@ git diff --check
 → Otherwise: Continue
 → Exit 0: Go to Step 5
 ```
+
+**Enforcement mode:**
+- `STOP` conditionals work as written
+- `Continue` and `Go to Step X` are ignored (automatic progression)
+- Use for algorithmic enforcement
+
+**Guided mode:**
+- All conditionals work as written
+- Full control flow enabled
+- Use when flexibility needed
 
 ### Prompts (Bold)
 
