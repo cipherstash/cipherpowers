@@ -93,20 +93,8 @@ impl WorkflowRunner {
             }
 
             // Execute prompts
-            // SECURITY: Prompts accept user input from stdin. While this is by design,
-            // malicious workflows could craft misleading prompts to trick users.
-            // Always review workflow files before execution (see README.md security section).
-            for prompt in &step.prompts {
-                println!("→ Prompt: {} [y/N]: ", prompt.text);
-
-                let mut input = String::new();
-                std::io::stdin().read_line(&mut input)?;
-
-                let answer = input.trim().to_lowercase();
-                if answer != "y" && answer != "yes" {
-                    println!("→ User answered no");
-                    return Ok(ExecutionResult::UserCancelled);
-                }
+            if self.execute_step_prompts(&step.prompts).is_err() {
+                return Ok(ExecutionResult::UserCancelled);
             }
 
             self.current_step += 1;
@@ -154,6 +142,25 @@ impl WorkflowRunner {
             }
         }
         Ok(None)
+    }
+
+    fn execute_step_prompts(&self, prompts: &[Prompt]) -> Result<()> {
+        // SECURITY: Prompts accept user input from stdin. While this is by design,
+        // malicious workflows could craft misleading prompts to trick users.
+        // Always review workflow files before execution (see README.md security section).
+        for prompt in prompts {
+            println!("→ Prompt: {} [y/N]: ", prompt.text);
+
+            let mut input = String::new();
+            std::io::stdin().read_line(&mut input)?;
+
+            let answer = input.trim().to_lowercase();
+            if answer != "y" && answer != "yes" {
+                println!("→ User answered no");
+                return Err(anyhow::anyhow!("User cancelled at prompt"));
+            }
+        }
+        Ok(())
     }
 
     fn display_command_output(&self, output: &CommandOutput, quiet: bool) -> Result<()> {
@@ -517,4 +524,22 @@ mod tests {
         // Stderr should be shown even with quiet=true and success=true
         runner.display_command_output(&output, true).unwrap();
     }
+
+    #[test]
+    fn test_execute_step_prompts_empty() {
+        // Empty prompt list should succeed immediately
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        runner.execute_step_prompts(&[]).unwrap();
+    }
+
+    // Note: Cannot easily test interactive stdin in unit tests
+    // Manual verification required for actual prompt behavior
 }
