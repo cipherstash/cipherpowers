@@ -3,6 +3,15 @@ use crate::executor::{execute_command, CommandOutput};
 use crate::models::*;
 use anyhow::Result;
 
+/// Maximum iterations multiplier per step.
+///
+/// This determines how many times we can loop through steps before detecting an infinite loop.
+/// For a workflow with N steps, the maximum total iterations is N * MAX_ITERATION_MULTIPLIER.
+///
+/// The value of 10 allows for reasonable looping patterns (e.g., retry logic, conditional jumps)
+/// while catching truly infinite loops. For example, a 5-step workflow can iterate up to 50 times.
+const MAX_ITERATION_MULTIPLIER: usize = 10;
+
 pub struct WorkflowRunner {
     steps: Vec<Step>,
     current_step: usize,
@@ -13,7 +22,7 @@ pub struct WorkflowRunner {
 
 impl WorkflowRunner {
     pub fn new(steps: Vec<Step>, mode: ExecutionMode) -> Self {
-        let max_iterations = steps.len() * 10; // Allow reasonable looping
+        let max_iterations = steps.len() * MAX_ITERATION_MULTIPLIER;
         Self {
             steps,
             current_step: 0,
@@ -346,7 +355,7 @@ mod tests {
                 command: Some(Command {
                     code: "echo 'step 1'".to_string(),
                     quiet: false,
-            }),
+                }),
                 prompts: vec![],
                 conditionals: vec![Conditional::ExitCode {
                     code: 0,
@@ -560,7 +569,7 @@ mod tests {
                 command: Some(Command {
                     code: "echo 'test'".to_string(),
                     quiet: false,
-            }),
+                }),
                 prompts: vec![],
                 conditionals: vec![
                     Conditional::ExitCode {
