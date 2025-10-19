@@ -1,6 +1,6 @@
-use pulldown_cmark::{Parser, Event, Tag, HeadingLevel};
 use crate::models::*;
 use anyhow::Result;
+use pulldown_cmark::{Event, HeadingLevel, Parser, Tag};
 
 pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
     let parser = Parser::new(markdown);
