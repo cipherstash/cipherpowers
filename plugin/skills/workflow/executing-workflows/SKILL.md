@@ -125,7 +125,153 @@ workflow plugin/practices/git-commit-algorithm.md
 workflow --guided docs/work/2025-10-19-feature/plan.md
 ```
 
-## Related Skills
+## Execution Modes Explained
+
+### Enforcement Mode (Default)
+
+**Purpose:** Algorithmic compliance - prevent rationalization under pressure.
+
+**Behavior:**
+- Steps execute sequentially (1 → 2 → 3...)
+- Only `STOP` conditionals respected
+- `Continue` and `Go to Step X` ignored (automatic progression)
+- No way to skip steps
+
+**When to use:**
+- Git commit readiness checks
+- TDD enforcement (test must exist before code)
+- Code review triggers (must review before merge)
+- Security checks, compliance workflows
+- Any task where 100% compliance required
+
+**Example:**
+```bash
+# Git commit algorithm - must complete all 10 steps
+workflow plugin/practices/git-commit-algorithm.md
+```
+
+**Risk prevented:** Agent rationalizes "I can skip this step because..." → 33% compliance drops to 0%
+
+### Guided Mode (--guided)
+
+**Purpose:** Flexible guidance - prevent "I don't need the workflow" while allowing adaptation.
+
+**Behavior:**
+- All conditionals enabled (Continue, GoTo, STOP)
+- Agent can skip steps via conditionals
+- Workflow guides process, agent adapts to context
+
+**When to use:**
+- Execute plan (tasks vary, judgment calls needed)
+- Complex refactoring (approach depends on findings)
+- Feature implementation (design emerges during work)
+- Any process with context-dependent decisions
+
+**Example:**
+```bash
+# Execute plan - tasks might be skipped based on context
+workflow --guided docs/work/2025-10-19-feature/plan.md
+```
+
+**Risk prevented:** Agent rationalizes "I don't need to use the workflow tool" → avoids tool entirely
+
+### Why Two Modes?
+
+**Two risks to prevent:**
+
+**Risk 1:** Agent rationalizes "I don't need the workflow tool at all"
+- **Solution:** Mandate workflow tool usage in instructions
+- **Both modes prevent this** - agent must invoke tool
+
+**Risk 2:** Agent rationalizes "I can skip this step because..."
+- **Solution:** Enforcement mode removes conditional flow
+- **Only enforcement mode prevents this** - no skipping possible
+
+**Guided mode still requires tool usage** (prevents Risk 1) but **allows flexibility** (accepts Risk 2 when appropriate).
+
+## Common Scenarios
+
+### Scenario 1: Workflow Stops with Message
+
+```bash
+workflow plugin/practices/git-commit-algorithm.md
+```
+
+Output:
+```
+✗ Failed (exit 1)
+→ Condition matched: STOP (tests failing)
+→ Workflow stopped
+```
+
+**Action:**
+1. Read the stop message: "tests failing"
+2. Fix the issue (make tests pass)
+3. Re-run workflow: `workflow plugin/practices/git-commit-algorithm.md`
+
+### Scenario 2: Guided Mode Skips Steps
+
+```bash
+workflow --guided docs/work/feature/plan.md
+```
+
+Output:
+```
+✓ Passed (exit 0)
+→ Condition matched: Go to Step 5
+→ Step 2: Task description
+→ Step 5: Later task
+```
+
+**Action:**
+- Steps 3-4 skipped as designed (GoTo worked)
+- Document why skipped if significant
+- Continue with workflow
+
+### Scenario 3: Workflow Parse Error
+
+```bash
+workflow path/to/workflow.md
+```
+
+Output:
+```
+Error: workflow.md:23: Invalid conditional syntax
+```
+
+**Action:**
+1. Check workflow file at line 23
+2. See creating-workflows skill for syntax
+3. Fix syntax error
+4. Re-run workflow
+
+### Scenario 4: Dry Run Preview
+
+```bash
+workflow --dry-run plugin/practices/git-commit-algorithm.md
+```
+
+**When to use:**
+- Understand workflow before executing
+- Verify workflow structure
+- Check how many steps involved
+
+**Then execute:**
+```bash
+workflow plugin/practices/git-commit-algorithm.md
+```
+
+## Remember
+
+- **Always use workflow tool when workflow file exists** - don't rationalize manual execution
+- **Enforcement mode for algorithmic tasks** - prevents step skipping
+- **Guided mode for flexible processes** - prevents tool avoidance
+- **Read stop messages carefully** - they tell you what to fix
+- **Re-run from beginning after fixes** - don't try to resume mid-workflow
+- **Document significant skips in guided mode** - explain why when reviewing work
+
+## References
 
 - **Creating workflows:** `@${CLAUDE_PLUGIN_ROOT}skills/workflow/creating-workflows/SKILL.md`
 - **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}practices/workflow.md`
+- **Workflow tool README:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/README.md`
