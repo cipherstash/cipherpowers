@@ -164,3 +164,29 @@ fn test_using_helpers() {
     let result = runner.run().unwrap();
     assert_eq!(result, runner::ExecutionResult::Success);
 }
+
+#[test]
+fn test_debug_mode_shows_evaluation() {
+    // This is more of a manual verification test
+    // We can't easily test stdout in unit tests
+    // Verify manually that debug output includes:
+    // - "Checking: exit code (0 = Pass, non-zero = Fail)"
+    // - "Result: Pass (exit 0)" or "Result: Fail (exit 1)"
+    // - "Action: Continue" or "Action: STOP"
+
+    // For now, just ensure it compiles
+    let workflow = r#"
+# Step 1: Test
+
+```bash
+exit 0
+```
+"#;
+    let steps = parser::parse_workflow(workflow).unwrap();
+    let mut runner = runner::WorkflowRunner::new(
+        steps,
+        execution_mode::ExecutionMode::Enforcement,
+    );
+    runner.set_debug(true);
+    let _ = runner.run();
+}

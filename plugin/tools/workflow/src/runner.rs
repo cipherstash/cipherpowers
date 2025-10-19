@@ -18,6 +18,7 @@ pub struct WorkflowRunner {
     iterations: usize,
     max_iterations: usize,
     mode: ExecutionMode,
+    debug: bool,
 }
 
 impl WorkflowRunner {
@@ -29,7 +30,12 @@ impl WorkflowRunner {
             iterations: 0,
             max_iterations,
             mode,
+            debug: false,
         }
+    }
+
+    pub fn set_debug(&mut self, debug: bool) {
+        self.debug = debug;
     }
 
     pub fn run(&mut self) -> Result<ExecutionResult> {
@@ -78,13 +84,39 @@ impl WorkflowRunner {
                     status_symbol, status_text, output.exit_code
                 );
 
+                // Debug output
+                if self.debug {
+                    println!("→ [DEBUG] Checking: exit code (0 = Pass, non-zero = Fail)");
+                    let result_text = if output.success {
+                        format!("Pass (exit {})", output.exit_code)
+                    } else {
+                        format!("Fail (exit {})", output.exit_code)
+                    };
+                    println!("→ [DEBUG] Result: {}", result_text);
+                }
+
                 // Evaluate conditionals
                 let action = self.evaluate_conditionals(&step.conditionals, &output)?
                     .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
 
+                if self.debug {
+                    match &action {
+                        Action::Continue => println!("→ [DEBUG] Action: Continue"),
+                        Action::Stop { message } => {
+                            if let Some(msg) = message {
+                                println!("→ [DEBUG] Action: STOP ({})", msg);
+                            } else {
+                                println!("→ [DEBUG] Action: STOP");
+                            }
+                        }
+                        Action::GoToStep { number } => println!("→ [DEBUG] Action: Go to Step {}", number),
+                    }
+                }
+
                 match action {
                     Action::Continue => {
-                        println!("→ Action: Continue");
+                        // Only show if debug mode
+                        // Silent continue in normal mode for clean UX
                     }
                     Action::Stop { message } => {
                         if let Some(msg) = message {
