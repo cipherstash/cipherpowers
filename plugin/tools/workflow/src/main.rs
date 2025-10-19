@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use std::fs;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod execution_mode;
 pub mod executor;
@@ -39,6 +40,15 @@ struct Args {
 }
 
 fn main() -> Result<()> {
+    // Initialize tracing (respects RUST_LOG env var)
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "workflow=info".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
     let args = Args::parse();
 
     // Read workflow file

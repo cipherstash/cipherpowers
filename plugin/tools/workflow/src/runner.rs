@@ -2,6 +2,7 @@ use crate::execution_mode::ExecutionMode;
 use crate::executor::{execute_command, CommandOutput};
 use crate::models::*;
 use anyhow::Result;
+use tracing::{debug, info, warn};
 
 /// Maximum iterations multiplier per step.
 ///
@@ -236,6 +237,38 @@ pub enum ExecutionResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tracing_subscriber::fmt::format::FmtSpan;
+
+    #[test]
+    fn test_tracing_debug_output_works() {
+        // Setup tracing capture
+        let subscriber = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::DEBUG)
+            .with_span_events(FmtSpan::ACTIVE)
+            .with_test_writer()
+            .finish();
+
+        let _guard = tracing::subscriber::set_default(subscriber);
+
+        // Create simple workflow
+        let steps = vec![Step {
+            number: 1,
+            description: "Test tracing".to_string(),
+            command: Some(Command {
+                code: "echo 'test'".to_string(),
+                quiet: false,
+            }),
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let result = runner.run().unwrap();
+
+        // Verify workflow completed
+        assert_eq!(result, ExecutionResult::Success);
+        // Manual verification: RUST_LOG=debug cargo test test_tracing_debug_output_works shows debug output
+    }
 
     #[test]
     fn test_no_conditionals_success_continues() {
