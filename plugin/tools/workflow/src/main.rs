@@ -2,6 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use std::fs;
 
+mod execution_mode;
 mod executor;
 mod models;
 mod parser;
