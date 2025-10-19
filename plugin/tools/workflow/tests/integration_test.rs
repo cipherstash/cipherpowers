@@ -21,3 +21,44 @@ fn test_no_arrow_syntax_in_examples() {
         }
     }
 }
+
+#[test]
+fn test_enforcement_example_executable() {
+    use std::process::{Command, Stdio};
+    use std::io::Write;
+
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let example_path = Path::new(manifest_dir).join("examples/enforcement.md");
+
+    // Build the workflow binary first
+    let build_status = Command::new("cargo")
+        .args(&["build", "--release"])
+        .current_dir(manifest_dir)
+        .status()
+        .expect("Failed to build workflow");
+
+    assert!(build_status.success(), "Build failed");
+
+    // Run the enforcement example with 'y' input for prompts
+    let binary_path = Path::new(manifest_dir)
+        .join("target/release/workflow");
+
+    let mut child = Command::new(binary_path)
+        .arg(example_path)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("Failed to spawn enforcement example");
+
+    // Provide 'y' answer to the prompt
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin.write_all(b"y\n").expect("Failed to write to stdin");
+    }
+
+    let output = child.wait_with_output().expect("Failed to wait for enforcement example");
+
+    // Should complete successfully (all commands succeed)
+    assert!(output.status.success(), "Enforcement example failed: {:?}",
+            String::from_utf8_lossy(&output.stderr));
+}
