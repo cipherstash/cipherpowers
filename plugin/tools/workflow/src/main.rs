@@ -1,5 +1,5 @@
-use clap::Parser;
 use anyhow::Result;
+use clap::Parser;
 use std::fs;
 
 mod executor;
@@ -79,14 +79,24 @@ fn main() -> Result<()> {
     println!("→ Steps: {}", steps.len());
 
     let mut runner = runner::WorkflowRunner::new(steps);
-    let result = runner.run()?;
+    let result = match runner.run() {
+        Ok(res) => res,
+        Err(e) => {
+            eprintln!("\n→ Workflow execution error: {}", e);
+            std::process::exit(4); // Distinct code for execution errors
+        }
+    };
 
     match result {
         runner::ExecutionResult::Success => {
             std::process::exit(0);
         }
-        runner::ExecutionResult::Stopped { message: _ } => {
-            println!("\n→ Workflow stopped");
+        runner::ExecutionResult::Stopped { message } => {
+            if let Some(msg) = message {
+                println!("\n→ Workflow stopped: {}", msg);
+            } else {
+                println!("\n→ Workflow stopped");
+            }
             std::process::exit(1);
         }
         runner::ExecutionResult::UserCancelled => {

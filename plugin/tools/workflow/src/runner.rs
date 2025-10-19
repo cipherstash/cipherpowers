@@ -1,22 +1,35 @@
-use crate::models::*;
 use crate::executor::{execute_command, CommandOutput};
+use crate::models::*;
 use anyhow::Result;
 
 pub struct WorkflowRunner {
     steps: Vec<Step>,
     current_step: usize,
+    iterations: usize,
+    max_iterations: usize,
 }
 
 impl WorkflowRunner {
     pub fn new(steps: Vec<Step>) -> Self {
+        let max_iterations = steps.len() * 10; // Allow reasonable looping
         Self {
             steps,
             current_step: 0,
+            iterations: 0,
+            max_iterations,
         }
     }
 
     pub fn run(&mut self) -> Result<ExecutionResult> {
         while self.current_step < self.steps.len() {
+            self.iterations += 1;
+            if self.iterations > self.max_iterations {
+                return Err(anyhow::anyhow!(
+                    "Exceeded maximum iterations ({}). Possible infinite loop in workflow.",
+                    self.max_iterations
+                ));
+            }
+
             let step = &self.steps[self.current_step];
 
             println!("\n→ Step {}: {}", step.number, step.description);
@@ -27,16 +40,23 @@ impl WorkflowRunner {
 
                 let output = execute_command(command)?;
 
-                // Show output based on quiet flag
+                // Show stdout based on quiet flag (suppress successful quiet commands)
                 if !command.quiet || !output.success {
                     print!("{}", output.stdout);
-                    print!("{}", output.stderr);
+                }
+
+                // Always show stderr (errors and warnings should be visible)
+                if !output.stderr.is_empty() {
+                    eprint!("{}", output.stderr);
                 }
 
                 // Status
                 let status_symbol = if output.success { "✓" } else { "✗" };
                 let status_text = if output.success { "Passed" } else { "Failed" };
-                println!("{} {} (exit {})", status_symbol, status_text, output.exit_code);
+                println!(
+                    "{} {} (exit {})",
+                    status_symbol, status_text, output.exit_code
+                );
 
                 // Evaluate conditionals
                 let action = self.evaluate_conditionals(&step.conditionals, &output)?;
@@ -60,12 +80,22 @@ impl WorkflowRunner {
                         continue;
                     }
                     None => {
-                        // No matching conditional - continue
+                        // No matching conditional found
+                        if !output.success {
+                            return Err(anyhow::anyhow!(
+                                "Command failed with exit code {} but no conditional matched. Add an 'Otherwise' conditional to handle unexpected cases.",
+                                output.exit_code
+                            ));
+                        }
+                        // Command succeeded - continue silently
                     }
                 }
             }
 
             // Execute prompts
+            // SECURITY: Prompts accept user input from stdin. While this is by design,
+            // malicious workflows could craft misleading prompts to trick users.
+            // Always review workflow files before execution (see README.md security section).
             for prompt in &step.prompts {
                 println!("→ Prompt: {} [y/N]: ", prompt.text);
 
@@ -86,7 +116,11 @@ impl WorkflowRunner {
         Ok(ExecutionResult::Success)
     }
 
-    fn evaluate_conditionals(&self, conditionals: &[Conditional], output: &CommandOutput) -> Result<Option<Action>> {
+    fn evaluate_conditionals(
+        &self,
+        conditionals: &[Conditional],
+        output: &CommandOutput,
+    ) -> Result<Option<Action>> {
         for conditional in conditionals {
             match conditional {
                 Conditional::ExitCode { code, action } => {
@@ -118,7 +152,8 @@ impl WorkflowRunner {
     }
 
     fn find_step_index(&self, number: usize) -> Result<usize> {
-        self.steps.iter()
+        self.steps
+            .iter()
             .position(|s| s.number == number)
             .ok_or_else(|| anyhow::anyhow!("Step {} not found", number))
     }
@@ -137,28 +172,167 @@ mod tests {
 
     #[test]
     fn test_run_simple_workflow() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Echo test".to_string(),
+            commands: vec![Command {
+                code: "echo 'step 1'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitCode {
+                code: 0,
+                action: Action::Continue,
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_conditional_output_contains() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test output matching".to_string(),
+            commands: vec![Command {
+                code: "echo 'ERROR: Something failed'".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::OutputContains {
+                text: "ERROR".to_string(),
+                action: Action::Stop {
+                    message: Some("Found error in output".to_string()),
+                },
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+        assert_eq!(
+            result,
+            ExecutionResult::Stopped {
+                message: Some("Found error in output".to_string())
+            }
+        );
+    }
+
+    #[test]
+    fn test_conditional_output_empty() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test empty output".to_string(),
+            commands: vec![Command {
+                code: "echo -n ''".to_string(), // Produces empty output
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::OutputEmpty {
+                action: Action::Continue,
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_conditional_otherwise() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test otherwise fallback".to_string(),
+            commands: vec![Command {
+                code: "exit 42".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![
+                Conditional::ExitCode {
+                    code: 0,
+                    action: Action::Continue,
+                },
+                Conditional::Otherwise {
+                    action: Action::Stop {
+                        message: Some("Unexpected exit code".to_string()),
+                    },
+                },
+            ],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+        assert_eq!(
+            result,
+            ExecutionResult::Stopped {
+                message: Some("Unexpected exit code".to_string())
+            }
+        );
+    }
+
+    #[test]
+    fn test_action_goto_step() {
         let steps = vec![
             Step {
                 number: 1,
-                description: "Echo test".to_string(),
-                commands: vec![
-                    Command {
-                        code: "echo 'step 1'".to_string(),
-                        quiet: false,
-                    }
-                ],
+                description: "First step".to_string(),
+                commands: vec![Command {
+                    code: "echo 'step 1'".to_string(),
+                    quiet: false,
+                }],
                 prompts: vec![],
-                conditionals: vec![
-                    Conditional::ExitCode {
-                        code: 0,
-                        action: Action::Continue,
-                    }
-                ],
+                conditionals: vec![Conditional::ExitCode {
+                    code: 0,
+                    action: Action::GoToStep { number: 3 },
+                }],
+            },
+            Step {
+                number: 2,
+                description: "Skipped step".to_string(),
+                commands: vec![],
+                prompts: vec![],
+                conditionals: vec![],
+            },
+            Step {
+                number: 3,
+                description: "Final step".to_string(),
+                commands: vec![],
+                prompts: vec![],
+                conditionals: vec![],
             },
         ];
 
         let mut runner = WorkflowRunner::new(steps);
         let result = runner.run().unwrap();
         assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_action_stop_with_message() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test stop with message".to_string(),
+            commands: vec![Command {
+                code: "exit 1".to_string(),
+                quiet: false,
+            }],
+            prompts: vec![],
+            conditionals: vec![Conditional::ExitNotZero {
+                action: Action::Stop {
+                    message: Some("Command failed as expected".to_string()),
+                },
+            }],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps);
+        let result = runner.run().unwrap();
+        assert_eq!(
+            result,
+            ExecutionResult::Stopped {
+                message: Some("Command failed as expected".to_string())
+            }
+        );
     }
 }
