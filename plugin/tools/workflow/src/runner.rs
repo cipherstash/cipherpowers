@@ -424,12 +424,10 @@ mod tests {
 
         let result = runner.execute_action(action, 1);
         assert!(result.is_err());
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("Step 99 does not exist")
-        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Step 99 does not exist"));
     }
 
     #[test]

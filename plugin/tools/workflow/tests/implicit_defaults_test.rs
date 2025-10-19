@@ -146,4 +146,3 @@ fn test_using_helpers() {
     let result = runner.run().unwrap();
     assert_eq!(result, runner::ExecutionResult::Success);
 }
-
