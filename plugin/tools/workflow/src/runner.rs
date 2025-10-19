@@ -68,32 +68,9 @@ impl WorkflowRunner {
 
                 let output = execute_command(command)?;
 
-                // Show stdout based on quiet flag (suppress successful quiet commands)
-                let should_suppress = command.quiet && output.success;
-                if !should_suppress {
-                    print!("{}", output.stdout);
-                }
+                self.display_command_output(&output, command.quiet)?;
 
-                // Always show stderr (errors and warnings should be visible)
-                if !output.stderr.is_empty() {
-                    eprint!("{}", output.stderr);
-                }
-
-                // Status
-                let status_symbol = if output.success { "✓" } else { "✗" };
-                let status_text = if output.success { "Passed" } else { "Failed" };
-                println!(
-                    "{} {} (exit {})",
-                    status_symbol, status_text, output.exit_code
-                );
-
-                // Debug output via tracing
-                debug!(
-                    exit_code = output.exit_code,
-                    success = output.success,
-                    "Checking: {}",
-                    DEBUG_EVALUATION_CRITERIA
-                );
+                debug!("Checking: {}", DEBUG_EVALUATION_CRITERIA);
 
                 // Evaluate conditionals
                 let action = self
@@ -179,6 +156,35 @@ impl WorkflowRunner {
         Ok(None)
     }
 
+    fn display_command_output(&self, output: &CommandOutput, quiet: bool) -> Result<()> {
+        // Show stdout based on quiet flag (suppress successful quiet commands)
+        let should_suppress = quiet && output.success;
+        if !should_suppress {
+            print!("{}", output.stdout);
+        }
+
+        // Always show stderr (errors and warnings should be visible)
+        if !output.stderr.is_empty() {
+            eprint!("{}", output.stderr);
+        }
+
+        // Status
+        let status_symbol = if output.success { "✓" } else { "✗" };
+        let status_text = if output.success { "Passed" } else { "Failed" };
+        println!(
+            "{} {} (exit {})",
+            status_symbol, status_text, output.exit_code
+        );
+
+        debug!(
+            exit_code = output.exit_code,
+            success = output.success,
+            "Command completed"
+        );
+
+        Ok(())
+    }
+
     fn execute_action(&self, action: Action, from_step: usize) -> Result<StepControl> {
         debug!(?action, "Executing action");
 
@@ -239,6 +245,7 @@ enum StepControl {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::executor::CommandOutput;
     use tracing_subscriber::fmt::format::FmtSpan;
 
     #[test]
@@ -440,5 +447,74 @@ mod tests {
                 message: Some("Test stop".to_string())
             })
         );
+    }
+
+    #[test]
+    fn test_display_command_output_quiet_success() {
+        // For quiet successful commands, output should be suppressed
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let output = CommandOutput {
+            stdout: "test output\n".to_string(),
+            stderr: String::new(),
+            exit_code: 0,
+            success: true,
+        };
+
+        // This should not panic and should suppress output
+        runner.display_command_output(&output, true).unwrap();
+    }
+
+    #[test]
+    fn test_display_command_output_quiet_failure() {
+        // For quiet failed commands, output should be shown
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let output = CommandOutput {
+            stdout: "error output\n".to_string(),
+            stderr: String::new(),
+            exit_code: 1,
+            success: false,
+        };
+
+        // This should not panic and should show output (failure case)
+        runner.display_command_output(&output, true).unwrap();
+    }
+
+    #[test]
+    fn test_display_command_output_stderr_always_shown() {
+        // Stderr should always be shown, even for quiet successful commands
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        let output = CommandOutput {
+            stdout: "stdout\n".to_string(),
+            stderr: "warning: something\n".to_string(),
+            exit_code: 0,
+            success: true,
+        };
+
+        // Stderr should be shown even with quiet=true and success=true
+        runner.display_command_output(&output, true).unwrap();
     }
 }
