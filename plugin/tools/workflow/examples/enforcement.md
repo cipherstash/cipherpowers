@@ -1,15 +1,14 @@
 # Enforcement Mode Example
 
-This workflow demonstrates enforcement mode (default). All conditionals except STOP are ignored, ensuring sequential execution.
+This workflow demonstrates enforcement mode (default). Only STOP conditionals work, ensuring sequential execution.
 
 # Step 1: Check preconditions
+
+Fail: STOP (preconditions failed)
 
 ```bash
 echo "Checking preconditions..."
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (preconditions failed)
 
 # Step 2: Run operation
 
@@ -17,19 +16,24 @@ echo "Checking preconditions..."
 echo "Running operation..."
 ```
 
+# Step 3: Run operation with prompt
+
+```bash
+echo "Running operation with prompt..."
+```
+
 **Prompt:** Did the operation complete successfully?
 
-# Step 3: Verify results
+# Step 4: Verify results
+
+Fail: STOP (verification failed)
 
 ```bash
 echo "Verifying results..."
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (verification failed)
-
-# Step 4: Complete
+# Step 5: Complete
 
 ```bash
-echo "Workflow complete!"
+echo "✓ Workflow complete!"
 ```

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use std::fs;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod execution_mode;
 pub mod executor;
@@ -32,13 +33,18 @@ struct Args {
     /// List all steps
     #[arg(long)]
     list: bool,
-
-    /// Show detailed evaluation information
-    #[arg(long)]
-    debug: bool,
 }
 
 fn main() -> Result<()> {
+    // Initialize tracing (respects RUST_LOG env var)
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "workflow=info".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
     let args = Args::parse();
 
     // Read workflow file
@@ -84,9 +90,6 @@ fn main() -> Result<()> {
     // Run workflow
     println!("→ Workflow: {}", args.workflow_file);
     println!("→ Steps: {}", steps.len());
-    if args.debug {
-        println!("→ Debug mode enabled");
-    }
 
     let mode = if args.guided {
         execution_mode::ExecutionMode::Guided
@@ -95,7 +98,6 @@ fn main() -> Result<()> {
     };
 
     let mut runner = runner::WorkflowRunner::new(steps, mode);
-    runner.set_debug(args.debug);
     let result = match runner.run() {
         Ok(res) => res,
         Err(e) => {

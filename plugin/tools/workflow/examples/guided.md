@@ -1,24 +1,35 @@
 # Guided Mode Example
 
-This workflow demonstrates guided mode. All conditionals work, enabling flexible control flow.
+Run with: `workflow --guided examples/guided.md`
 
-# Step 1: Check if work needed
+This workflow demonstrates guided mode. All conditionals work (Pass, Fail, GoTo), enabling flexible control flow.
 
-**Prompt:** Are there uncommitted changes? If no, STOP (nothing to do)
+# Step 1: Check prerequisites
+
+Fail: STOP (prerequisites not met)
 
 ```bash quiet
-git status --porcelain
+echo "Checking prerequisites..."
+exit 0
 ```
+
+If prerequisites check fails, stop early.
 
 # Step 2: Quick check
 
+Pass: Go to Step 4
+Fail: Continue
+
 ```bash
 echo "Running quick check..."
+exit 0
 ```
 
-Pass: Go to Step 4
+If quick check passes, skip detailed analysis (Go to Step 4).
 
 # Step 3: Detailed analysis
+
+Only runs if quick check failed (Step 2 Fail: Continue).
 
 ```bash
 echo "Running detailed analysis (only if quick check failed)..."
@@ -32,4 +43,10 @@ echo "Running detailed analysis (only if quick check failed)..."
 
 ```bash
 echo "Executing action..."
+```
+
+# Step 6: Complete
+
+```bash
+echo "✓ Workflow complete!"
 ```
