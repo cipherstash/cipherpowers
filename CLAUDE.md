@@ -303,7 +303,7 @@ When developing CipherPowers plugin components:
 2. For skills: Follow TDD approach with test scenarios before implementation
 3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 4. For practices: Separate universal standards from project-specific configuration
-5. Test components using discovery tools (`find-skills`, `find-practices`)
+5. Test components using discovery tools (`find-practices` for practices; skills are auto-discovered)
 6. Ensure proper references using environment variables
 
 **Environment Variables:**
