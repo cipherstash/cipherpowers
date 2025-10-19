@@ -584,7 +584,10 @@ mod tests {
 
         let result = runner.check_iteration_limit(&runner.steps[0]);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Exceeded maximum iterations"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Exceeded maximum iterations"));
     }
 
     #[test]
@@ -594,9 +597,9 @@ mod tests {
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![
-                Conditional::Pass { action: Action::GoToStep { number: 2 } }
-            ],
+            conditionals: vec![Conditional::Pass {
+                action: Action::GoToStep { number: 2 },
+            }],
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -630,7 +633,9 @@ mod tests {
             exit_code: 0,
             success: true,
         };
-        let action = runner.determine_action(&runner.steps[0], &output_success).unwrap();
+        let action = runner
+            .determine_action(&runner.steps[0], &output_success)
+            .unwrap();
         assert_eq!(action, Action::Continue);
 
         // Failure → STOP
@@ -640,7 +645,9 @@ mod tests {
             exit_code: 1,
             success: false,
         };
-        let action = runner.determine_action(&runner.steps[0], &output_fail).unwrap();
+        let action = runner
+            .determine_action(&runner.steps[0], &output_fail)
+            .unwrap();
         assert_eq!(action, Action::Stop { message: None });
     }
 }
