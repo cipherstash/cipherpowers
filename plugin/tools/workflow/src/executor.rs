@@ -54,4 +54,39 @@ mod tests {
         assert!(!output.success);
         assert_eq!(output.exit_code, 1);
     }
+
+    #[test]
+    fn test_execute_command_not_found() {
+        let cmd = Command {
+            code: "nonexistent_command_12345_xyz".to_string(),
+            quiet: false,
+        };
+        let output = execute_command(&cmd).unwrap();
+        assert!(!output.success);
+        assert_ne!(output.exit_code, 0);
+        // Shell should report an error message in stderr
+        assert!(!output.stderr.is_empty());
+    }
+
+    #[test]
+    fn test_execute_stderr_captured() {
+        let cmd = Command {
+            code: "echo 'to stdout'; echo 'to stderr' >&2".to_string(),
+            quiet: false,
+        };
+        let output = execute_command(&cmd).unwrap();
+        assert!(output.stdout.contains("to stdout"));
+        assert!(output.stderr.contains("to stderr"));
+    }
+
+    #[test]
+    fn test_execute_exit_code_captured() {
+        let cmd = Command {
+            code: "exit 42".to_string(),
+            quiet: false,
+        };
+        let output = execute_command(&cmd).unwrap();
+        assert_eq!(output.exit_code, 42);
+        assert!(!output.success);
+    }
 }

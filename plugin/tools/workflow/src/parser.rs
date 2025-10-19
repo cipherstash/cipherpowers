@@ -66,6 +66,10 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                     strong_content.push_str(&text);
                 } else if capturing_prompt {
                     // Capture the prompt text
+                    // LIMITATION: Only captures the first text node after "**Prompt:**"
+                    // This means prompts with inline markdown (code, emphasis, links) will be truncated.
+                    // For now, prompts should be plain text without inline formatting.
+                    // TODO (Task 10 - bug fixes): Accumulate text across multiple nodes until next non-text event
                     let prompt_text = text.trim().to_string();
                     if !prompt_text.is_empty() {
                         if let Some(step) = current_step.as_mut() {
@@ -249,11 +253,11 @@ git status
         let steps = parse_workflow(markdown).unwrap();
         assert_eq!(steps[0].commands.len(), 1);
         assert_eq!(steps[0].commands[0].code, "mise run test");
-        assert_eq!(steps[0].commands[0].quiet, false);
+        assert!(!steps[0].commands[0].quiet);
 
         assert_eq!(steps[1].commands.len(), 1);
         assert_eq!(steps[1].commands[0].code, "git status");
-        assert_eq!(steps[1].commands[0].quiet, true);
+        assert!(steps[1].commands[0].quiet);
     }
 
     #[test]
@@ -306,7 +310,7 @@ echo test
 "#;
         let steps = parse_workflow(markdown).unwrap();
         assert_eq!(steps[0].commands.len(), 1);
-        assert_eq!(steps[0].commands[0].quiet, true);
+        assert!(steps[0].commands[0].quiet);
     }
 
     #[test]
@@ -356,6 +360,87 @@ mise run test
                 _ => panic!("Expected Stop action"),
             },
             _ => panic!("Expected ExitNotZero conditional"),
+        }
+    }
+
+    #[test]
+    fn test_parse_arbitrary_exit_codes() {
+        let markdown = r#"
+# Step 1: Test
+→ Exit 42: STOP (custom exit code)
+→ Exit 127: STOP (command not found)
+"#;
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 2);
+
+        match &steps[0].conditionals[0] {
+            Conditional::ExitCode { code, action } => {
+                assert_eq!(*code, 42);
+                match action {
+                    Action::Stop { message } => {
+                        assert_eq!(message.as_deref(), Some("custom exit code"));
+                    }
+                    _ => panic!("Expected Stop action"),
+                }
+            }
+            _ => panic!("Expected ExitCode conditional"),
+        }
+
+        match &steps[0].conditionals[1] {
+            Conditional::ExitCode { code, action } => {
+                assert_eq!(*code, 127);
+                match action {
+                    Action::Stop { message } => {
+                        assert_eq!(message.as_deref(), Some("command not found"));
+                    }
+                    _ => panic!("Expected Stop action"),
+                }
+            }
+            _ => panic!("Expected ExitCode conditional"),
+        }
+    }
+
+    #[test]
+    fn test_parse_conditionals_with_ascii_arrow() {
+        let markdown = r#"
+# Step 1: Test
+-> Exit 0: Continue
+-> Exit != 0: STOP
+"#;
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 2);
+
+        match &steps[0].conditionals[0] {
+            Conditional::ExitCode { code, action } => {
+                assert_eq!(*code, 0);
+                assert_eq!(*action, Action::Continue);
+            }
+            _ => panic!("Expected ExitCode conditional"),
+        }
+
+        match &steps[0].conditionals[1] {
+            Conditional::ExitNotZero { action } => {
+                assert_eq!(*action, Action::Stop { message: None });
+            }
+            _ => panic!("Expected ExitNotZero conditional"),
+        }
+    }
+
+    #[test]
+    fn test_parse_output_contains_with_quotes() {
+        let markdown = r#"
+# Step 1: Test
+→ If output contains "error": STOP
+"#;
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 1);
+
+        match &steps[0].conditionals[0] {
+            Conditional::OutputContains { text, action } => {
+                assert_eq!(text, "error");
+                assert_eq!(*action, Action::Stop { message: None });
+            }
+            _ => panic!("Expected OutputContains conditional"),
         }
     }
 }
