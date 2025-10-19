@@ -46,14 +46,7 @@ impl WorkflowRunner {
             self.iterations += 1;
             let step = &self.steps[self.current_step];
 
-            if self.iterations > self.max_iterations {
-                return Err(anyhow::anyhow!(
-                    "Exceeded maximum iterations ({}) at Step {}: '{}'. Possible infinite loop in workflow.\nCheck for GoTo loops or missing STOP conditions.",
-                    self.max_iterations,
-                    step.number,
-                    step.description
-                ));
-            }
+            self.check_iteration_limit(step)?;
 
             println!(
                 "\n→ Step {}/{}: {}",
@@ -142,6 +135,18 @@ impl WorkflowRunner {
             }
         }
         Ok(None)
+    }
+
+    fn check_iteration_limit(&self, step: &Step) -> Result<()> {
+        if self.iterations > self.max_iterations {
+            return Err(anyhow::anyhow!(
+                "Exceeded maximum iterations ({}) at Step {}: '{}'. Possible infinite loop in workflow.\nCheck for GoTo loops or missing STOP conditions.",
+                self.max_iterations,
+                step.number,
+                step.description
+            ));
+        }
+        Ok(())
     }
 
     fn execute_step_prompts(&self, prompts: &[Prompt]) -> Result<()> {
@@ -540,4 +545,37 @@ mod tests {
 
     // Note: Cannot easily test interactive stdin in unit tests
     // Manual verification required for actual prompt behavior
+
+    #[test]
+    fn test_check_iteration_limit_within_bounds() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        // Within bounds: iterations = 0, max = 10 (1 step * 10 multiplier)
+        runner.check_iteration_limit(&runner.steps[0]).unwrap();
+    }
+
+    #[test]
+    fn test_check_iteration_limit_exceeded() {
+        let steps = vec![Step {
+            number: 1,
+            description: "Test infinite loop".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        runner.iterations = 100; // Exceed max_iterations (1 * 10 = 10)
+
+        let result = runner.check_iteration_limit(&runner.steps[0]);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Exceeded maximum iterations"));
+    }
 }
