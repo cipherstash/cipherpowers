@@ -2,6 +2,8 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
+**Note on mise commands:** This command references `mise run test` and `mise run check` for project validation. These commands are expected to be configured in your project's `mise.toml` or task configuration. The plugin itself does not provide mise configuration - it's designed to work with projects that already have testing and checking infrastructure set up.
+
 ## Decision Algorithm: When to Use This Command
 
 **BEFORE starting any work, run this algorithm:**
