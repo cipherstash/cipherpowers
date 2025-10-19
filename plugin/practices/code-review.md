@@ -22,8 +22,9 @@ The goal of code reviews is not to simply find errors, but to foster a culture o
 
 You will evaluate code and categorize feedback into the following severity levels.
 
-### Level 1: Blockers (Must Fix Before Merge)
+### BLOCKING (Must Fix Before Merge)
 
+**Security & Correctness:**
 -   **Security Vulnerabilities**:
     -   Any potential for SQL injection, XSS, CSRF, or other common vulnerabilities.
     -   Improper handling of secrets, hardcoded credentials, or exposed API keys.
@@ -38,8 +39,7 @@ You will evaluate code and categorize feedback into the following severity level
 -   **Breaking API or Data Schema Changes**:
     -   Any modification to a public API contract or database schema that is not part of a documented, backward-compatible migration plan.
 
-### Level 2: High Priority (Strongly Recommend Fixing Before Merge)
-
+**Architecture & Performance:**
 -   **Architectural Violations**:
     -   **Single Responsibility Principle (SRP)**: Functions that have multiple, distinct responsibilities or operate at different levels of abstraction (e.g., mixing business logic with low-level data marshalling).
     -   **Duplication (Non-Trivial DRY)**: Duplicated logic that, if changed in one place, would almost certainly need to be changed in others. *This does not apply to simple, repeated patterns where an abstraction would be more complex than the duplication.*
@@ -51,21 +51,20 @@ You will evaluate code and categorize feedback into the following severity level
     -   Swallowing exceptions or failing silently.
     -   Error messages that lack sufficient context for debugging.
 
-### Level 3: Medium Priority (Consider for Follow-up)
+### NON-BLOCKING (Can Be Deferred or Follow-up)
 
--   **Clarity and Readability**:
-    -   Ambiguous or misleading variable, function, or class names.
-    -   Overly complex conditional logic that could be simplified or refactored into smaller functions.
-    -   "Magic numbers" or hardcoded strings that should be named constants.
--   **Documentation Gaps**:
-    -   Lack of comments for complex, non-obvious algorithms or business logic.
-    -   Missing doc comments for public-facing functions.
+**Clarity & Documentation:**
+-   Ambiguous or misleading variable, function, or class names.
+-   Overly complex conditional logic that could be simplified or refactored into smaller functions.
+-   "Magic numbers" or hardcoded strings that should be named constants.
+-   Lack of comments for complex, non-obvious algorithms or business logic.
+-   Missing doc comments for public-facing functions.
 
-### Level 4: Low Priority (Nice to Have)
-
--   **Style Preferences**: Minor naming improvements, formatting that isn't caught by linters
--   **Minor Optimizations**: Performance improvements with negligible impact
--   **Future Considerations**: Suggestions for future refactoring
+**Polish:**
+-   Style preferences (minor naming improvements, formatting not caught by linters).
+-   Minor optimizations (performance improvements with negligible impact).
+-   Future considerations (suggestions for future refactoring).
+-   Mise run check issues that don't affect functionality (linting, formatting that can be auto-fixed).
 
 ## Project Configuration
 
@@ -106,16 +105,10 @@ Save review using this structure:
 ## Summary
 [1-2 sentences]
 
-## Critical Issues (Level 1 - Blockers)
+## BLOCKING (Must Fix Before Merge)
 [Issues or "None found"]
 
-## High Priority Issues (Level 2)
-[Issues or "None found"]
-
-## Medium Priority Issues (Level 3)
-[Issues or "None found"]
-
-## Low Priority Issues (Level 4)
+## NON-BLOCKING (Can Be Deferred)
 [Issues or "None found"]
 
 ## Positive Observations
