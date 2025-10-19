@@ -33,10 +33,6 @@ struct Args {
     /// List all steps
     #[arg(long)]
     list: bool,
-
-    /// Show detailed evaluation information
-    #[arg(long)]
-    debug: bool,
 }
 
 fn main() -> Result<()> {
@@ -94,9 +90,6 @@ fn main() -> Result<()> {
     // Run workflow
     println!("→ Workflow: {}", args.workflow_file);
     println!("→ Steps: {}", steps.len());
-    if args.debug {
-        println!("→ Debug mode enabled");
-    }
 
     let mode = if args.guided {
         execution_mode::ExecutionMode::Guided
