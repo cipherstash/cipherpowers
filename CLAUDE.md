@@ -255,12 +255,13 @@ Commands and agents reference skills and practices using environment variables:
 
 ## Working with Skills in this Repository
 
-When creating or editing skills in `skills/`:
+When creating or editing skills in `plugin/skills/`:
 
 1. **Read the meta-skill:** `${SUPERPOWERS_SKILLS_ROOT}/skills/meta/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider upstream:** Universal skills may be contributed to superpowers later
+5. **Skills are auto-discovered:** Once created in `plugin/skills/`, they're automatically available via the Skill tool
 
 ## Creating Agents and Practices
 
