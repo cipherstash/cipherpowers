@@ -164,10 +164,10 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 - Check `${SUPERPOWERS_SKILLS_ROOT}` environment variable is set
 - Superpowers must be installed before CipherPowers
 
-**Discovery tools not finding skills:**
-- Ensure you're running from repository root
-- Use `./plugin/tools/find-skills` with proper path
-- Check both plugins are installed correctly
+**Skills not available:**
+- Skills are auto-discovered - no manual discovery needed
+- Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
+- Verify both cipherpowers and superpowers plugins are installed correctly
 
 ## Documentation
 
