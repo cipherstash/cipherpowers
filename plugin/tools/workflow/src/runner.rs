@@ -76,35 +76,26 @@ impl WorkflowRunner {
                 );
 
                 // Evaluate conditionals
-                let action = self.evaluate_conditionals(&step.conditionals, &output)?;
+                let action = self.evaluate_conditionals(&step.conditionals, &output)?
+                    .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
 
                 match action {
-                    Some(Action::Continue) => {
-                        println!("→ Condition matched: Continue");
+                    Action::Continue => {
+                        println!("→ Action: Continue");
                     }
-                    Some(Action::Stop { message }) => {
+                    Action::Stop { message } => {
                         if let Some(msg) = message {
-                            println!("→ Condition matched: STOP ({})", msg);
+                            println!("→ Action: STOP ({})", msg);
                             return Ok(ExecutionResult::Stopped { message: Some(msg) });
                         } else {
-                            println!("→ Condition matched: STOP");
+                            println!("→ Action: STOP");
                             return Ok(ExecutionResult::Stopped { message: None });
                         }
                     }
-                    Some(Action::GoToStep { number }) => {
-                        println!("→ Condition matched: Go to Step {}", number);
+                    Action::GoToStep { number } => {
+                        println!("→ Action: Go to Step {}", number);
                         self.current_step = self.find_step_index(number)?;
                         continue 'workflow_loop;
-                    }
-                    None => {
-                        // No matching conditional found
-                        if !output.success {
-                            return Err(anyhow::anyhow!(
-                                "Command failed with exit code {} but no conditional matched. Add an 'Otherwise' conditional to handle unexpected cases.",
-                                output.exit_code
-                            ));
-                        }
-                        // Command succeeded - continue silently
                     }
                 }
             }
@@ -131,6 +122,24 @@ impl WorkflowRunner {
 
         println!("\n→ Workflow completed successfully");
         Ok(ExecutionResult::Success)
+    }
+
+    fn apply_defaults(&self, output: &CommandOutput, conditionals: &[Conditional]) -> Action {
+        // If no conditionals specified, use implicit defaults
+        if conditionals.is_empty() {
+            return if output.success {
+                Action::Continue  // Implicit: Pass → Continue
+            } else {
+                Action::Stop { message: None }  // Implicit: Fail → STOP
+            };
+        }
+
+        // If conditionals exist but none matched, use defaults
+        if output.success {
+            Action::Continue  // Implicit: Pass → Continue
+        } else {
+            Action::Stop { message: None }  // Implicit: Fail → STOP
+        }
     }
 
     fn evaluate_conditionals(
@@ -489,7 +498,8 @@ mod tests {
     }
 
     #[test]
-    fn test_no_conditionals_failure_errors() {
+    fn test_no_conditionals_failure_stops() {
+        // With implicit defaults, failure with no conditionals → STOP
         let steps = vec![Step {
             number: 1,
             description: "Test no conditionals with failure".to_string(),
@@ -502,12 +512,8 @@ mod tests {
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let result = runner.run();
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert!(err
-            .to_string()
-            .contains("Command failed with exit code 1 but no conditional matched"));
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Stopped { message: None });
     }
 
     #[test]

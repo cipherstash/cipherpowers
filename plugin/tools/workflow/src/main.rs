@@ -2,11 +2,11 @@ use anyhow::Result;
 use clap::Parser;
 use std::fs;
 
-mod execution_mode;
-mod executor;
-mod models;
-mod parser;
-mod runner;
+pub mod execution_mode;
+pub mod executor;
+pub mod models;
+pub mod parser;
+pub mod runner;
 
 #[derive(Parser, Debug)]
 #[command(name = "workflow")]
