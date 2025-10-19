@@ -99,6 +99,208 @@ Same syntax works in both modes. Choose based on usage:
 
 **Same workflow, different modes** - syntax supports both.
 
+## Workflow Syntax
+
+Workflows use conventional markdown syntax. No special parser knowledge needed - if you know markdown, you know workflow syntax.
+
+### Steps (H1 Headers)
+
+Steps are level 1 headers with "Step N:" prefix:
+
+```markdown
+# Step 1: Description of what this step does
+# Step 2: Another step description
+# Step 3: Final step
+```
+
+**Requirements:**
+- Use `# ` (H1, one hash)
+- Include "Step N:" prefix
+- Number sequentially (1, 2, 3...)
+- Clear, concise description
+
+**Example:**
+```markdown
+# Step 1: Run all tests
+# Step 2: Check code formatting
+# Step 3: Commit changes
+```
+
+### Commands (Bash Code Blocks)
+
+Commands are bash code blocks that will be executed:
+
+````markdown
+```bash
+mise run test
+```
+
+```bash quiet
+git status --porcelain
+```
+````
+
+**Features:**
+- Use ` ```bash ` fence
+- Commands execute in shell
+- Add `quiet` flag to hide output unless fails
+- Multiple commands per step supported
+
+**Quiet mode:**
+- Normal: Shows all output
+- Quiet: Shows output only on failure
+- Use quiet for status checks, verbose for main actions
+
+**Example:**
+````markdown
+# Step 1: Check for changes
+
+```bash quiet
+git status --porcelain
+```
+
+# Step 2: Run tests
+
+```bash
+mise run test
+```
+````
+
+### Conditionals (Arrow Notation)
+
+Conditionals control flow based on command results:
+
+```markdown
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (fix tests)
+→ If output empty: STOP (nothing to commit)
+→ If output contains "error": STOP (found errors)
+→ Otherwise: Continue
+→ Exit 0: Go to Step 5
+```
+
+**Syntax:**
+- Start with `→` or `->`
+- Condition: `Exit 0`, `Exit ≠ 0`, `If output empty`, `If output contains "text"`, `Otherwise`
+- Action: `Continue`, `STOP`, `STOP (message)`, `Go to Step N`
+
+**Enforcement mode behavior:**
+- `STOP` works as written
+- `Continue` and `Go to Step X` ignored (automatic progression)
+
+**Guided mode behavior:**
+- All conditionals work as written
+- Full control flow enabled
+
+**Example:**
+```markdown
+# Step 1: Run tests
+
+```bash
+mise run test
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (tests must pass before commit)
+
+# Step 2: Check for unstaged changes
+
+```bash quiet
+git diff --check
+```
+
+→ If output empty: Continue
+→ Otherwise: STOP (whitespace errors found)
+```
+
+### Prompts (Bold Text)
+
+Prompts ask yes/no questions during execution:
+
+```markdown
+**Prompt:** Are all functions covered by tests?
+
+**Prompt:** Have you reviewed the changes?
+```
+
+**Syntax:**
+- Use `**Prompt:**` (bold "Prompt:")
+- Follow with question
+- Execution waits for y/n answer
+- Answering 'n' or Enter stops workflow (exit 2)
+
+**When to use:**
+- Human judgment required
+- Cannot be automated (test coverage judgment, review quality)
+- Yes/no decision point
+
+**Example:**
+```markdown
+# Step 3: Verify test coverage
+
+**Prompt:** Do ALL new/modified functions have tests?
+
+# Step 4: Commit changes
+
+```bash
+git commit
+```
+```
+
+## Complete Syntax Example
+
+Here's a workflow using all syntax elements:
+
+```markdown
+# Step 1: Check for changes
+
+```bash quiet
+git status --porcelain
+```
+
+→ If output empty: STOP (nothing to commit)
+→ Otherwise: Continue
+
+# Step 2: Verify tests exist
+
+**Prompt:** Do ALL new/modified functions have tests?
+
+# Step 3: Run test suite
+
+```bash
+mise run test
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (fix failing tests)
+
+# Step 4: Check formatting
+
+```bash quiet
+mise run fmt -- --check
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (run mise fmt to format)
+
+# Step 5: Commit changes
+
+```bash
+git add .
+git commit
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (commit failed)
+```
+
+**This workflow demonstrates:**
+- Steps (H1 headers with numbers)
+- Commands (bash blocks, some quiet)
+- Conditionals (exit codes, output checks)
+- Prompts (manual verification)
+- Flow control (STOP with messages, Continue)
+
 ## Related Skills
 
 - **Executing workflows:** `@${CLAUDE_PLUGIN_ROOT}skills/workflow/executing-workflows/SKILL.md`
