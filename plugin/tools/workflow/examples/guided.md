@@ -17,8 +17,7 @@ git status --porcelain
 echo "Running quick check..."
 ```
 
-→ Exit 0: Go to Step 4
-→ Exit ≠ 0: Continue
+Pass: Go to Step 4
 
 # Step 3: Detailed analysis
 
