@@ -11,7 +11,7 @@ version: 1.0.0
 
 ## Overview
 
-Design and write markdown-based workflows that are both readable documentation and executable processes. Use conventional markdown syntax (headers, code blocks, arrows, bold) to create workflows that work in both enforcement and guided modes.
+Design and write markdown-based workflows that are both readable documentation and executable processes. Use conventional markdown syntax (headers, code blocks, Pass/Fail labels, bold) to create workflows that work in both enforcement and guided modes.
 
 **Announce at start:** "I'm creating a workflow for [task-name]."
 
@@ -45,12 +45,11 @@ Complex logic lives in agents, not workflows. Workflows describe steps, agents m
 ```markdown
 # Step 1: Run tests
 
+Fail: STOP (fix tests)
+
 ```bash
 mise run test
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests)
 ```
 
 **Avoid:**
@@ -166,23 +165,30 @@ mise run test
 ```
 ````
 
-### Conditionals (Arrow Notation)
+### Conditionals (Pass/Fail Labels)
 
-Conditionals control flow based on command results:
+Conditionals control flow based on command exit codes:
 
 ```markdown
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests)
-→ If output empty: STOP (nothing to commit)
-→ If output contains "error": STOP (found errors)
-→ Otherwise: Continue
-→ Exit 0: Go to Step 5
+Pass: Continue
+Pass: Go to Step 5
+Fail: STOP (fix tests)
+Fail: Continue
 ```
 
-**Syntax:**
-- Start with `→` or `->`
-- Condition: `Exit 0`, `Exit ≠ 0`, `If output empty`, `If output contains "text"`, `Otherwise`
-- Action: `Continue`, `STOP`, `STOP (message)`, `Go to Step N`
+**Convention:**
+- Exit code 0 = Pass
+- Exit code non-zero = Fail
+
+**Implicit defaults:**
+- Pass → Continue (omit if not overriding)
+- Fail → STOP (omit if not overriding)
+
+**Available actions:**
+- `Continue` - Proceed to next step
+- `STOP` - Stop workflow with no message
+- `STOP (message)` - Stop with helpful message
+- `Go to Step N` - Jump to specific step
 
 **Enforcement mode behavior:**
 - `STOP` works as written
@@ -196,21 +202,36 @@ Conditionals control flow based on command results:
 ```markdown
 # Step 1: Run tests
 
+Fail: STOP (tests must pass before commit)
+
 ```bash
 mise run test
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (tests must pass before commit)
-
 # Step 2: Check for unstaged changes
+
+Fail: STOP (whitespace errors found)
 
 ```bash quiet
 git diff --check
 ```
+```
 
-→ If output empty: Continue
-→ Otherwise: STOP (whitespace errors found)
+**Complex conditions:** Use wrapper scripts to translate logic to exit codes:
+
+```bash
+# mise-task: check-has-changes
+git status --porcelain | grep -q . && exit 0 || exit 1
+```
+
+```markdown
+# Step 1: Check for changes
+
+Fail: STOP (nothing to commit)
+
+```bash
+mise run check-has-changes
+```
 ```
 
 ### Prompts (Bold Text)
@@ -254,12 +275,11 @@ Here's a workflow using all syntax elements:
 ```markdown
 # Step 1: Check for changes
 
-```bash quiet
-git status --porcelain
-```
+Fail: STOP (nothing to commit)
 
-→ If output empty: STOP (nothing to commit)
-→ Otherwise: Continue
+```bash quiet
+mise run check-has-changes
+```
 
 # Step 2: Verify tests exist
 
@@ -267,21 +287,19 @@ git status --porcelain
 
 # Step 3: Run test suite
 
+Fail: STOP (fix failing tests)
+
 ```bash
 mise run test
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix failing tests)
-
 # Step 4: Check formatting
+
+Fail: STOP (run mise fmt to format)
 
 ```bash quiet
 mise run fmt -- --check
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (run mise fmt to format)
 
 # Step 5: Commit changes
 
@@ -289,17 +307,14 @@ mise run fmt -- --check
 git add .
 git commit
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (commit failed)
 ```
 
 **This workflow demonstrates:**
 - Steps (H1 headers with numbers)
-- Commands (bash blocks, some quiet)
-- Conditionals (exit codes, output checks)
+- One command per step (enforced)
+- Conditionals (Pass/Fail labels)
 - Prompts (manual verification)
-- Flow control (STOP with messages, Continue)
+- Implicit defaults (Pass → Continue, Fail → STOP)
 
 ## Examples by Type
 
@@ -310,30 +325,27 @@ For linear processes with no branching:
 ```markdown
 # Step 1: Setup
 
+Fail: STOP (setup failed)
+
 ```bash
 mise install
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (setup failed)
-
 # Step 2: Build
+
+Fail: STOP (build failed)
 
 ```bash
 mise run build
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (build failed)
-
 # Step 3: Test
+
+Fail: STOP (tests failed)
 
 ```bash
 mise run test
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (tests failed)
 ```
 
 **Use for:** CI/CD steps, setup processes, verification workflows
@@ -364,17 +376,16 @@ mise run publish-docs
 
 ### Workflow with Conditional Flow (Guided Mode)
 
-For processes with dynamic paths:
+For processes with dynamic paths, use wrapper scripts:
 
 ```markdown
 # Step 1: Check if migration needed
 
-```bash quiet
-ls migrations/*.sql 2>/dev/null | wc -l
-```
+Pass: Go to Step 3
 
-→ If output empty: Go to Step 3
-→ Otherwise: Continue
+```bash quiet
+mise run check-has-migrations  # Returns 0 if migrations exist, 1 if none
+```
 
 # Step 2: Run migrations
 
@@ -389,6 +400,12 @@ mise run start
 ```
 ```
 
+**Wrapper script** (in mise-task or separate file):
+```bash
+# mise-task: check-has-migrations
+[ -n "$(ls migrations/*.sql 2>/dev/null)" ] && exit 0 || exit 1
+```
+
 **Use for:** Conditional setup, smart workflows, context-aware processes
 
 ### Complex Enforcement Workflow
@@ -398,21 +415,19 @@ Real example - git commit algorithm:
 ```markdown
 # Step 1: Verify changes exist
 
+Fail: STOP (nothing to commit)
+
 ```bash quiet
-git status --porcelain
+mise run check-has-changes
 ```
 
-→ If output empty: STOP (nothing to commit)
-→ Otherwise: Continue
-
 # Step 2: Check tests pass
+
+Fail: STOP (fix tests before committing)
 
 ```bash
 mise run test
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests before committing)
 
 # Step 3: Verify test coverage
 
@@ -420,21 +435,19 @@ mise run test
 
 # Step 4: Check formatting
 
+Fail: STOP (run mise fmt to format code)
+
 ```bash quiet
 mise run fmt -- --check
 ```
 
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (run mise fmt to format code)
-
 # Step 5: Check for debugging code
 
-```bash quiet
-git diff --cached | grep -E 'console\.log|debugger|TODO'
-```
+Fail: STOP (remove debugging code)
 
-→ If output empty: Continue
-→ Otherwise: STOP (remove debugging code)
+```bash quiet
+mise run check-no-debug
+```
 
 # Step 6: Verify atomic commit
 
@@ -445,6 +458,15 @@ git diff --cached | grep -E 'console\.log|debugger|TODO'
 ```bash
 git commit
 ```
+```
+
+**Wrapper scripts:**
+```bash
+# mise-task: check-has-changes
+git status --porcelain | grep -q . && exit 0 || exit 1
+
+# mise-task: check-no-debug
+git diff --cached | grep -qE 'console\.log|debugger|TODO' && exit 1 || exit 0
 ```
 
 **Use for:** Git workflows, code review triggers, TDD enforcement
@@ -519,12 +541,11 @@ workflow --guided workflow.md
 ```markdown
 # Step 1: Check precondition
 
+Fail: STOP (required-file.txt not found)
+
 ```bash quiet
 test -f required-file.txt
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (required-file.txt not found)
 ```
 
 ### Pattern: Multiple Checks Before Action

@@ -61,6 +61,56 @@ Step 10: Split changes into multiple commits
         STOP
 ```
 
+## Executable Workflow
+
+Run with: `workflow plugin/practices/git-commit-algorithm.md`
+
+---
+
+# Step 1: Check for changes
+
+Fail: STOP (nothing to commit)
+
+```bash quiet
+mise run check-has-changes
+```
+
+# Step 2: Verify test coverage
+
+**Prompt:** Do ALL new/modified functions have tests?
+
+# Step 3: Run tests
+
+Fail: STOP (fix tests before committing)
+
+```bash
+mise run test
+```
+
+# Step 4: Run checks
+
+Fail: STOP (run mise check to see failures)
+
+```bash
+mise run check
+```
+
+# Step 5: Check documentation
+
+**Prompt:** Is documentation updated for user-facing changes?
+
+# Step 6: Verify atomic commit
+
+**Prompt:** Do changes serve a single atomic purpose?
+
+# Step 7: Commit changes
+
+Fail: STOP (commit failed - check message format)
+
+```bash
+git commit
+```
+
 ## INVALID Conditions for Committing Early
 
 These rationalizations are **NOT VALID ALGORITHM CONDITIONS:**
