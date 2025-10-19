@@ -15,27 +15,35 @@ Systematic code review process ensuring correctness, security, and maintainabili
 
 Use this algorithm to determine if code review is required before merge/PR/completion:
 
-```
-Step 1: Check: Have you made commits to a feature branch?
-        → YES: Go to Step 2
-        → NO: Go to Step 6 (no review needed yet)
+# Step 1: Check for commits
 
-Step 2: Check: Have these commits been reviewed?
-        → YES: Go to Step 6 (already reviewed)
-        → NO: Go to Step 3
+**Prompt:** Have you made commits to a feature branch?
 
-Step 3: Check: Are you about to merge, create PR, or mark work complete?
-        → YES: Go to Step 4
-        → NO: Go to Step 6 (continue working)
+Fail: Go to Step 6
 
-Step 4: Request code review
-        Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
-        STOP - do not merge/PR/complete until review done
+# Step 2: Check for existing review
 
-Step 5: [UNREACHABLE - if you reach here, you violated Step 4]
+**Prompt:** Have these commits been reviewed?
 
-Step 6: Continue (no commits OR already reviewed OR still working)
-```
+Pass: Go to Step 6
+
+# Step 3: Check for completion
+
+**Prompt:** Are you about to merge, create PR, or mark work complete?
+
+Fail: Go to Step 6
+
+# Step 4: Request code review
+
+Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+
+**Prompt:** STOP - do not merge/PR/complete until review done
+
+# Step 5: [UNREACHABLE - if you reach here, you violated Step 4]
+
+# Step 6: Continue
+
+**Prompt:** No commits OR already reviewed OR still working - continue
 
 ### INVALID Conditions for Skipping Review
 
