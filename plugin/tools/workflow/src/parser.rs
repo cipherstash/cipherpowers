@@ -2,8 +2,6 @@ use crate::models::*;
 use anyhow::Result;
 use pulldown_cmark::{Event, HeadingLevel, Parser, Tag};
 
-// TODO: Remove #[allow(dead_code)] once Task 4 (execution engine) uses this function
-#[allow(dead_code)]
 pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
     let parser = Parser::new(markdown);
     let mut steps = Vec::new();
@@ -184,7 +182,6 @@ fn extract_step_header(text: &str) -> Option<(usize, String)> {
 fn parse_conditional(text: &str) -> Option<Conditional> {
     let trimmed = text.trim();
 
-    // New syntax: Pass/Fail labels (no arrow prefix)
     if trimmed.starts_with("Pass:") {
         let action_str = trimmed.strip_prefix("Pass:")?.trim();
         let action = parse_action(action_str)?;
@@ -197,52 +194,7 @@ fn parse_conditional(text: &str) -> Option<Conditional> {
         return Some(Conditional::Fail { action });
     }
 
-    // Legacy syntax: arrow-based conditionals (deprecated)
-    if !trimmed.starts_with("→") && !trimmed.starts_with("->") {
-        return None;
-    }
-
-    // Remove arrow prefix
-    let content = trimmed
-        .strip_prefix("→")
-        .or_else(|| trimmed.strip_prefix("->"))?
-        .trim();
-
-    // Split on first ':'
-    let parts: Vec<&str> = content.splitn(2, ':').collect();
-    if parts.len() != 2 {
-        return None;
-    }
-
-    let condition = parts[0].trim();
-    let action_str = parts[1].trim();
-
-    // Parse action
-    let action = parse_action(action_str)?;
-
-    // Parse legacy condition types
-    #[allow(deprecated)]
-    if condition == "Exit 0" {
-        Some(Conditional::ExitCode { code: 0, action })
-    } else if condition == "Exit ≠ 0" || condition == "Exit != 0" {
-        Some(Conditional::ExitNotZero { action })
-    } else if condition.starts_with("Exit ") {
-        let code: i32 = condition.strip_prefix("Exit ")?.trim().parse().ok()?;
-        Some(Conditional::ExitCode { code, action })
-    } else if condition == "If output empty" {
-        Some(Conditional::OutputEmpty { action })
-    } else if condition.starts_with("If output contains") {
-        let text = condition
-            .strip_prefix("If output contains")?
-            .trim()
-            .trim_matches('"')
-            .to_string();
-        Some(Conditional::OutputContains { text, action })
-    } else if condition == "Otherwise" {
-        Some(Conditional::Otherwise { action })
-    } else {
-        None
-    }
+    None
 }
 
 fn parse_action(text: &str) -> Option<Action> {
@@ -291,24 +243,6 @@ fn validate_workflow(steps: &[Step]) -> Result<()> {
                 | Conditional::Fail {
                     action: Action::GoToStep { number },
                 } => Some(number),
-                #[allow(deprecated)]
-                Conditional::ExitCode {
-                    action: Action::GoToStep { number },
-                    ..
-                }
-                | Conditional::ExitNotZero {
-                    action: Action::GoToStep { number },
-                }
-                | Conditional::OutputEmpty {
-                    action: Action::GoToStep { number },
-                }
-                | Conditional::OutputContains {
-                    action: Action::GoToStep { number },
-                    ..
-                }
-                | Conditional::Otherwise {
-                    action: Action::GoToStep { number },
-                } => Some(number),
                 _ => None,
             };
             if let Some(number) = goto_number {
@@ -328,24 +262,6 @@ fn validate_workflow(steps: &[Step]) -> Result<()> {
                     action: Action::GoToStep { number },
                 }
                 | Conditional::Fail {
-                    action: Action::GoToStep { number },
-                } => Some(number),
-                #[allow(deprecated)]
-                Conditional::ExitCode {
-                    action: Action::GoToStep { number },
-                    ..
-                }
-                | Conditional::ExitNotZero {
-                    action: Action::GoToStep { number },
-                }
-                | Conditional::OutputEmpty {
-                    action: Action::GoToStep { number },
-                }
-                | Conditional::OutputContains {
-                    action: Action::GoToStep { number },
-                    ..
-                }
-                | Conditional::Otherwise {
                     action: Action::GoToStep { number },
                 } => Some(number),
                 _ => None,
@@ -542,12 +458,11 @@ echo "test"
         }
 
         #[test]
-        #[allow(deprecated)]
         fn test_validation_invalid_goto() {
             let markdown = r#"
 # Step 1: Bad goto
 
-→ Exit 0: Go to Step 99
+Pass: Go to Step 99
 
 ```bash
 echo "test"
@@ -562,126 +477,6 @@ echo "test"
 
     mod conditionals {
         use super::*;
-
-        #[test]
-        #[allow(deprecated)]
-        fn test_parse_conditionals() {
-            let markdown = r#"
-# Step 1: Run tests
-
-```bash
-mise run test
-```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (fix tests)
-"#;
-
-            let steps = parse_workflow(markdown).unwrap();
-            assert_eq!(steps[0].conditionals.len(), 2);
-
-            match &steps[0].conditionals[0] {
-                Conditional::ExitCode { code, action } => {
-                    assert_eq!(*code, 0);
-                    assert_eq!(*action, Action::Continue);
-                }
-                _ => panic!("Expected ExitCode conditional"),
-            }
-
-            match &steps[0].conditionals[1] {
-                Conditional::ExitNotZero { action } => match action {
-                    Action::Stop { message } => {
-                        assert_eq!(message.as_deref(), Some("fix tests"));
-                    }
-                    _ => panic!("Expected Stop action"),
-                },
-                _ => panic!("Expected ExitNotZero conditional"),
-            }
-        }
-
-        #[test]
-        #[allow(deprecated)]
-        fn test_parse_arbitrary_exit_codes() {
-            let markdown = r#"
-# Step 1: Test
-→ Exit 42: STOP (custom exit code)
-→ Exit 127: STOP (command not found)
-"#;
-            let steps = parse_workflow(markdown).unwrap();
-            assert_eq!(steps[0].conditionals.len(), 2);
-
-            match &steps[0].conditionals[0] {
-                Conditional::ExitCode { code, action } => {
-                    assert_eq!(*code, 42);
-                    match action {
-                        Action::Stop { message } => {
-                            assert_eq!(message.as_deref(), Some("custom exit code"));
-                        }
-                        _ => panic!("Expected Stop action"),
-                    }
-                }
-                _ => panic!("Expected ExitCode conditional"),
-            }
-
-            match &steps[0].conditionals[1] {
-                Conditional::ExitCode { code, action } => {
-                    assert_eq!(*code, 127);
-                    match action {
-                        Action::Stop { message } => {
-                            assert_eq!(message.as_deref(), Some("command not found"));
-                        }
-                        _ => panic!("Expected Stop action"),
-                    }
-                }
-                _ => panic!("Expected ExitCode conditional"),
-            }
-        }
-
-        #[test]
-        #[allow(deprecated)]
-        fn test_parse_conditionals_with_ascii_arrow() {
-            let markdown = r#"
-# Step 1: Test
--> Exit 0: Continue
--> Exit != 0: STOP
-"#;
-            let steps = parse_workflow(markdown).unwrap();
-            assert_eq!(steps[0].conditionals.len(), 2);
-
-            match &steps[0].conditionals[0] {
-                Conditional::ExitCode { code, action } => {
-                    assert_eq!(*code, 0);
-                    assert_eq!(*action, Action::Continue);
-                }
-                _ => panic!("Expected ExitCode conditional"),
-            }
-
-            match &steps[0].conditionals[1] {
-                Conditional::ExitNotZero { action } => {
-                    assert_eq!(*action, Action::Stop { message: None });
-                }
-                _ => panic!("Expected ExitNotZero conditional"),
-            }
-        }
-
-        #[test]
-        #[allow(deprecated)]
-        fn test_parse_output_contains_with_quotes() {
-            let markdown = r#"
-# Step 1: Test
-→ If output contains "error": STOP
-"#;
-            let steps = parse_workflow(markdown).unwrap();
-            assert_eq!(steps[0].conditionals.len(), 1);
-
-            match &steps[0].conditionals[0] {
-                Conditional::OutputContains { text, action } => {
-                    assert_eq!(text, "error");
-                    assert_eq!(*action, Action::Stop { message: None });
-                }
-                _ => panic!("Expected OutputContains conditional"),
-            }
-        }
 
         #[test]
         fn test_parse_pass_fail_conditionals() {

@@ -155,12 +155,11 @@ echo "test output"
         let workflow = r#"
 # Step 1: Test failure
 
+Fail: STOP (Command failed as expected)
+
 ```bash
 exit 1
 ```
-
-→ Exit 0: Continue
-→ Exit ≠ 0: STOP (Command failed as expected)
 "#;
 
         let steps = crate::parser::parse_workflow(workflow).unwrap();
