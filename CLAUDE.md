@@ -145,7 +145,8 @@ All components work together without duplication:
 - `plugin/commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
-- Any agent can run `find-skills "commit"` and discover workflow
+- Claude Code's native Skill tool discovers all skills automatically
+- Agents reference skills directly: `${CLAUDE_PLUGIN_ROOT}/skills/commit-workflow/SKILL.md`
 - No need to hardcode commit knowledge into every agent
 - Update workflow in skill → all agents benefit
 

@@ -128,11 +128,18 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 
 ## Discovery Tools
 
-**Find Skills:**
-```bash
-./plugin/tools/find-skills "pattern"
-./plugin/tools/find-skills --local "pattern"    # cipherpowers only
-./plugin/tools/find-skills --upstream "pattern" # superpowers only
+**Skills:**
+
+Skills are automatically discovered by Claude Code's native Skill tool. No manual discovery needed.
+
+In conversation, Claude uses skills via:
+- `Skill(command: "cipherpowers:conducting-code-review")`
+- `Skill(command: "superpowers:brainstorming")`
+
+To reference skills directly in agents/commands:
+```markdown
+@${CLAUDE_PLUGIN_ROOT}/skills/category/skill-name/SKILL.md
+@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md
 ```
 
 **Find Practices:**
