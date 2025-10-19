@@ -333,22 +333,46 @@ CipherPowers captures significant learnings from development work to build organ
 
 CipherPowers uses **algorithmic decision trees** instead of imperative instructions for discipline-enforcing workflows. This achieves 0% → 100% compliance improvement under pressure.
 
+**Workflow Executor Tool:** `plugin/tools/workflow`
+
+Executes markdown-based workflows with two modes:
+
+**Enforcement mode (default):**
+```bash
+workflow path/to/workflow.md
+```
+- Sequential execution, no skipping
+- Only STOP conditionals respected
+- 100% compliance for algorithmic tasks
+- Use for: git-commit, TDD enforcement, code review triggers
+
+**Guided mode (--guided):**
+```bash
+workflow --guided path/to/workflow.md
+```
+- All conditionals enabled (Continue, GoTo, STOP)
+- Agent uses tool but retains flexibility
+- Prevents "I don't need the workflow" rationalization
+- Use for: execute-plan, repeatable processes with judgment calls
+
 **Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
 
 **Implemented algorithms:**
-1. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
-   - Prevents code before tests via binary "Does failing test exist?" check
-   - Recovery mandates deleting untested code (no sunk cost exceptions)
-
-2. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
-   - Requires review before merge via binary commit + review status checks
-   - Invalidates "too small", "senior dev", "tests passing" rationalizations
-
-3. **Git Commit Readiness** - `plugin/practices/git-commit-algorithm.md`
+1. **Git Commit Readiness** - `plugin/practices/git-commit-algorithm.md`
    - 10-step algorithm: tests pass → checks pass → docs updated → atomic
    - Prevents WIP commits, "will fix later", exhaustion-driven commits
 
+2. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
+   - Prevents code before tests via binary "Does failing test exist?" check
+   - Recovery mandates deleting untested code (no sunk cost exceptions)
+
+3. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
+   - Requires review before merge via binary commit + review status checks
+   - Invalidates "too small", "senior dev", "tests passing" rationalizations
+
 **Why algorithmic?** LLMs treat algorithms as deterministic systems (execute them) but treat imperatives as suggestions (interpret them). Evidence: 33% imperative compliance vs 100% algorithmic compliance in pressure testing.
+
+**Workflow syntax:** Markdown with conventional headers (steps), code blocks (commands), arrows (conditionals), bold (prompts). See `plugin/tools/workflow/README.md` for full syntax.
 
 **Testing:** All algorithms include pressure test scenarios in `docs/tests/` validating resistance to time pressure, sunk cost, authority, and exhaustion.
 
