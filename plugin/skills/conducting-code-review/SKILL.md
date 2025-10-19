@@ -124,11 +124,9 @@ mise run check
 ${CLAUDE_PLUGIN_ROOT}practices/code-review.md
 ```
 
-**Review ALL four severity levels:**
-1. Level 1: Blockers (from practices)
-2. Level 2: High Priority (from practices)
-3. Level 3: Medium Priority (from practices)
-4. Level 4: Low Priority (from practices)
+**Review ALL severity levels:**
+1. BLOCKING (Must Fix Before Merge) - from practices
+2. NON-BLOCKING (Can Be Deferred) - from practices
 
 **Empty sections are GOOD if you actually checked.** Missing sections mean you didn't check.
 

@@ -2,15 +2,118 @@
 
 > **For Claude:** Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` to implement this plan task-by-task.
 
+**Version:** 1.1.0
+**Last Updated:** 2025-10-18
+**Changes in v1.1:**
+- Added Task 1: Standardize path references (prerequisite for clean migration)
+- Clarified that environment variables are provided by Claude Code runtime
+- Confirmed `.claude-plugin/skills.json` location is correct (plugin is a local marketplace)
+- All skill paths verified to include correct subdirectories
+- Total tasks: 31 (was 30)
+
 **Goal:** Migrate CipherPowers from legacy manual skill discovery to Anthropic's official Skill tool mechanism, enabling automatic skill registration, discovery, and invocation while maintaining backward compatibility.
 
-**Architecture:** Non-breaking incremental migration across 8 phases: (1) Create plugin manifest registering 8 skills with `cipherpowers:*` namespace, (2) Update meta-skills to document Skill tool usage, (3) Update 7 commands to support dual invocation, (4) Migrate 5 agents from Read tool to Skill tool, (5) Update skill cross-references, (6) Update templates, (7) Update documentation, (8) Comprehensive testing. Practices architecture validated as separate from skills (no changes needed).
+**Architecture:** Non-breaking incremental migration across 9 phases: (1) Standardize path references across agents and commands, (2) Create plugin manifest registering 8 skills with `cipherpowers:*` namespace, (3) Update meta-skills to document Skill tool usage, (4) Update 7 commands to support dual invocation, (5) Migrate 5 agents from Read tool to Skill tool, (6) Update skill cross-references, (7) Update templates, (8) Update documentation, (9) Comprehensive testing. Practices architecture validated as separate from skills (no changes needed).
 
 **Tech Stack:** Claude Code plugin system, Bash scripts (find-skills, find-practices), Markdown (SKILL.md format with YAML frontmatter), JSON (plugin manifest)
 
 ---
 
-## Task 1: Create Plugin Skills Manifest
+## Task 1: Standardize Path References
+
+**Files:**
+- Modify: `plugin/agents/*.md` (5 agents)
+- Modify: `plugin/commands/*.md` (7 commands)
+
+**Context:** Current path references are inconsistent:
+- Some use `${CLAUDE_PLUGIN_ROOT}commit-workflow/SKILL.md` (missing skills/)
+- Some use `${CLAUDE_PLUGIN_ROOT}plugin/skills/...` (includes extra plugin/)
+- Some use `@skills/...` (local reference)
+
+**Step 1: Standardize agent path references**
+
+Fix patterns in all 5 agents:
+- `code-reviewer.md`
+- `rust-engineer.md`
+- `technical-writer.md`
+- `retrospective-writer.md`
+- `ultrathink-debugger.md`
+
+**Correct patterns:**
+```markdown
+# For local skills (relative to plugin root):
+@skills/conducting-code-review/SKILL.md
+@skills/commit-workflow/SKILL.md
+@skills/meta/algorithmic-command-enforcement/SKILL.md
+@skills/testing/tdd-enforcement-algorithm/SKILL.md
+@skills/documentation/maintaining-docs-after-changes/SKILL.md
+@skills/documentation/capturing-learning/SKILL.md
+
+# For practices (using environment variable):
+${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+${CLAUDE_PLUGIN_ROOT}practices/development.md
+${CLAUDE_PLUGIN_ROOT}practices/testing.md
+
+# For superpowers skills:
+@${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md
+```
+
+**Step 2: Standardize command path references**
+
+Fix patterns in all 7 commands:
+- `brainstorm.md`
+- `plan.md`
+- `execute.md`
+- `commit.md`
+- `code-review.md`
+- `doc-review.md`
+- `summarise.md`
+
+**Incorrect patterns to fix:**
+```markdown
+# WRONG - missing skills/ directory:
+${CLAUDE_PLUGIN_ROOT}commit-workflow/SKILL.md
+
+# WRONG - includes plugin/ in path:
+${CLAUDE_PLUGIN_ROOT}plugin/skills/selecting-agents/SKILL.md
+```
+
+**Correct patterns:**
+```markdown
+# For referencing skills in documentation:
+${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md
+${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md
+${CLAUDE_PLUGIN_ROOT}skills/selecting-agents/SKILL.md
+```
+
+**Step 3: Verify standardization**
+
+Run verification:
+```bash
+# Check for incorrect patterns
+grep -r "\${CLAUDE_PLUGIN_ROOT}plugin/" plugin/
+grep -r "\${CLAUDE_PLUGIN_ROOT}[^/]*workflow" plugin/
+
+# Should return no results after fixes
+```
+
+**Step 4: Commit path standardization**
+
+```bash
+git add plugin/agents/*.md plugin/commands/*.md
+git commit -m "refactor: standardize path references across agents and commands
+
+- Fix agents: use @skills/ for local, \${CLAUDE_PLUGIN_ROOT}practices/ for practices
+- Fix commands: use \${CLAUDE_PLUGIN_ROOT}skills/ for skill references
+- Remove incorrect plugin/ prefix in paths
+- Add missing skills/ directory in paths
+
+Prepares for clean Skill tool migration."
+```
+
+---
+
+## Task 2: Create Plugin Skills Manifest
 
 **Files:**
 - Create: `.claude-plugin/skills.json`
@@ -82,29 +185,36 @@ Expected: Valid JSON output with all 8 skills
 
 **Step 3: Test variable resolution**
 
-Create temporary test to verify environment variables work in Skill contexts:
+Note: Environment variables `${CLAUDE_PLUGIN_ROOT}` and `${SUPERPOWERS_SKILLS_ROOT}` are provided by the Claude Code runtime when the plugin is loaded. They won't be set in a regular bash shell but will be available when running within Claude Code.
 
+Optional validation (when running in Claude Code context):
 ```bash
-# Test that CLAUDE_PLUGIN_ROOT resolves correctly
-echo "Testing: ${CLAUDE_PLUGIN_ROOT}practices/code-review.md"
-if [[ -f "${CLAUDE_PLUGIN_ROOT}practices/code-review.md" ]]; then
-  echo "✓ CLAUDE_PLUGIN_ROOT resolves correctly"
+# Test that CLAUDE_PLUGIN_ROOT resolves correctly (only when in Claude Code)
+if [[ -n "${CLAUDE_PLUGIN_ROOT}" ]]; then
+  echo "Testing: ${CLAUDE_PLUGIN_ROOT}practices/code-review.md"
+  if [[ -f "${CLAUDE_PLUGIN_ROOT}practices/code-review.md" ]]; then
+    echo "✓ CLAUDE_PLUGIN_ROOT resolves correctly"
+  else
+    echo "✗ CLAUDE_PLUGIN_ROOT path incorrect"
+  fi
 else
-  echo "✗ CLAUDE_PLUGIN_ROOT does not resolve - check plugin environment"
-  exit 1
+  echo "ℹ CLAUDE_PLUGIN_ROOT not set (normal outside Claude Code runtime)"
 fi
 
-# Test that SUPERPOWERS_SKILLS_ROOT resolves correctly
-echo "Testing: ${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md"
-if [[ -f "${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md" ]]; then
-  echo "✓ SUPERPOWERS_SKILLS_ROOT resolves correctly"
+# Test that SUPERPOWERS_SKILLS_ROOT resolves correctly (only when in Claude Code)
+if [[ -n "${SUPERPOWERS_SKILLS_ROOT}" ]]; then
+  echo "Testing: ${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md"
+  if [[ -f "${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/brainstorming/SKILL.md" ]]; then
+    echo "✓ SUPERPOWERS_SKILLS_ROOT resolves correctly"
+  else
+    echo "✗ SUPERPOWERS_SKILLS_ROOT path incorrect"
+  fi
 else
-  echo "✗ SUPERPOWERS_SKILLS_ROOT does not resolve - check superpowers installation"
-  exit 1
+  echo "ℹ SUPERPOWERS_SKILLS_ROOT not set (normal outside Claude Code runtime)"
 fi
 ```
 
-Expected: Both variables resolve to valid paths
+Expected: Variables may not be set during development but will resolve when plugin is loaded in Claude Code
 
 **Step 4: Commit manifest**
 
@@ -127,7 +237,7 @@ Non-breaking: maintains backward compatibility with manual discovery."
 
 ---
 
-## Task 2: Update using-skills Meta-Skill
+## Task 3: Update using-skills Meta-Skill
 
 **Files:**
 - Modify: `plugin/skills/using-skills/SKILL.md:1-50`
@@ -227,10 +337,10 @@ git reset --hard <commit-hash>
 ```
 
 **Safe Rollback Points:**
-- After Task 1: Manifest only, no breaking changes
-- After Task 10: Commands updated, agents still use old pattern
-- After Task 15: Agents migrated, skills not yet cross-referenced
-- After Task 21: All functionality migrated, templates/docs not yet updated
+- After Task 2: Manifest only, no breaking changes
+- After Task 11: Commands updated, agents still use old pattern
+- After Task 16: Agents migrated, skills not yet cross-referenced
+- After Task 22: All functionality migrated, templates/docs not yet updated
 
 **Verification After Rollback:**
 ```bash
@@ -308,7 +418,7 @@ git commit -m "docs: update selecting-agents to use Skill tool invocation
 
 ---
 
-## Task 4: Update brainstorm Command
+## Task 5: Update brainstorm Command
 
 **Files:**
 - Modify: `plugin/commands/brainstorm.md:1-26`
@@ -386,7 +496,7 @@ git commit -m "docs: update brainstorm command with dual invocation pattern
 
 ---
 
-## Task 5: Update plan Command
+## Task 6: Update plan Command
 
 **Files:**
 - Modify: `plugin/commands/plan.md:1-30`
@@ -469,7 +579,7 @@ git commit -m "docs: update plan command with dual invocation pattern
 
 ---
 
-## Task 6: Update commit Command
+## Task 7: Update commit Command
 
 **Files:**
 - Modify: `plugin/commands/commit.md:1-35`
@@ -558,7 +668,7 @@ git commit -m "docs: update commit command with Skill tool invocation
 
 ---
 
-## Task 7: Update code-review Command
+## Task 8: Update code-review Command
 
 **Files:**
 - Modify: `plugin/commands/code-review.md:1-40`
@@ -653,7 +763,7 @@ git commit -m "docs: update code-review command with multi-layer invocation
 
 ---
 
-## Task 8: Update doc-review Command
+## Task 9: Update doc-review Command
 
 **Files:**
 - Modify: `plugin/commands/doc-review.md:1-35`
@@ -749,7 +859,7 @@ git commit -m "docs: update doc-review command with agent→skill flow
 
 ---
 
-## Task 9: Update summarise Command
+## Task 10: Update summarise Command
 
 **Files:**
 - Modify: `plugin/commands/summarise.md:1-35`
@@ -857,7 +967,7 @@ git commit -m "docs: update summarise command with learning capture flow
 
 ---
 
-## Task 10: Update execute Command
+## Task 11: Update execute Command
 
 **Files:**
 - Modify: `plugin/commands/execute.md:150-180`
@@ -940,7 +1050,7 @@ git commit -m "docs: update execute command Skill tool references
 
 ---
 
-## Task 11: Update code-reviewer Agent
+## Task 12: Update code-reviewer Agent
 
 **Files:**
 - Modify: `plugin/agents/code-reviewer.md:10-65`
@@ -1015,7 +1125,7 @@ git commit -m "refactor: migrate code-reviewer agent to Skill tool
 
 ---
 
-## Task 12: Update rust-engineer Agent
+## Task 13: Update rust-engineer Agent
 
 **Files:**
 - Modify: `plugin/agents/rust-engineer.md:10-70`
@@ -1096,7 +1206,7 @@ git commit -m "refactor: migrate rust-engineer agent to Skill tool
 
 ---
 
-## Task 13: Update technical-writer Agent
+## Task 14: Update technical-writer Agent
 
 **Files:**
 - Modify: `plugin/agents/technical-writer.md:10-50`
@@ -1162,7 +1272,7 @@ git commit -m "refactor: migrate technical-writer agent to Skill tool
 
 ---
 
-## Task 14: Update retrospective-writer Agent
+## Task 15: Update retrospective-writer Agent
 
 **Files:**
 - Modify: `plugin/agents/retrospective-writer.md:10-50`
@@ -1233,7 +1343,7 @@ git commit -m "refactor: migrate retrospective-writer agent to Skill tool
 
 ---
 
-## Task 15: Update ultrathink-debugger Agent
+## Task 16: Update ultrathink-debugger Agent
 
 **Files:**
 - Modify: `plugin/agents/ultrathink-debugger.md:10-60`
@@ -1319,7 +1429,7 @@ git commit -m "refactor: migrate ultrathink-debugger agent to Skill tool
 
 ---
 
-## Task 16: Update conducting-code-review Skill
+## Task 17: Update conducting-code-review Skill
 
 **Files:**
 - Modify: `plugin/skills/conducting-code-review/SKILL.md:1-150`
@@ -1376,7 +1486,7 @@ git commit -m "docs: add skill/practice references to conducting-code-review
 
 ---
 
-## Task 17: Update commit-workflow Skill
+## Task 18: Update commit-workflow Skill
 
 **Files:**
 - Modify: `plugin/skills/commit-workflow/SKILL.md:1-100`
@@ -1426,7 +1536,7 @@ git commit -m "docs: add practice references to commit-workflow skill
 
 ---
 
-## Task 18: Update maintaining-docs Skill
+## Task 19: Update maintaining-docs Skill
 
 **Files:**
 - Modify: `plugin/skills/documentation/maintaining-docs-after-changes/SKILL.md:1-120`
@@ -1473,7 +1583,7 @@ git commit -m "docs: add practice references to maintaining-docs skill
 
 ---
 
-## Task 19: Update capturing-learning Skill
+## Task 20: Update capturing-learning Skill
 
 **Files:**
 - Modify: `plugin/skills/documentation/capturing-learning/SKILL.md:1-100`
@@ -1521,7 +1631,7 @@ git commit -m "docs: add practice references to capturing-learning skill
 
 ---
 
-## Task 20: Update tdd-enforcement-algorithm Skill
+## Task 21: Update tdd-enforcement-algorithm Skill
 
 **Files:**
 - Modify: `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md:1-80`
@@ -1571,7 +1681,7 @@ git commit -m "docs: add skill/practice references to tdd-enforcement-algorithm
 
 ---
 
-## Task 21: Update algorithmic-command-enforcement Skill
+## Task 22: Update algorithmic-command-enforcement Skill
 
 **Files:**
 - Modify: `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md:80-120`
@@ -1636,7 +1746,7 @@ git commit -m "docs: add implementation examples to algorithmic-enforcement
 
 ---
 
-## Task 22: Update find-skills Tool
+## Task 23: Update find-skills Tool
 
 **Files:**
 - Modify: `plugin/tools/find-skills:1-20`
@@ -1690,7 +1800,7 @@ git commit -m "docs: add header to find-skills explaining dual discovery
 
 ---
 
-## Task 23: Update skill-template
+## Task 24: Update skill-template
 
 **Files:**
 - Modify: `plugin/templates/skill-template.md:1-80`
@@ -1795,7 +1905,7 @@ git commit -m "docs: update skill-template with Skill tool pattern
 
 ---
 
-## Task 24: Update agent-template
+## Task 25: Update agent-template
 
 **Files:**
 - Modify: `plugin/templates/agent-template.md:1-100`
@@ -1870,7 +1980,7 @@ git commit -m "docs: update agent-template with Skill tool pattern
 
 ---
 
-## Task 25: Update CLAUDE.md Architecture Documentation
+## Task 26: Update CLAUDE.md Architecture Documentation
 
 **Files:**
 - Modify: `CLAUDE.md:203-260`
@@ -2018,7 +2128,7 @@ git commit -m "docs: update CLAUDE.md with Skill tool architecture
 
 ---
 
-## Task 26: Update README.md
+## Task 27: Update README.md
 
 **Files:**
 - Modify: `README.md:30-120`
@@ -2117,7 +2227,7 @@ git commit -m "docs: add Using CipherPowers section to README
 
 ---
 
-## Task 27: Create Migration Verification Test
+## Task 28: Create Migration Verification Test
 
 **Files:**
 - Create: `plugin/tools/verify-migration`
@@ -2286,7 +2396,7 @@ Provides automated verification of complete migration."
 
 ---
 
-## Task 28: Run Migration Verification
+## Task 29: Run Migration Verification
 
 **Files:**
 - Test: All migration changes
@@ -2360,7 +2470,7 @@ Migration verified complete."
 
 ---
 
-## Task 29: Final Integration Test
+## Task 30: Final Integration Test
 
 **Files:**
 - Create: `plugin/tools/integration-test`
@@ -2556,7 +2666,7 @@ Provides automated verification of complete migration."
 
 ---
 
-## Task 30: Update Migration Plan Status
+## Task 31: Update Migration Plan Status
 
 **Files:**
 - Modify: `docs/migration-plan-official-skills.md:1-50`
@@ -2609,7 +2719,7 @@ Next: Monitor adoption and consider upstream contributions."
 
 ## Execution Complete
 
-All 30 tasks completed! The migration is ready for:
+All 31 tasks completed! The migration is ready for:
 
 **Option 1: Review & Deploy**
 - Review all commits

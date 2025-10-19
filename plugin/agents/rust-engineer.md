@@ -22,7 +22,6 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - ${CLAUDE_PLUGIN_ROOT}practices/testing.md
       - ${CLAUDE_PLUGIN_ROOT}practices/rust/microsoft-rust-guidelines.md
 
-
       YOU MUST ALWAYS READ these skills:
       - Test-Driven Development (TDD)
       - Testing Anti-Patterns

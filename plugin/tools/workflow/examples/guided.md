@@ -4,12 +4,11 @@ This workflow demonstrates guided mode. All conditionals work, enabling flexible
 
 # Step 1: Check if work needed
 
+**Prompt:** Are there uncommitted changes? If no, STOP (nothing to do)
+
 ```bash quiet
 git status --porcelain
 ```
-
-→ If output empty: STOP (nothing to do)
-→ Otherwise: Continue
 
 # Step 2: Quick check
 
