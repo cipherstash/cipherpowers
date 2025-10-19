@@ -27,6 +27,28 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 - Universal skills under development (before upstreaming)
 - Extensions to superpowers skills for team context
 
+**Organization-specific skills:**
+
+**Workflow:**
+- **Executing workflows** (`skills/workflow/executing-workflows/`) - Use workflow executor tool with enforcement or guided modes
+- **Creating workflows** (`skills/workflow/creating-workflows/`) - Design and write markdown-based executable workflows
+
+**Documentation:**
+- **Maintaining docs** (`skills/documentation/maintaining-docs-after-changes/`) - Two-phase sync process
+- **Capturing learning** (`skills/documentation/capturing-learning/`) - Retrospective capture process
+
+**Meta:**
+- **Algorithmic enforcement** (`skills/meta/algorithmic-command-enforcement/`) - Why algorithms > imperatives
+- **Using skills** (`skills/using-skills/`) - CipherPowers skill discovery
+
+**Testing:**
+- **TDD enforcement** (`skills/testing/tdd-enforcement-algorithm/`) - Prevent code before tests
+
+**Collaboration:**
+- **Code review** (`skills/conducting-code-review/`) - Complete review workflow
+- **Commit workflow** (`skills/commit-workflow/`) - Atomic commits with conventional format
+- **Selecting agents** (`skills/selecting-agents/`) - Choose right agent for task
+
 ### 2. Automation Layer (`commands/`, `agents/`)
 
 Commands and agents that dispatch to skills or provide project-specific workflows.
@@ -225,6 +247,11 @@ Commands and agents reference skills and practices transparently using standard 
 # From repository root or via relative path
 ./plugin/tools/find-skills "search pattern"
 
+# Examples
+./plugin/tools/find-skills "workflow"          # Find workflow skills
+./plugin/tools/find-skills "executing"         # Find execution guidance
+./plugin/tools/find-skills "code review"       # Find review skills
+
 # With scope flags
 ./plugin/tools/find-skills --local "pattern"      # cipherpowers only
 ./plugin/tools/find-skills --upstream "pattern"   # superpowers only
@@ -321,6 +348,7 @@ CipherPowers captures significant learnings from development work to build organ
 
 **Key Learnings:**
 - [Algorithmic vs Imperative Command Enforcement](docs/learning/2025-10-16-algorithmic-command-enforcement.md) - Discovered agents follow algorithms (100% compliance) better than imperatives (0-33% compliance). Use boolean decision trees for discipline-enforcing workflows.
+- [Workflow Executor Implementation](docs/learning/2025-10-19-workflow-executor.md) - Built Rust CLI tool for executing markdown workflows. Key insights: TDD prevented debugging time, batch reviews caught 12+ issues early, labeled loops solved GoToStep bug, security by documentation approach.
 
 **When to capture learning:**
 - After completing significant features
