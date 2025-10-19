@@ -32,48 +32,67 @@ Agents follow **algorithmic decision trees** (100% compliance) better than **imp
 
 ## Decision Algorithm: When to Write Tests First
 
+# Step 1: Check for implementation code
+
+**Prompt:** Are you about to write implementation code?
+
+Fail: Go to Step 6
+
+# Step 2: Check for prototype exception
+
+**Prompt:** Does throwaway prototype exception apply (user approved)?
+
+Pass: Go to Step 6
+
+# Step 3: Check for failing test
+
+**Prompt:** Does a failing test exist for this code?
+
+Pass: Go to Step 6
+Fail: Go to Step 4
+
+# Step 4: Write failing test first
+
+**Prompt:** STOP writing implementation code. Write failing test first.
+
+# Step 5: Verify test fails
+
+Pass: Go to Step 6
+Fail: Go to Step 2
+
+```bash
+mise run test
 ```
-Step 1: Check: Are you about to write implementation code?
-        → YES: Go to Step 2
-        → NO: Go to Step 6
 
-Step 2: Check: Does throwaway prototype exception apply (user approved)?
-        → YES: Go to Step 6
-        → NO: Go to Step 3
+# Step 6: Proceed with implementation
 
-Step 3: Check: Does a failing test exist for this code?
-        → YES: Go to Step 6 (proceed with implementation)
-        → NO: Go to Step 4
-
-Step 4: STOP writing implementation code
-        Write failing test first
-        Do not proceed to Step 5
-
-Step 5: [UNREACHABLE - if you reach here, you violated Step 4]
-
-Step 6: Proceed (test exists OR not writing code OR approved exception)
-```
+**Prompt:** Test exists OR not writing code OR approved exception - proceed
 
 ## Recovery Algorithm: Already Wrote Code Without Tests?
 
-```
-Step 1: Check: Have you written ANY implementation code?
-        → YES: Go to Step 2
-        → NO: Go to Step 5
+# Step 1: Check for implementation code
 
-Step 2: Check: Does that code have tests that failed first?
-        → YES: Go to Step 5
-        → NO: Go to Step 3
+**Prompt:** Have you written ANY implementation code?
 
-Step 3: Delete the untested code
-        Execute: git reset --hard OR rm [files]
-        Do not keep as "reference"
-        STOP
+Fail: Go to Step 5
 
-Step 4: [UNREACHABLE - Step 3 has STOP]
+# Step 2: Check for tests
 
-Step 5: Continue (tests exist OR no code written)
-```
+**Prompt:** Does that code have tests that failed first?
+
+Pass: Go to Step 5
+
+# Step 3: Delete untested code
+
+**Prompt:** Delete the untested code. Execute: git reset --hard OR rm [files]. Do not keep as "reference".
+
+STOP
+
+# Step 4: [UNREACHABLE - Step 3 has STOP]
+
+# Step 5: Continue
+
+**Prompt:** Tests exist OR no code written - continue
 
 ## INVALID Conditions (NOT in algorithm, do NOT use)
 
