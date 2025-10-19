@@ -383,6 +383,73 @@ workflow --guided path/to/workflow.md
 
 **Testing:** All algorithms include pressure test scenarios in `docs/tests/` validating resistance to time pressure, sunk cost, authority, and exhaustion.
 
+## Emergency Stop Protocol
+
+CipherPowers provides an **emergency stop** keyword for users to immediately halt agent work when problems are detected.
+
+### Using STOP Keyword
+
+**Format:**
+```
+STOP[punctuation optional]
+[explanation of the issue]
+```
+
+**Requirements:**
+- First word of your message must be "STOP"
+- ALL CAPS
+- Optional punctuation (STOP, STOP!, STOP:, etc.)
+- Followed by explanation on next line(s)
+
+**Examples that trigger emergency stop:**
+```
+STOP
+You're modifying the wrong file - should be src/lib.rs not src/main.rs
+
+STOP!
+That architectural approach won't work with our ECS design
+
+STOP:
+Let me explain the actual requirement before you continue
+```
+
+**Examples that DO NOT trigger:**
+- "We should STOP using that pattern" (not first word)
+- "Please STOP this approach" (not first word)
+- "stop working on this" (lowercase)
+- "Let's STOP and reconsider" (not first word)
+
+### When to Use STOP
+
+**Use STOP when:**
+- Agent is working on wrong feature/file/approach
+- Agent misunderstood requirements
+- Critical flaw detected in current direction
+- Essential context needed before continuing
+- Significant effort would be wasted if not stopped
+
+**Do NOT use STOP for:**
+- Adding new tasks to queue ("also please do X later")
+- General questions during work
+- Normal feedback or suggestions
+- Requesting status updates
+
+**Mental model:** STOP = pulling the Andon cord in Toyota factory. Only pull when defect detected, not for routine communication.
+
+### What Happens When You Use STOP
+
+1. Agent halts current work immediately (mid-task is fine)
+2. Agent acknowledges: "[EMERGENCY STOP] Work halted. What's the issue?"
+3. Agent listens to your concern without assuming or offering solutions
+4. Agent waits for your direction on how to proceed
+
+**The agent will NOT:**
+- Finish current function/test/file
+- Complete current batch
+- Continue with work in progress
+
+**Reference:** See `plugin/skills/collaboration/emergency-stop/SKILL.md` for full protocol details.
+
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin
