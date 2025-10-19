@@ -35,14 +35,16 @@ impl WorkflowRunner {
     pub fn run(&mut self) -> Result<ExecutionResult> {
         'workflow_loop: while self.current_step < self.steps.len() {
             self.iterations += 1;
+            let step = &self.steps[self.current_step];
+
             if self.iterations > self.max_iterations {
                 return Err(anyhow::anyhow!(
-                    "Exceeded maximum iterations ({}). Possible infinite loop in workflow.",
-                    self.max_iterations
+                    "Exceeded maximum iterations ({}) at Step {}: '{}'. Possible infinite loop in workflow.\nCheck for GoTo loops or missing STOP conditions.",
+                    self.max_iterations,
+                    step.number,
+                    step.description
                 ));
             }
-
-            let step = &self.steps[self.current_step];
 
             println!(
                 "\n→ Step {}/{}: {}",
@@ -58,7 +60,8 @@ impl WorkflowRunner {
                 let output = execute_command(command)?;
 
                 // Show stdout based on quiet flag (suppress successful quiet commands)
-                if !command.quiet || !output.success {
+                let should_suppress = command.quiet && output.success;
+                if !should_suppress {
                     print!("{}", output.stdout);
                 }
 
@@ -94,7 +97,7 @@ impl WorkflowRunner {
                     }
                     Action::GoToStep { number } => {
                         println!("→ Action: Go to Step {}", number);
-                        self.current_step = self.find_step_index(number)?;
+                        self.current_step = self.find_step_index(number, step.number)?;
                         continue 'workflow_loop;
                     }
                 }
@@ -224,15 +227,16 @@ impl WorkflowRunner {
         Ok(None)
     }
 
-    fn find_step_index(&self, number: usize) -> Result<usize> {
+    fn find_step_index(&self, target: usize, from_step: usize) -> Result<usize> {
         self.steps
             .iter()
-            .position(|s| s.number == number)
+            .position(|s| s.number == target)
             .ok_or_else(|| {
                 let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number).collect();
                 anyhow::anyhow!(
-                    "Step {} not found in workflow. Available steps: {:?}",
-                    number,
+                    "Step {}: GoTo target Step {} does not exist.\nAvailable steps: {:?}\nCheck your 'Go to Step N' conditionals.",
+                    from_step,
+                    target,
                     available_steps
                 )
             })
@@ -441,7 +445,7 @@ mod tests {
         let result = runner.run();
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains("Step 99 not found"));
+        assert!(err.to_string().contains("Step 99 does not exist"));
     }
 
     #[test]

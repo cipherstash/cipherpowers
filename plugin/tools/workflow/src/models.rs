@@ -73,6 +73,13 @@ pub enum Action {
     GoToStep { number: usize },
 }
 
+// Note: Action uses Clone instead of Copy because Stop contains Option<String>.
+// This is acceptable because:
+// 1. Actions are cloned infrequently (once per step evaluation)
+// 2. The enum is small (3 variants with minimal data)
+// 3. Stop messages are typically short strings
+// 4. The performance impact is negligible compared to command execution
+
 #[cfg(test)]
 mod tests {
     use super::*;
