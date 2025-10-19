@@ -1,5 +1,6 @@
 use clap::Parser;
 
+mod executor;
 mod models;
 mod parser;
 
