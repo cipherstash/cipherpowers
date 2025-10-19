@@ -18,3 +18,6 @@ settings.local.json
 
 # Git worktrees
 .worktrees/
+
+# Rust build artifacts
+**/target/

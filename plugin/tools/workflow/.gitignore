@@ -1,0 +1,5 @@
+# Rust build artifacts
+/target/
+
+# Cargo.lock is committed for binaries
+# See: https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
