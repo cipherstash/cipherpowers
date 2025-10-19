@@ -2,6 +2,8 @@ use crate::models::*;
 use anyhow::Result;
 use pulldown_cmark::{Event, HeadingLevel, Parser, Tag};
 
+// TODO: Remove #[allow(dead_code)] once Task 4 (execution engine) uses this function
+#[allow(dead_code)]
 pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
     let parser = Parser::new(markdown);
     let mut steps = Vec::new();
@@ -26,8 +28,12 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
             }
             Event::End(Tag::CodeBlock(_)) => {
                 in_code_block = false;
-                if code_block_lang.starts_with("bash") {
-                    let quiet = code_block_lang.contains("quiet");
+                // Parse language tag properly using whitespace splitting
+                let parts: Vec<&str> = code_block_lang.split_whitespace().collect();
+                let is_bash = parts.first().is_some_and(|&lang| lang == "bash");
+                let quiet = parts.contains(&"quiet");
+
+                if is_bash {
                     if let Some(step) = current_step.as_mut() {
                         step.commands.push(Command {
                             code: code_block_content.trim().to_string(),
@@ -57,6 +63,25 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
 
     if let Some(step) = current_step {
         steps.push(step);
+    }
+
+    // Validate that workflow is not empty
+    if steps.is_empty() {
+        anyhow::bail!(
+            "No steps found in workflow. Expected H1 headers like '# Step 1: Description'"
+        );
+    }
+
+    // Validate that step numbers are sequential
+    for (i, step) in steps.iter().enumerate() {
+        let expected = i + 1;
+        if step.number != expected {
+            anyhow::bail!(
+                "Step numbers must be sequential. Expected Step {}, found Step {}",
+                expected,
+                step.number
+            );
+        }
     }
 
     Ok(steps)
@@ -128,5 +153,58 @@ git status
         assert_eq!(steps[1].commands.len(), 1);
         assert_eq!(steps[1].commands[0].code, "git status");
         assert_eq!(steps[1].commands[0].quiet, true);
+    }
+
+    #[test]
+    fn test_empty_markdown_returns_error() {
+        let markdown = "";
+        let result = parse_workflow(markdown);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("No steps found"));
+    }
+
+    #[test]
+    fn test_non_sequential_steps_returns_error() {
+        let markdown = r#"
+# Step 1: First step
+
+# Step 5: Fifth step
+"#;
+        let result = parse_workflow(markdown);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("sequential"));
+        assert!(err.to_string().contains("Expected Step 2"));
+    }
+
+    #[test]
+    fn test_code_block_bashquiet_not_quiet() {
+        // "bashquiet" (no space) should NOT be treated as quiet
+        let markdown = r#"
+# Step 1: Test
+
+```bashquiet
+echo test
+```
+"#;
+        let steps = parse_workflow(markdown).unwrap();
+        // Should not parse as bash at all since language is "bashquiet" not "bash"
+        assert_eq!(steps[0].commands.len(), 0);
+    }
+
+    #[test]
+    fn test_code_block_bash_quiet_is_quiet() {
+        // Verify the fix: "bash quiet" (with space) should be quiet
+        let markdown = r#"
+# Step 1: Test
+
+```bash quiet
+echo test
+```
+"#;
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].commands.len(), 1);
+        assert_eq!(steps[0].commands[0].quiet, true);
     }
 }
