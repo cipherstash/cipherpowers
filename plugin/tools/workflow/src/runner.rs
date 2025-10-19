@@ -12,6 +12,13 @@ use anyhow::Result;
 /// while catching truly infinite loops. For example, a 5-step workflow can iterate up to 50 times.
 const MAX_ITERATION_MULTIPLIER: usize = 10;
 
+/// Debug message explaining Pass/Fail evaluation criteria.
+///
+/// This defines the semantics of conditional evaluation:
+/// - Pass: exit code 0 (command succeeded)
+/// - Fail: non-zero exit code (command failed)
+const DEBUG_EVALUATION_CRITERIA: &str = "exit code (0 = Pass, non-zero = Fail)";
+
 pub struct WorkflowRunner {
     steps: Vec<Step>,
     current_step: usize,
@@ -86,7 +93,7 @@ impl WorkflowRunner {
 
                 // Debug output
                 if self.debug {
-                    println!("→ [DEBUG] Checking: exit code (0 = Pass, non-zero = Fail)");
+                    println!("→ [DEBUG] Checking: {}", DEBUG_EVALUATION_CRITERIA);
                     let result_text = if output.success {
                         format!("Pass (exit {})", output.exit_code)
                     } else {
@@ -184,7 +191,7 @@ impl WorkflowRunner {
     ) -> Result<Option<Action>> {
         for conditional in conditionals {
             let matched_action = match conditional {
-                // New syntax (will be implemented properly in Task 5)
+                // Pass conditional: matches when command succeeds (exit code 0)
                 Conditional::Pass { action } => {
                     if output.success {
                         Some(action.clone())
@@ -192,6 +199,7 @@ impl WorkflowRunner {
                         None
                     }
                 }
+                // Fail conditional: matches when command fails (non-zero exit code)
                 Conditional::Fail { action } => {
                     if !output.success {
                         Some(action.clone())
