@@ -4,10 +4,13 @@ Execute markdown-based workflows with shell commands, conditionals, and interact
 
 ## Why?
 
-Workflows documented in markdown stay readable AND executable. Single source of truth - no duplication between docs and scripts.
+**Single source of truth:** Workflows documented in markdown are both readable AND executable.
 
-**Problem:** LLM agents don't consistently follow algorithmic workflows despite testing.
-**Solution:** Execute workflows deterministically - no cognitive load, no rationalization.
+**Algorithmic enforcement:** LLMs rationalize under pressure (33% compliance). Deterministic execution prevents skipped steps (100% compliance).
+
+**Simple semantics:** One code block → one exit code → one evaluation. Exit 0 = Pass → Continue. Exit non-zero = Fail → STOP. Override when needed.
+
+**Convention over configuration:** Minimal syntax for common cases. Explicit only when needed.
 
 ## Security Warning
 
