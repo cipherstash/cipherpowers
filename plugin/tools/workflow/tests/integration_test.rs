@@ -24,8 +24,8 @@ fn test_no_arrow_syntax_in_examples() {
 
 #[test]
 fn test_enforcement_example_executable() {
-    use std::process::{Command, Stdio};
     use std::io::Write;
+    use std::process::{Command, Stdio};
 
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
     let example_path = Path::new(manifest_dir).join("examples/enforcement.md");
@@ -40,8 +40,7 @@ fn test_enforcement_example_executable() {
     assert!(build_status.success(), "Build failed");
 
     // Run the enforcement example with 'y' input for prompts
-    let binary_path = Path::new(manifest_dir)
-        .join("target/release/workflow");
+    let binary_path = Path::new(manifest_dir).join("target/release/workflow");
 
     let mut child = Command::new(binary_path)
         .arg(example_path)
@@ -56,11 +55,16 @@ fn test_enforcement_example_executable() {
         stdin.write_all(b"y\n").expect("Failed to write to stdin");
     }
 
-    let output = child.wait_with_output().expect("Failed to wait for enforcement example");
+    let output = child
+        .wait_with_output()
+        .expect("Failed to wait for enforcement example");
 
     // Should complete successfully (all commands succeed)
-    assert!(output.status.success(), "Enforcement example failed: {:?}",
-            String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Enforcement example failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
@@ -71,20 +75,26 @@ fn test_guided_example_syntax_valid() {
     let content = fs::read_to_string(&example_path).unwrap();
 
     // Verify Pass/Fail syntax present (not arrow syntax)
-    assert!(content.contains("Pass:") || content.contains("Fail:"),
-            "Guided example should use Pass/Fail syntax");
-    assert!(!content.contains("→ Exit 0:"),
-            "Guided example should not use arrow syntax");
+    assert!(
+        content.contains("Pass:") || content.contains("Fail:"),
+        "Guided example should use Pass/Fail syntax"
+    );
+    assert!(
+        !content.contains("→ Exit 0:"),
+        "Guided example should not use arrow syntax"
+    );
 
     // Verify it has GoTo conditional (not just text mention)
-    assert!(content.contains("Pass: Go to Step") || content.contains("Fail: Go to Step"),
-            "Guided example should have GoTo conditional");
+    assert!(
+        content.contains("Pass: Go to Step") || content.contains("Fail: Go to Step"),
+        "Guided example should have GoTo conditional"
+    );
 }
 
 #[test]
 fn test_simple_example_executable() {
-    use std::process::{Command, Stdio};
     use std::io::Write;
+    use std::process::{Command, Stdio};
 
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
     let example_path = Path::new(manifest_dir).join("examples/simple.md");
@@ -99,8 +109,7 @@ fn test_simple_example_executable() {
     assert!(build_status.success(), "Build failed");
 
     // Run the simple example
-    let binary_path = Path::new(manifest_dir)
-        .join("target/release/workflow");
+    let binary_path = Path::new(manifest_dir).join("target/release/workflow");
 
     let mut child = Command::new(binary_path)
         .arg(example_path)
@@ -115,9 +124,14 @@ fn test_simple_example_executable() {
         stdin.write_all(b"y\n").expect("Failed to write to stdin");
     }
 
-    let output = child.wait_with_output().expect("Failed to wait for simple example");
+    let output = child
+        .wait_with_output()
+        .expect("Failed to wait for simple example");
 
     // Should complete successfully (all echo commands succeed)
-    assert!(output.status.success(), "Simple example failed: {:?}",
-            String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Simple example failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }

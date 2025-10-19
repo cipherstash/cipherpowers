@@ -2,6 +2,8 @@ use crate::execution_mode::ExecutionMode;
 use crate::executor::{execute_command, CommandOutput};
 use crate::models::*;
 use anyhow::Result;
+use crossterm::event::{self, Event, KeyCode};
+use crossterm::tty::IsTty;
 use tracing::debug;
 
 /// Maximum iterations multiplier per step.
@@ -49,7 +51,7 @@ impl WorkflowRunner {
             self.check_iteration_limit(step)?;
 
             println!(
-                "\n→ Step {}/{}: {}",
+                "\nStep {}/{}: {}",
                 step.number,
                 self.steps.len(),
                 step.description
@@ -57,7 +59,7 @@ impl WorkflowRunner {
 
             // Execute commands
             if let Some(command) = &step.command {
-                println!("→ Executing: {}", command.code);
+                debug!("Executing: {}", command.code);
 
                 let output = execute_command(command)?;
 
@@ -91,25 +93,15 @@ impl WorkflowRunner {
             self.current_step += 1;
         }
 
-        println!("\n→ Workflow completed successfully");
         Ok(ExecutionResult::Success)
     }
 
-    fn apply_defaults(&self, output: &CommandOutput, conditionals: &[Conditional]) -> Action {
-        // If no conditionals specified, use implicit defaults
-        if conditionals.is_empty() {
-            return if output.success {
-                Action::Continue // Implicit: Pass → Continue
-            } else {
-                Action::Stop { message: None } // Implicit: Fail → STOP
-            };
-        }
-
-        // If conditionals exist but none matched, use defaults
+    fn apply_defaults(&self, output: &CommandOutput) -> Action {
+        // Implicit defaults: Pass → Continue, Fail → STOP
         if output.success {
-            Action::Continue // Implicit: Pass → Continue
+            Action::Continue
         } else {
-            Action::Stop { message: None } // Implicit: Fail → STOP
+            Action::Stop { message: None }
         }
     }
 
@@ -142,7 +134,7 @@ impl WorkflowRunner {
         }
 
         // Apply implicit defaults
-        Ok(self.apply_defaults(output, &step.conditionals))
+        Ok(self.apply_defaults(output))
     }
 
     fn check_iteration_limit(&self, step: &Step) -> Result<()> {
@@ -161,16 +153,41 @@ impl WorkflowRunner {
         // SECURITY: Prompts accept user input from stdin. While this is by design,
         // malicious workflows could craft misleading prompts to trick users.
         // Always review workflow files before execution (see README.md security section).
+
+        let use_single_char = std::io::stdin().is_tty();
+
         for prompt in prompts {
-            println!("→ Prompt: {} [y/N]: ", prompt.text);
+            print!("Prompt: {} [y/n]: ", prompt.text);
+            std::io::Write::flush(&mut std::io::stdout())?;
 
-            let mut input = String::new();
-            std::io::stdin().read_line(&mut input)?;
-
-            let answer = input.trim().to_lowercase();
-            if answer != "y" && answer != "yes" {
-                println!("→ User answered no");
-                return Err(anyhow::anyhow!("User cancelled at prompt"));
+            if use_single_char {
+                // Interactive terminal: read single character without waiting for Enter
+                loop {
+                    if let Event::Key(key_event) = event::read()? {
+                        match key_event.code {
+                            KeyCode::Char('y') | KeyCode::Char('Y') => {
+                                println!("y");
+                                break;
+                            }
+                            KeyCode::Char('n') | KeyCode::Char('N') | KeyCode::Esc => {
+                                println!("n");
+                                return Err(anyhow::anyhow!("WORKFLOWFAILED"));
+                            }
+                            _ => {
+                                // Ignore other keys
+                                continue;
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Non-interactive (tests, pipes): use line-based input
+                let mut input = String::new();
+                std::io::stdin().read_line(&mut input)?;
+                let answer = input.trim().to_lowercase();
+                if answer != "y" {
+                    return Err(anyhow::anyhow!("WORKFLOWFAILED"));
+                }
             }
         }
         Ok(())
@@ -191,7 +208,7 @@ impl WorkflowRunner {
         // Status
         let status_symbol = if output.success { "✓" } else { "✗" };
         let status_text = if output.success { "Passed" } else { "Failed" };
-        println!(
+        debug!(
             "{} {} (exit {})",
             status_symbol, status_text, output.exit_code
         );
@@ -213,15 +230,15 @@ impl WorkflowRunner {
 
             Action::Stop { message } => {
                 if let Some(msg) = &message {
-                    println!("→ Action: STOP ({})", msg);
+                    println!("Action: STOP ({})", msg);
                 } else {
-                    println!("→ Action: STOP");
+                    println!("Action: STOP");
                 }
                 Ok(StepControl::Terminate(ExecutionResult::Stopped { message }))
             }
 
             Action::GoToStep { number } => {
-                println!("→ Action: Go to Step {}", number);
+                println!("Action: Go to Step {}", number);
                 let index = self.find_step_index(number, from_step)?;
                 Ok(StepControl::JumpTo(index))
             }

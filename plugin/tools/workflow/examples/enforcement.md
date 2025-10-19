@@ -16,9 +16,15 @@ echo "Checking preconditions..."
 echo "Running operation..."
 ```
 
+# Step 3: Run operation with prompt
+
+```bash
+echo "Running operation with prompt..."
+```
+
 **Prompt:** Did the operation complete successfully?
 
-# Step 3: Verify results
+# Step 4: Verify results
 
 Fail: STOP (verification failed)
 
@@ -26,7 +32,7 @@ Fail: STOP (verification failed)
 echo "Verifying results..."
 ```
 
-# Step 4: Complete
+# Step 5: Complete
 
 ```bash
 echo "✓ Workflow complete!"
