@@ -83,6 +83,10 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                         prompts: Vec::new(),
                         conditionals: Vec::new(),
                     });
+                } else if let Some(conditional) = parse_conditional(&text) {
+                    if let Some(step) = current_step.as_mut() {
+                        step.conditionals.push(conditional);
+                    }
                 }
             }
             _ => {}
@@ -131,6 +135,77 @@ fn extract_step_header(text: &str) -> Option<(usize, String)> {
     let description = parts[1].trim().to_string();
 
     Some((number, description))
+}
+
+fn parse_conditional(text: &str) -> Option<Conditional> {
+    let trimmed = text.trim();
+    if !trimmed.starts_with("→") && !trimmed.starts_with("->") {
+        return None;
+    }
+
+    // Remove arrow prefix
+    let content = trimmed
+        .strip_prefix("→")
+        .or_else(|| trimmed.strip_prefix("->"))?
+        .trim();
+
+    // Split on first ':'
+    let parts: Vec<&str> = content.splitn(2, ':').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+
+    let condition = parts[0].trim();
+    let action_str = parts[1].trim();
+
+    // Parse action
+    let action = parse_action(action_str)?;
+
+    // Parse condition type
+    if condition == "Exit 0" {
+        Some(Conditional::ExitCode { code: 0, action })
+    } else if condition == "Exit ≠ 0" || condition == "Exit != 0" {
+        Some(Conditional::ExitNotZero { action })
+    } else if condition.starts_with("Exit ") {
+        let code: i32 = condition.strip_prefix("Exit ")?.trim().parse().ok()?;
+        Some(Conditional::ExitCode { code, action })
+    } else if condition == "If output empty" {
+        Some(Conditional::OutputEmpty { action })
+    } else if condition.starts_with("If output contains") {
+        let text = condition
+            .strip_prefix("If output contains")?
+            .trim()
+            .trim_matches('"')
+            .to_string();
+        Some(Conditional::OutputContains { text, action })
+    } else if condition == "Otherwise" {
+        Some(Conditional::Otherwise { action })
+    } else {
+        None
+    }
+}
+
+fn parse_action(text: &str) -> Option<Action> {
+    let trimmed = text.trim();
+
+    if trimmed == "Continue" {
+        Some(Action::Continue)
+    } else if trimmed == "STOP" {
+        Some(Action::Stop { message: None })
+    } else if trimmed.starts_with("STOP (") && trimmed.ends_with(")") {
+        let message = trimmed
+            .strip_prefix("STOP (")?
+            .strip_suffix(")")?
+            .to_string();
+        Some(Action::Stop {
+            message: Some(message),
+        })
+    } else if trimmed.starts_with("Go to Step ") {
+        let number: usize = trimmed.strip_prefix("Go to Step ")?.trim().parse().ok()?;
+        Some(Action::GoToStep { number })
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
@@ -249,5 +324,42 @@ Some other text
         let steps = parse_workflow(markdown).unwrap();
         assert_eq!(steps[0].prompts.len(), 1);
         assert_eq!(steps[0].prompts[0].text, "Do all functions have tests?");
+    }
+
+    #[test]
+    fn test_parse_conditionals() {
+        let markdown = r#"
+# Step 1: Run tests
+
+```bash
+mise run test
+```
+
+→ Exit 0: Continue
+→ Exit ≠ 0: STOP (fix tests)
+"#;
+
+        let steps = parse_workflow(markdown).unwrap();
+        assert_eq!(steps[0].conditionals.len(), 2);
+
+        match &steps[0].conditionals[0] {
+            Conditional::ExitCode { code, action } => {
+                assert_eq!(*code, 0);
+                assert_eq!(*action, Action::Continue);
+            }
+            _ => panic!("Expected ExitCode conditional"),
+        }
+
+        match &steps[0].conditionals[1] {
+            Conditional::ExitNotZero { action } => {
+                match action {
+                    Action::Stop { message } => {
+                        assert_eq!(message.as_deref(), Some("fix tests"));
+                    }
+                    _ => panic!("Expected Stop action"),
+                }
+            }
+            _ => panic!("Expected ExitNotZero conditional"),
+        }
     }
 }
