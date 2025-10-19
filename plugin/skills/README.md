@@ -21,7 +21,13 @@ Skills in this directory are:
 
 ## Discovery
 
-Use `tools/find-skills` to search both cipherpowers and superpowers skills.
+Skills are automatically discovered by Claude Code's native Skill tool. All skills in `plugin/skills/` are available in Claude Code sessions.
+
+To use a skill in conversation, Claude uses the `Skill` tool with the skill name. For example:
+- `Skill(command: "cipherpowers:conducting-code-review")`
+- `Skill(command: "superpowers:brainstorming")`
+
+Skills from both cipherpowers and upstream superpowers are available seamlessly.
 
 ## Structure
 
