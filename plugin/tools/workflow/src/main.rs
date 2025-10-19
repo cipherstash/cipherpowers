@@ -10,13 +10,14 @@ mod runner;
 
 #[derive(Parser, Debug)]
 #[command(name = "workflow")]
-#[command(about = "Execute markdown-based workflows", long_about = None)]
+#[command(about = "Execute markdown-based workflows with deterministic control flow")]
+#[command(long_about = "Execute markdown workflows in enforcement mode (sequential, STOP only) or guided mode (full control flow). Enforcement prevents rationalization, guided enables flexibility.")]
 struct Args {
     /// Path to workflow markdown file
     workflow_file: String,
 
-    /// Enable guided mode (allows Continue/GoTo conditionals)
-    #[arg(long)]
+    /// Enable guided mode for flexible execution
+    #[arg(long, help = "Enable guided mode (allows Continue/GoTo conditionals). Default is enforcement mode (sequential, STOP only).")]
     guided: bool,
 
     /// Show steps without executing
