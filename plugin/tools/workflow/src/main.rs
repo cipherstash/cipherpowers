@@ -105,7 +105,6 @@ fn main() -> Result<()> {
     };
 
     let mut runner = runner::WorkflowRunner::new(steps, mode);
-    runner.set_debug(args.debug);
     let result = match runner.run() {
         Ok(res) => res,
         Err(e) => {

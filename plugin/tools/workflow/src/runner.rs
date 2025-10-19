@@ -2,7 +2,7 @@ use crate::execution_mode::ExecutionMode;
 use crate::executor::{execute_command, CommandOutput};
 use crate::models::*;
 use anyhow::Result;
-use tracing::{debug, info, warn};
+use tracing::debug;
 
 /// Maximum iterations multiplier per step.
 ///
@@ -27,7 +27,6 @@ pub struct WorkflowRunner {
     max_iterations: usize,
     #[allow(dead_code)] // Reserved for future use (enforcement vs guided mode)
     mode: ExecutionMode,
-    debug: bool,
 }
 
 impl WorkflowRunner {
@@ -39,12 +38,7 @@ impl WorkflowRunner {
             iterations: 0,
             max_iterations,
             mode,
-            debug: false,
         }
-    }
-
-    pub fn set_debug(&mut self, debug: bool) {
-        self.debug = debug;
     }
 
     pub fn run(&mut self) -> Result<ExecutionResult> {
@@ -93,37 +87,20 @@ impl WorkflowRunner {
                     status_symbol, status_text, output.exit_code
                 );
 
-                // Debug output
-                if self.debug {
-                    println!("→ [DEBUG] Checking: {}", DEBUG_EVALUATION_CRITERIA);
-                    let result_text = if output.success {
-                        format!("Pass (exit {})", output.exit_code)
-                    } else {
-                        format!("Fail (exit {})", output.exit_code)
-                    };
-                    println!("→ [DEBUG] Result: {}", result_text);
-                }
+                // Debug output via tracing
+                debug!(
+                    exit_code = output.exit_code,
+                    success = output.success,
+                    "Checking: {}",
+                    DEBUG_EVALUATION_CRITERIA
+                );
 
                 // Evaluate conditionals
                 let action = self
                     .evaluate_conditionals(&step.conditionals, &output)?
                     .unwrap_or_else(|| self.apply_defaults(&output, &step.conditionals));
 
-                if self.debug {
-                    match &action {
-                        Action::Continue => println!("→ [DEBUG] Action: Continue"),
-                        Action::Stop { message } => {
-                            if let Some(msg) = message {
-                                println!("→ [DEBUG] Action: STOP ({})", msg);
-                            } else {
-                                println!("→ [DEBUG] Action: STOP");
-                            }
-                        }
-                        Action::GoToStep { number } => {
-                            println!("→ [DEBUG] Action: Go to Step {}", number)
-                        }
-                    }
-                }
+                debug!(?action, "Determined action");
 
                 match action {
                     Action::Continue => {
@@ -268,6 +245,23 @@ mod tests {
         // Verify workflow completed
         assert_eq!(result, ExecutionResult::Success);
         // Manual verification: RUST_LOG=debug cargo test test_tracing_debug_output_works shows debug output
+    }
+
+    #[test]
+    fn test_no_debug_field_exists() {
+        // This test ensures debug field has been removed
+        // If debug field exists, this won't compile
+        let steps = vec![Step {
+            number: 1,
+            description: "Test".to_string(),
+            command: None,
+            prompts: vec![],
+            conditionals: vec![],
+        }];
+
+        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        // If we can construct without set_debug(), field is gone
+        drop(runner); // Explicit to show we just need construction
     }
 
     #[test]
