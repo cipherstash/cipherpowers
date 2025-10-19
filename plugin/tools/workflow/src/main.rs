@@ -3,6 +3,7 @@ use clap::Parser;
 mod executor;
 mod models;
 mod parser;
+mod runner;
 
 #[derive(Parser, Debug)]
 #[command(name = "workflow")]
