@@ -159,7 +159,7 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 ```
 
 **Direct references in agents/commands:**
-- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 
 ## Key Features

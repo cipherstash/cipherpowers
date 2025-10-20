@@ -95,7 +95,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`plugin/practices/`)
+- Standards live in one place (`plugin/principles/`, `plugin/standards/`, `plugin/workflows/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -127,7 +127,7 @@ This three-layer separation achieves key software engineering principles:
 
 **Example: Code Review Workflow**
 - `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
-- `plugin/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `plugin/standards/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
 - `plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
 - `plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
 - Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
@@ -140,8 +140,8 @@ All components work together without duplication:
 
 **Example: Commit Workflow**
 - `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
-- `plugin/practices/conventional-commits.md` = Commit message format standards
-- `plugin/practices/git-guidelines.md` = Git workflow standards
+- `plugin/standards/conventional-commits.md` = Commit message format standards
+- `plugin/standards/git-guidelines.md` = Git workflow standards
 - `plugin/commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
@@ -151,7 +151,7 @@ Skills enable discovery:
 - Update workflow in skill → all agents benefit
 
 **Example: Documentation Structure**
-- `plugin/practices/documentation.md` = Standards (formatting, completeness, structure)
+- `plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
 - `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
 - `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
 - `plugin/commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
@@ -163,7 +163,7 @@ All five components work together without duplication. Change documentation stan
 - `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
 - `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
-- `plugin/practices/code-review.md` = Review standards referenced at batch checkpoints
+- `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
 
 The /execute command demonstrates:
@@ -177,7 +177,7 @@ The /execute command demonstrates:
 
 **CLAUDE_PLUGIN_ROOT**: Path to the cipherpowers plugin installation
 - Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
-- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/practices/name.md`
+- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/standards/name.md`
 - Also used by `find-practices` tool for discovery
 
 **SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
@@ -201,7 +201,7 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **`./plugin/` - Plugin Content**
 - All content shipped with the plugin to users
-- **`plugin/practices/`** - Coding standards, conventions, guidelines
+- **`plugin/principles/`, `plugin/standards/`, `plugin/workflows/`** - Coding standards, conventions, guidelines
 - **`plugin/templates/`** - Templates for agents, practices, skills
 - **`plugin/agents/`** - Specialized subagent prompts
 - **`plugin/commands/`** - Slash commands
@@ -210,7 +210,7 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **Key distinction:**
 - `./docs/plans/` = Plans for building cipherpowers
-- `./plugin/practices/` = Standards for users of cipherpowers
+- `./plugin/standards/` = Standards for users of cipherpowers
 
 **Referencing paths**
 n Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. This variable is intended to point to the root directory of the plugin, allowing commands to access scripts and resources relative to the plugin's location.
@@ -234,8 +234,8 @@ CipherPowers integrates seamlessly with the superpowers plugin through Claude Co
 
 **Practices Discovery:**
 Custom `find-practices` tool (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
-- Searches `${CLAUDE_PLUGIN_ROOT}plugin/practices/` (local practices)
-- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/practices/` (marketplace practices, if available)
+- Searches `${CLAUDE_PLUGIN_ROOT}plugin/standards/` (local practices)
+- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/standards/` (marketplace practices, if available)
 - Extracts YAML frontmatter (name, description, when_to_use)
 - Flags: `--local`, `--upstream`, or default (both)
 
@@ -249,7 +249,7 @@ Custom `find-practices` tool (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
 
 **Direct References:**
 Commands and agents reference skills and practices using environment variables:
-- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 - Skills are invoked via Skill tool, not direct file references
 
@@ -286,7 +286,7 @@ When developing CipherPowers plugin components:
 **Directory Structure:**
 - `plugin/commands/` - Slash commands (thin dispatchers)
 - `plugin/agents/` - Specialized subagent prompts with enforced workflows
-- `plugin/practices/` - Standards and project configuration
+- `plugin/principles/`, `plugin/standards/`, `plugin/workflows/` - Standards and project configuration
 - `plugin/skills/` - Organization-specific skills
 - `plugin/templates/` - Templates for agents, practices, and skills
 - `plugin/tools/` - Discovery and utility tools
@@ -383,7 +383,7 @@ workflow --dry-run path/to/workflow.md
 **Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
 
 **Implemented algorithms:**
-1. **Git Commit Readiness** - `plugin/practices/git-commit-algorithm.md`
+1. **Git Commit Readiness** - `plugin/workflows/git-commit.md`
    - 10-step algorithm: tests pass → checks pass → docs updated → atomic
    - Prevents WIP commits, "will fix later", exhaustion-driven commits
 
