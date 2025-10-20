@@ -33,8 +33,9 @@ Treat workflow files like shell scripts - review them before execution.
 ## Installation
 
 When using CipherPowers as a local plugin, the workflow tool will auto-compile
-on first use. To avoid delays during agent execution, pre-build the tool after
-cloning:
+on first use. However, this introduces a ~30 second delay the first time an agent
+invokes a workflow, which can disrupt agent execution flow and make it appear
+stuck. Pre-building avoids this delay:
 
 ```bash
 # From CipherPowers repository root
@@ -48,7 +49,7 @@ This compiles the release binary to `target/release/workflow`.
 - Cargo (included with Rust)
 
 **For agents:** The workflow tool is accessed via the wrapper script at
-`${CLAUDE_PLUGIN_ROOT}/plugin/tools/workflow/run`, which handles automatic
+`${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run`, which handles automatic
 compilation if needed.
 
 ## Usage

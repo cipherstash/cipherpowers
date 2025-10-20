@@ -32,12 +32,13 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
     <available_tools>
       ## Available Tools
 
-      **Workflow Executor:** `${CLAUDE_PLUGIN_ROOT}/plugin/tools/workflow/run`
+      **Workflow Executor:** `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run`
       - Execute markdown workflows in enforcement or guided mode
       - Enforcement mode (default): Sequential execution, no skipping
       - Guided mode: All conditionals enabled, agent retains flexibility
       - Syntax: `workflow/run <workflow-file.md>` or `workflow/run --guided <workflow-file.md>`
-      - Example: `${CLAUDE_PLUGIN_ROOT}/plugin/tools/workflow/run ${CLAUDE_PLUGIN_ROOT}/plugin/practices/git-commit-algorithm.md`
+      - Example: `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run ${CLAUDE_PLUGIN_ROOT}plugin/practices/git-commit-algorithm.md`
+      - See `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/README.md` for complete workflow syntax documentation
     </available_tools>
 
     <non_negotiable_workflow>
