@@ -52,7 +52,10 @@ workflow path/to/workflow.md
 # Run workflow in guided mode (enables Continue/GoTo)
 workflow --guided path/to/workflow.md
 
-# Dry run (show steps without executing)
+# Validate workflow structure without executing
+workflow --validate workflow.md
+
+# Dry run (parse and show steps without executing commands)
 workflow --dry-run workflow.md
 
 # List all steps
@@ -88,6 +91,40 @@ Use for repeatable processes where judgment calls are needed (e.g., execute-plan
 workflow --guided docs/work/2025-10-19-feature/plan.md
 ```
 
+### Validation Mode (--validate)
+
+Parse and validate workflow structure without execution:
+
+```bash
+workflow --validate plugin/practices/git-commit-algorithm.md
+```
+
+**Validation checks:**
+- Exactly one H1 (workflow title)
+- All steps use H2 (`##`)
+- Sequential numbering (1, 2, 3...)
+- GOTO targets exist
+- Conditional lists have exactly 2 items (PASS and FAIL)
+- No duplicate PASS or FAIL branches
+- Keywords are ALLCAPS
+- No "Step" keyword in headers
+
+Use after migrating workflows to verify new syntax.
+
+### Dry-Run Mode (--dry-run)
+
+Parse workflow and show execution flow without running commands:
+
+```bash
+workflow --dry-run plugin/practices/git-commit-algorithm.md
+```
+
+**Behavior:**
+- Shows commands but doesn't execute them
+- Displays prompts (with pause for Enter)
+- Follows conditionals assuming success (exit code 0)
+- Tests workflow structure before actual execution
+
 ### Why Two Modes?
 
 **Enforcement prevents rationalization:**
@@ -102,21 +139,125 @@ workflow --guided docs/work/2025-10-19-feature/plan.md
 
 ## Workflow Syntax
 
-Workflows use simple markdown conventions.
+Workflows use simple markdown conventions with clean, minimal syntax.
 
-### Steps (Headers)
+### Complete Example: Before & After
+
+**Old syntax (verbose):**
 
 ```markdown
-# Step 1: Description of step
-# Step 2: Another step
+# Git Commit Readiness
+
+# Step 1: Check for changes
+
+Fail: STOP (nothing to commit)
+
+```bash quiet
+check-has-changes
 ```
+
+# Step 2: Run tests
+
+Pass: Continue
+Fail: STOP (fix tests first)
+
+```bash
+cargo test
+```
+
+# Step 3: Review atomicity
+
+**Prompt:** Are changes focused on single logical change?
+
+Pass: Continue
+Fail: Go to Step 5
+
+# Step 4: Commit
+
+```bash
+git commit
+```
+
+# Step 5: Split changes
+
+**Prompt:** Break into separate commits first.
+```
+
+**New syntax (clean):**
+
+```markdown
+# Git Commit Readiness
+
+## 1. Check for changes
+
+```bash quiet
+check-has-changes
+```
+
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
+
+## 2. Run tests
+
+```bash
+cargo test
+```
+
+- PASS: CONTINUE
+- FAIL: STOP fix tests first
+
+## 3. Review atomicity
+
+Are changes focused on single logical change?
+
+- PASS: CONTINUE
+- FAIL: GOTO 5
+
+## 4. Commit
+
+```bash
+git commit
+```
+
+## 5. Split changes
+
+Break into separate commits first.
+```
+
+**Key differences:**
+1. Headers: `# Step N:` → `## N.` (clean numbered headings)
+2. Keywords: `Pass:`/`Fail:` → `PASS:`/`FAIL:` (ALLCAPS)
+3. GOTO syntax: `Go to Step 6` → `GOTO 6` (concise)
+4. STOP syntax: `STOP (message)` → `STOP message` (no parens)
+5. List-based conditionals: `- PASS: ACTION` format
+6. Implicit prompts: No `**Prompt:**` prefix needed
+7. Implicit defaults: Steps without lists use defaults
+
+### Structure
+
+**Workflow title:**
+```markdown
+# My Workflow Title
+```
+Single H1 heading at top (required).
+
+**Steps:**
+```markdown
+## 1. First step
+## 2. Second step
+## 3. Third step
+```
+- Use H2 (`##`) for all steps
+- Sequential numbering (1, 2, 3...)
+- Flexible separator: `. : - )` or space
+- Examples: `## 1. Title` or `## 1: Title` or `## 1 Title`
 
 ### Commands (Code Blocks)
 
 One code block per step (enforced):
 
 ```markdown
-# Step 1: Run tests
+## 1. Run tests
 
 ```bash
 mise run test
@@ -131,115 +272,93 @@ git status --porcelain
 ```
 ```
 
-### Conditionals (Pass/Fail Labels)
-
-**New simplified syntax:**
-
-```markdown
-# Step 1: Run tests
-
-Fail: STOP (fix tests before committing)
-
-```bash
-mise run test
-```
-```
+### Conditionals (PASS/FAIL Lists)
 
 **Convention:**
-- Exit code 0 = Pass
-- Exit code non-zero = Fail
+- Exit code 0 = PASS
+- Exit code non-zero = FAIL
 
 **Defaults (implicit):**
-- Pass → Continue
-- Fail → STOP
+- Commands: PASS → CONTINUE, FAIL → STOP
+- Prompts: Always CONTINUE
 
-**Override when needed:**
-
-```markdown
-# Override: allow failure
-Fail: Continue
-
-# Override: change success behavior
-Pass: Go to Step 5
-```
-
-**Available actions:** `Continue`, `STOP`, `STOP (message)`, `Go to Step N`
-
-**Minimal syntax (no conditionals = use defaults):**
+**Override defaults with list:**
 
 ```markdown
-# Step 1: Run tests
+## 1. Run tests
 
 ```bash
 mise run test
 ```
 
-# Step 2: Check formatting
-
-```bash
-mise run fmt -- --check
-```
+- PASS: CONTINUE
+- FAIL: STOP fix tests before committing
 ```
 
-Behavior: Any failure stops workflow automatically.
+**Available actions:**
+- `CONTINUE` - Proceed to next step
+- `STOP message` - Halt with optional message
+- `GOTO N` - Jump to step N
+
+**Atomic conditionals principle:**
+Either use defaults (no list) OR override both branches (2-item list).
+
+```markdown
+# ❌ Invalid (partial override)
+- FAIL: STOP
+
+# ✅ Valid (complete override)
+- PASS: CONTINUE
+- FAIL: STOP fix first
+
+# ✅ Valid (use defaults)
+(no list at all)
+```
+
+**Flexible separators:**
+```markdown
+- PASS: CONTINUE  ✅
+- PASS CONTINUE   ✅
+- PASS - CONTINUE ✅
+```
 
 **Complex conditions:** Use wrapper scripts to control exit codes
 
 ```markdown
-# Step 1: Check for changes
-
-Fail: STOP (nothing to commit)
+## 1. Check for changes
 
 ```bash
-mise run check-has-changes  # Script returns 0 if changes, 1 if empty
-```
+mise run check-has-changes  # Returns 0 if changes, 1 if empty
 ```
 
-### Prompts (Bold)
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
+```
+
+### Prompts (Implicit)
+
+No `**Prompt:**` prefix needed - steps without code blocks are prompts:
 
 ```markdown
-**Prompt:** Do all functions have tests?
+## 2. Verify test coverage
+
+Do ALL new/modified functions have tests?
 ```
 
 Prompts wait for y/n input. Answering 'n' or Enter stops workflow (exit 2).
 
-### Complete Example
+### Migration Guide
 
-```markdown
-# Step 1: Check for changes
+**Converting old workflows to new syntax:**
 
-Fail: STOP (nothing to commit)
-
-```bash quiet
-mise run check-has-changes
-```
-
-# Step 2: Verify test coverage
-
-**Prompt:** Do ALL new/modified functions have tests?
-
-# Step 3: Run tests
-
-Fail: STOP (fix tests before committing)
-
-```bash
-mise run test
-```
-
-# Step 4: Check formatting
-
-Fail: STOP (run mise fmt to format code)
-
-```bash quiet
-mise run fmt -- --check
-```
-
-# Step 5: Commit
-
-```bash
-git commit
-```
-```
+1. **Update headers:** `# Step N:` → `## N.`
+2. **Update keywords:** `Pass:` → `PASS:`, `Fail:` → `FAIL:`, `Continue` → `CONTINUE`
+3. **Update GOTO:** `Go to Step N` → `GOTO N`
+4. **Update STOP:** `STOP (message)` → `STOP message`
+5. **Update conditionals:** Paragraph format → List syntax (`- PASS: ACTION`)
+6. **Remove prompt prefix:** `**Prompt:**` prefix no longer needed
+7. **Apply atomic principle:** Either no list (defaults) or 2-item list (both branches)
+8. **Validate:** `workflow --validate migrated-file.md`
 
 ## Exit Codes
 

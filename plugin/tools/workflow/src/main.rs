@@ -33,6 +33,10 @@ struct Args {
     /// List all steps
     #[arg(long)]
     list: bool,
+
+    /// Validate workflow structure without executing
+    #[arg(long, help = "Validate workflow structure without executing")]
+    validate: bool,
 }
 
 fn main() -> Result<()> {
@@ -50,6 +54,20 @@ fn main() -> Result<()> {
     // Read workflow file
     let markdown = fs::read_to_string(&args.workflow_file)?;
 
+    // Handle --validate flag (validate only, no execution)
+    if args.validate {
+        match parser::parse_workflow(&markdown) {
+            Ok(_) => {
+                println!("✓ Workflow is valid");
+                return Ok(());
+            }
+            Err(e) => {
+                eprintln!("✗ Workflow validation failed: {}", e);
+                std::process::exit(1);
+            }
+        }
+    }
+
     // Parse workflow
     let steps = parser::parse_workflow(&markdown)?;
 
@@ -63,33 +81,21 @@ fn main() -> Result<()> {
         println!("→ Workflow: {}", args.workflow_file);
         println!("→ Steps: {}\n", steps.len());
         for step in &steps {
-            println!("Step {}: {}", step.number, step.description);
+            println!("Step {}: {}", step.number.get(), step.description);
             println!("  Commands: {}", step.command.as_ref().map_or(0, |_| 1));
             println!("  Prompts: {}", step.prompts.len());
-            println!("  Conditionals: {}", step.conditionals.len());
+            println!("  Conditions: {}", if step.conditions.is_some() { "Yes" } else { "No" });
         }
         return Ok(());
     }
 
-    // Handle --dry-run flag
-    if args.dry_run {
-        println!("→ Workflow: {}", args.workflow_file);
-        println!("→ Steps: {}\n", steps.len());
-        for step in &steps {
-            println!("Step {}: {}", step.number, step.description);
-            if let Some(cmd) = &step.command {
-                println!("  Would execute: {}", cmd.code);
-            }
-            for prompt in &step.prompts {
-                println!("  Would prompt: {}", prompt.text);
-            }
-        }
-        return Ok(());
-    }
-
-    // Run workflow
+    // Run workflow (both normal and dry-run modes)
     println!("→ Workflow: {}", args.workflow_file);
     println!("→ Steps: {}", steps.len());
+
+    if args.dry_run {
+        println!("→ Mode: Dry-run (simulated execution)\n");
+    }
 
     let mode = if args.guided {
         execution_mode::ExecutionMode::Guided
@@ -98,6 +104,12 @@ fn main() -> Result<()> {
     };
 
     let mut runner = runner::WorkflowRunner::new(steps, mode);
+
+    // Set dry-run mode if requested
+    if args.dry_run {
+        runner.set_dry_run(true);
+    }
+
     let result = match runner.run() {
         Ok(res) => res,
         Err(e) => {
@@ -132,7 +144,7 @@ mod integration_tests {
     #[test]
     fn test_end_to_end_workflow() {
         let workflow = r#"
-# Step 1: Test echo
+## 1. Test echo
 
 ```bash
 echo "test output"
@@ -155,9 +167,9 @@ echo "test output"
     #[test]
     fn test_end_to_end_workflow_with_stop() {
         let workflow = r#"
-# Step 1: Test failure
+## 1. Test failure
 
-Fail: STOP (Command failed as expected)
+FAIL: STOP Command failed as expected
 
 ```bash
 exit 1
@@ -184,5 +196,61 @@ exit 1
         // This will compile once we add the flag
         let args = Args::parse_from(vec!["workflow", "--guided", "test.md"]);
         assert!(args.guided);
+    }
+
+    // Task 3.2: --validate flag tests
+    #[test]
+    fn test_validate_flag_parsing() {
+        let args = Args::parse_from(vec!["workflow", "--validate", "test.md"]);
+        assert!(args.validate);
+    }
+
+    #[test]
+    fn test_validate_flag_success() {
+        // Valid workflow should validate without error
+        let valid_workflow = r#"
+## 1. First step
+
+```bash
+echo "test"
+```
+
+## 2. Second step
+
+```bash
+echo "test"
+```
+"#;
+        let result = crate::parser::parse_workflow(valid_workflow);
+        assert!(result.is_ok(), "Valid workflow should parse successfully");
+    }
+
+    #[test]
+    fn test_validate_flag_catches_errors() {
+        // Invalid workflow should fail validation
+        let invalid_workflow = r#"
+## 1. First step
+
+```bash
+echo "test"
+```
+
+## 4. Fourth step (missing step 2 and 3)
+
+```bash
+echo "test"
+```
+"#;
+        let result = crate::parser::parse_workflow(invalid_workflow);
+        assert!(result.is_err(), "Invalid workflow should fail validation");
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("sequential"), "Error should mention sequential numbering");
+    }
+
+    // Task 4.3: --dry-run flag tests
+    #[test]
+    fn test_dry_run_flag_parsing() {
+        let args = Args::parse_from(vec!["workflow", "--dry-run", "test.md"]);
+        assert!(args.dry_run);
     }
 }

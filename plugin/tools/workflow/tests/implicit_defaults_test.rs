@@ -7,13 +7,13 @@ use helpers::*;
 fn test_implicit_pass_continue() {
     // No conditionals specified, command succeeds → should continue
     let workflow = r#"
-# Step 1: First step
+## 1. First step
 
 ```bash
 exit 0
 ```
 
-# Step 2: Second step
+## 2. Second step
 
 ```bash
 echo "reached step 2"
@@ -31,13 +31,13 @@ echo "reached step 2"
 fn test_implicit_fail_stop() {
     // No conditionals specified, command fails → should STOP
     let workflow = r#"
-# Step 1: First step
+## 1. First step
 
 ```bash
 exit 1
 ```
 
-# Step 2: Should not reach
+## 2. Should not reach
 
 ```bash
 echo "should not see this"
@@ -54,21 +54,21 @@ echo "should not see this"
 #[test]
 fn test_pass_conditional_on_success() {
     let workflow = r#"
-# Step 1: Run command
+## 1. Run command
 
-Pass: Go to Step 3
+PASS: Go to Step 3
 
 ```bash
 exit 0
 ```
 
-# Step 2: Should skip
+## 2. Should skip
 
 ```bash
 echo "should not see this"
 ```
 
-# Step 3: Should reach
+## 3. Should reach
 
 ```bash
 echo "reached step 3"
@@ -85,9 +85,9 @@ echo "reached step 3"
 #[test]
 fn test_fail_conditional_on_failure() {
     let workflow = r#"
-# Step 1: Run command
+## 1. Run command
 
-Fail: STOP (command failed as expected)
+FAIL: STOP command failed as expected
 
 ```bash
 exit 1
@@ -110,15 +110,15 @@ exit 1
 fn test_fail_override_continue() {
     // Override default: Fail → Continue instead of STOP
     let workflow = r#"
-# Step 1: Optional hook
+## 1. Optional hook
 
-Fail: Continue
+FAIL: Continue
 
 ```bash
 exit 1
 ```
 
-# Step 2: Should still reach
+## 2. Should still reach
 
 ```bash
 echo "reached despite failure"

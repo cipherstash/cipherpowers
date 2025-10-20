@@ -28,6 +28,7 @@ pub struct WorkflowRunner {
     iterations: usize,
     max_iterations: usize,
     mode: ExecutionMode,
+    dry_run: bool,
 }
 
 impl WorkflowRunner {
@@ -39,7 +40,12 @@ impl WorkflowRunner {
             iterations: 0,
             max_iterations,
             mode,
+            dry_run: false,
         }
+    }
+
+    pub fn set_dry_run(&mut self, dry_run: bool) {
+        self.dry_run = dry_run;
     }
 
     pub fn run(&mut self) -> Result<ExecutionResult> {
@@ -51,25 +57,38 @@ impl WorkflowRunner {
 
             println!(
                 "\nStep {}/{}: {}",
-                step.number,
+                step.number.get(),
                 self.steps.len(),
                 step.description
             );
 
             // Execute commands
             if let Some(command) = &step.command {
-                debug!("Executing: {}", command.code);
+                let output = if self.dry_run {
+                    // Dry-run mode: skip execution, show command, assume success
+                    println!("  [DRY-RUN] Would execute: {}", command.code);
+                    CommandOutput {
+                        stdout: String::new(),
+                        stderr: String::new(),
+                        exit_code: 0,
+                        success: true,
+                    }
+                } else {
+                    // Normal mode: execute command
+                    debug!("Executing: {}", command.code);
+                    execute_command(command)?
+                };
 
-                let output = execute_command(command)?;
-
-                self.display_command_output(&output, command.quiet)?;
+                if !self.dry_run {
+                    self.display_command_output(&output, command.quiet)?;
+                }
 
                 debug!("Checking: {}", DEBUG_EVALUATION_CRITERIA);
 
-                // Determine action from conditionals or defaults
-                let action = self.determine_action(step, &output)?;
+                // Determine action from conditions or defaults
+                let action = self.evaluate_step_outcome(step, &output);
 
-                let control = self.execute_action(action, step.number)?;
+                let control = self.execute_action(action, step.number.get())?;
                 match control {
                     StepControl::Next => {
                         // Continue to next step
@@ -100,64 +119,43 @@ impl WorkflowRunner {
         if output.success {
             Action::Continue
         } else {
-            Action::Stop { message: None }
+            Action::Stop(None)
         }
     }
 
-    fn evaluate_conditionals(
-        &self,
-        conditionals: &[Conditional],
-        output: &CommandOutput,
-    ) -> Result<Option<Action>> {
-        for conditional in conditionals {
-            let matched_action = match conditional {
-                Conditional::Pass { action } => {
-                    if output.success {
-                        Some(action)
-                    } else {
-                        None
-                    }
-                }
-                Conditional::Fail { action } => {
-                    if !output.success {
-                        Some(action)
-                    } else {
-                        None
-                    }
-                }
-            };
+    fn evaluate_step_outcome(&self, step: &Step, output: &CommandOutput) -> Action {
+        match &step.conditions {
+            Some(conditions) => {
+                // Explicit conditions: choose based on exit code
+                let action = if output.success {
+                    &conditions.pass
+                } else {
+                    &conditions.fail
+                };
 
-            // If we matched a conditional, check if it's allowed in current mode
-            if let Some(action) = matched_action {
+                // Check if action is allowed in current mode
                 let is_allowed = match action {
                     Action::Continue => self.mode.allows_continue(),
-                    Action::Stop { .. } => self.mode.allows_stop(),
-                    Action::GoToStep { .. } => self.mode.allows_goto(),
+                    Action::Stop(..) => self.mode.allows_stop(),
+                    Action::Goto(..) => self.mode.allows_goto(),
                 };
 
                 if is_allowed {
-                    return Ok(Some(action.clone()));
+                    action.clone()
                 } else {
-                    // In enforcement mode, Continue/GoTo are ignored
+                    // In enforcement mode, Continue/GoTo are ignored → apply defaults
                     debug!(
                         "Conditional matched but ignored in enforcement mode: {:?}",
                         action
                     );
-                    continue; // Try next conditional
+                    self.apply_defaults(output)
                 }
             }
+            None => {
+                // No explicit conditions: use implicit defaults
+                self.apply_defaults(output)
+            }
         }
-        Ok(None)
-    }
-
-    fn determine_action(&self, step: &Step, output: &CommandOutput) -> Result<Action> {
-        // Evaluate explicit conditionals first
-        if let Some(action) = self.evaluate_conditionals(&step.conditionals, output)? {
-            return Ok(action);
-        }
-
-        // Apply implicit defaults
-        Ok(self.apply_defaults(output))
     }
 
     fn check_iteration_limit(&self, step: &Step) -> Result<()> {
@@ -165,7 +163,7 @@ impl WorkflowRunner {
             return Err(anyhow::anyhow!(
                 "Exceeded maximum iterations ({}) at Step {}: '{}'. Possible infinite loop in workflow.\nCheck for GoTo loops or missing STOP conditions.",
                 self.max_iterations,
-                step.number,
+                step.number.get(),
                 step.description
             ));
         }
@@ -177,11 +175,18 @@ impl WorkflowRunner {
         // malicious workflows could craft misleading prompts to trick users.
         // Always review workflow files before execution (see README.md security section).
 
-        let use_single_char = std::io::stdin().is_tty();
-
         for prompt in prompts {
+            if self.dry_run {
+                // Dry-run mode: display prompt but don't wait for input
+                println!("  [DRY-RUN] Would prompt: {}", prompt.text);
+                continue;
+            }
+
+            // Normal mode: interactive prompts
             print!("Prompt: {} [y/n]: ", prompt.text);
             std::io::Write::flush(&mut std::io::stdout())?;
+
+            let use_single_char = std::io::stdin().is_tty();
 
             if use_single_char {
                 // Interactive terminal: read single character without waiting for Enter
@@ -251,7 +256,7 @@ impl WorkflowRunner {
         match action {
             Action::Continue => Ok(StepControl::Next),
 
-            Action::Stop { message } => {
+            Action::Stop(message) => {
                 if let Some(msg) = &message {
                     println!("Action: STOP ({})", msg);
                 } else {
@@ -260,7 +265,8 @@ impl WorkflowRunner {
                 Ok(StepControl::Terminate(ExecutionResult::Stopped { message }))
             }
 
-            Action::GoToStep { number } => {
+            Action::Goto(step_number) => {
+                let number = step_number.get();
                 println!("Action: Go to Step {}", number);
                 let index = self.find_step_index(number, from_step)?;
                 Ok(StepControl::JumpTo(index))
@@ -271,9 +277,9 @@ impl WorkflowRunner {
     fn find_step_index(&self, target: usize, from_step: usize) -> Result<usize> {
         self.steps
             .iter()
-            .position(|s| s.number == target)
+            .position(|s| s.number.get() == target)
             .ok_or_else(|| {
-                let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number).collect();
+                let available_steps: Vec<usize> = self.steps.iter().map(|s| s.number.get()).collect();
                 anyhow::anyhow!(
                     "Step {}: GoTo target Step {} does not exist.\nAvailable steps: {:?}\nCheck your 'Go to Step N' conditionals.",
                     from_step,
@@ -321,14 +327,14 @@ mod tests {
 
         // Create simple workflow
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test tracing".to_string(),
             command: Some(Command {
                 code: "echo 'test'".to_string(),
                 quiet: false,
             }),
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -344,11 +350,11 @@ mod tests {
         // This test ensures debug field has been removed
         // If debug field exists, this won't compile
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -384,14 +390,14 @@ mod tests {
     #[test]
     fn test_no_conditionals_success_continues() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test no conditionals".to_string(),
             command: Some(Command {
                 code: "echo 'success'".to_string(),
                 quiet: false,
             }),
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -403,14 +409,14 @@ mod tests {
     fn test_no_conditionals_failure_stops() {
         // With implicit defaults, failure with no conditionals → STOP
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test no conditionals with failure".to_string(),
             command: Some(Command {
                 code: "exit 1".to_string(),
                 quiet: false,
             }),
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -421,11 +427,11 @@ mod tests {
     #[test]
     fn test_execute_action_continue() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -439,23 +445,23 @@ mod tests {
     fn test_execute_action_goto() {
         let steps = vec![
             Step {
-                number: 1,
+                number: StepNumber::new(1).unwrap(),
                 description: "Step 1".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
             Step {
-                number: 2,
+                number: StepNumber::new(2).unwrap(),
                 description: "Step 2".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
         ];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let action = Action::GoToStep { number: 2 };
+        let action = Action::Goto(StepNumber::new(2).unwrap());
 
         let control = runner.execute_action(action, 1).unwrap();
         assert_eq!(control, StepControl::JumpTo(1)); // Index 1 for step number 2
@@ -463,17 +469,17 @@ mod tests {
 
     #[test]
     fn test_execute_action_goto_invalid() {
-        // Test error case: invalid GoToStep number
+        // Test error case: invalid Goto number
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let action = Action::GoToStep { number: 99 }; // Step doesn't exist
+        let action = Action::Goto(StepNumber::new(99).unwrap()); // Step doesn't exist
 
         let result = runner.execute_action(action, 1);
         assert!(result.is_err());
@@ -486,17 +492,15 @@ mod tests {
     #[test]
     fn test_execute_action_stop() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let action = Action::Stop {
-            message: Some("Test stop".to_string()),
-        };
+        let action = Action::Stop(Some("Test stop".to_string()));
 
         let control = runner.execute_action(action, 1).unwrap();
         assert_eq!(
@@ -511,11 +515,11 @@ mod tests {
     fn test_display_command_output_quiet_success() {
         // For quiet successful commands, output should be suppressed
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -534,11 +538,11 @@ mod tests {
     fn test_display_command_output_quiet_failure() {
         // For quiet failed commands, output should be shown
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -557,11 +561,11 @@ mod tests {
     fn test_display_command_output_stderr_always_shown() {
         // Stderr should always be shown, even for quiet successful commands
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -580,11 +584,11 @@ mod tests {
     fn test_execute_step_prompts_empty() {
         // Empty prompt list should succeed immediately
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -597,11 +601,11 @@ mod tests {
     #[test]
     fn test_check_iteration_limit_within_bounds() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -612,11 +616,11 @@ mod tests {
     #[test]
     fn test_check_iteration_limit_exceeded() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test infinite loop".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![],
+            conditions: None,
         }];
 
         let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -631,16 +635,17 @@ mod tests {
     }
 
     #[test]
-    fn test_determine_action_explicit_pass() {
-        // Test explicit Pass conditional in Guided mode (allows GoTo)
+    fn test_evaluate_step_outcome_explicit_pass() {
+        // Test explicit Pass condition in Guided mode (allows GoTo)
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![Conditional::Pass {
-                action: Action::GoToStep { number: 2 },
-            }],
+            conditions: Some(Conditions {
+                pass: Action::Goto(StepNumber::new(2).unwrap()),
+                fail: Action::Stop(None),
+            }),
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
@@ -651,18 +656,18 @@ mod tests {
             success: true,
         };
 
-        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
-        assert_eq!(action, Action::GoToStep { number: 2 });
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output);
+        assert_eq!(action, Action::Goto(StepNumber::new(2).unwrap()));
     }
 
     #[test]
-    fn test_determine_action_implicit_defaults() {
+    fn test_evaluate_step_outcome_implicit_defaults() {
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![], // No explicit conditionals
+            conditions: None, // No explicit conditions
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -674,9 +679,7 @@ mod tests {
             exit_code: 0,
             success: true,
         };
-        let action = runner
-            .determine_action(&runner.steps[0], &output_success)
-            .unwrap();
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output_success);
         assert_eq!(action, Action::Continue);
 
         // Failure → STOP
@@ -686,44 +689,43 @@ mod tests {
             exit_code: 1,
             success: false,
         };
-        let action = runner
-            .determine_action(&runner.steps[0], &output_fail)
-            .unwrap();
-        assert_eq!(action, Action::Stop { message: None });
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output_fail);
+        assert_eq!(action, Action::Stop(None));
     }
 
     #[test]
-    fn test_enforcement_mode_ignores_goto_conditional() {
-        // Test that enforcement mode ignores GoTo conditionals in evaluate_conditionals
+    fn test_enforcement_mode_ignores_goto_condition() {
+        // Test that enforcement mode ignores Goto conditions
         let steps = vec![
             Step {
-                number: 1,
+                number: StepNumber::new(1).unwrap(),
                 description: "Test".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![Conditional::Pass {
-                    action: Action::GoToStep { number: 3 },
-                }],
+                conditions: Some(Conditions {
+                    pass: Action::Goto(StepNumber::new(3).unwrap()),
+                    fail: Action::Stop(None),
+                }),
             },
             Step {
-                number: 2,
+                number: StepNumber::new(2).unwrap(),
                 description: "Should be visited in enforcement mode".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
             Step {
-                number: 3,
+                number: StepNumber::new(3).unwrap(),
                 description: "Final step".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
         ];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
 
-        // In enforcement mode, GoTo should be ignored and return None
+        // In enforcement mode, GoTo should be ignored
         // so implicit defaults apply (Pass → Continue)
         let output = CommandOutput {
             stdout: String::new(),
@@ -732,24 +734,23 @@ mod tests {
             success: true,
         };
 
-        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output);
         // In enforcement mode: GoTo ignored, defaults to Continue
         assert_eq!(action, Action::Continue);
     }
 
     #[test]
-    fn test_enforcement_mode_allows_stop_conditional() {
-        // Test that enforcement mode allows STOP conditionals
+    fn test_enforcement_mode_allows_stop_condition() {
+        // Test that enforcement mode allows STOP conditions
         let steps = vec![Step {
-            number: 1,
+            number: StepNumber::new(1).unwrap(),
             description: "Test".to_string(),
             command: None,
             prompts: vec![],
-            conditionals: vec![Conditional::Pass {
-                action: Action::Stop {
-                    message: Some("Intentional stop".to_string()),
-                },
-            }],
+            conditions: Some(Conditions {
+                pass: Action::Stop(Some("Intentional stop".to_string())),
+                fail: Action::Stop(None),
+            }),
         }];
 
         let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
@@ -760,42 +761,41 @@ mod tests {
             success: true,
         };
 
-        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output);
         // STOP should be allowed in enforcement mode
         assert_eq!(
             action,
-            Action::Stop {
-                message: Some("Intentional stop".to_string())
-            }
+            Action::Stop(Some("Intentional stop".to_string()))
         );
     }
 
     #[test]
-    fn test_guided_mode_allows_goto_conditional() {
-        // Test that guided mode allows GoTo conditionals
+    fn test_guided_mode_allows_goto_condition() {
+        // Test that guided mode allows Goto conditions
         let steps = vec![
             Step {
-                number: 1,
+                number: StepNumber::new(1).unwrap(),
                 description: "Test".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![Conditional::Pass {
-                    action: Action::GoToStep { number: 3 },
-                }],
+                conditions: Some(Conditions {
+                    pass: Action::Goto(StepNumber::new(3).unwrap()),
+                    fail: Action::Stop(None),
+                }),
             },
             Step {
-                number: 2,
+                number: StepNumber::new(2).unwrap(),
                 description: "Should be skipped in guided mode".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
             Step {
-                number: 3,
+                number: StepNumber::new(3).unwrap(),
                 description: "Final step".to_string(),
                 command: None,
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
         ];
 
@@ -807,47 +807,48 @@ mod tests {
             success: true,
         };
 
-        let action = runner.determine_action(&runner.steps[0], &output).unwrap();
-        // In guided mode: GoTo should be allowed
-        assert_eq!(action, Action::GoToStep { number: 3 });
+        let action = runner.evaluate_step_outcome(&runner.steps[0], &output);
+        // In guided mode: Goto should be allowed
+        assert_eq!(action, Action::Goto(StepNumber::new(3).unwrap()));
     }
 
     #[test]
     fn test_enforcement_mode_integration() {
         // Integration test: full workflow execution in enforcement mode
-        // Verifies that GoTo is ignored and all steps execute sequentially
+        // Verifies that Goto is ignored and all steps execute sequentially
         let steps = vec![
             Step {
-                number: 1,
-                description: "Step 1 with GoTo".to_string(),
+                number: StepNumber::new(1).unwrap(),
+                description: "Step 1 with Goto".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
                     quiet: false,
                 }),
                 prompts: vec![],
-                conditionals: vec![Conditional::Pass {
-                    action: Action::GoToStep { number: 3 },
-                }],
+                conditions: Some(Conditions {
+                    pass: Action::Goto(StepNumber::new(3).unwrap()),
+                    fail: Action::Stop(None),
+                }),
             },
             Step {
-                number: 2,
+                number: StepNumber::new(2).unwrap(),
                 description: "Step 2 - must be visited".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
                     quiet: false,
                 }),
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
             Step {
-                number: 3,
+                number: StepNumber::new(3).unwrap(),
                 description: "Step 3".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
                     quiet: false,
                 }),
                 prompts: vec![],
-                conditionals: vec![],
+                conditions: None,
             },
         ];
 
@@ -857,5 +858,163 @@ mod tests {
         // In enforcement mode, should visit all 3 steps sequentially (GoTo ignored)
         assert_eq!(runner.current_step, 3); // All steps visited
         assert_eq!(result, ExecutionResult::Success);
+    }
+
+    // Task 4.3: Dry-run tests
+    #[test]
+    fn test_dry_run_skips_command_execution() {
+        // Dry-run should skip actual command execution
+        // Use a command that would fail if actually executed
+        let steps = vec![Step {
+            number: StepNumber::new(1).unwrap(),
+            description: "Test dry-run".to_string(),
+            command: Some(Command {
+                code: "nonexistent_command_should_fail".to_string(),
+                quiet: false,
+            }),
+            prompts: vec![],
+            conditions: None,
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        runner.set_dry_run(true);
+
+        // Should succeed even though command would fail if executed
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_dry_run_assumes_success() {
+        // Dry-run should assume all commands succeed (follow PASS path)
+        let steps = vec![
+            Step {
+                number: StepNumber::new(1).unwrap(),
+                description: "Test dry-run assumes success".to_string(),
+                command: Some(Command {
+                    code: "exit 1".to_string(), // Would fail in normal execution
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditions: Some(Conditions {
+                    pass: Action::Continue,
+                    fail: Action::Stop(Some("Should not reach this".to_string())),
+                }),
+            },
+            Step {
+                number: StepNumber::new(2).unwrap(),
+                description: "Second step".to_string(),
+                command: Some(Command {
+                    code: "echo done".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditions: None,
+            },
+        ];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
+        runner.set_dry_run(true);
+
+        // Should follow PASS path (Continue) even though command exits 1
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+        assert_eq!(runner.current_step, 2); // Both steps visited
+    }
+
+    #[test]
+    fn test_dry_run_displays_prompts() {
+        // Dry-run should display prompts (but not actually wait for input)
+        let steps = vec![Step {
+            number: StepNumber::new(1).unwrap(),
+            description: "Test prompts in dry-run".to_string(),
+            command: None,
+            prompts: vec![
+                Prompt {
+                    text: "First prompt?".to_string(),
+                },
+                Prompt {
+                    text: "Second prompt?".to_string(),
+                },
+            ],
+            conditions: None,
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        runner.set_dry_run(true);
+
+        // Should handle prompts without blocking on stdin
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_normal_mode_executes_commands() {
+        // Normal mode (not dry-run) should execute commands
+        let steps = vec![Step {
+            number: StepNumber::new(1).unwrap(),
+            description: "Test normal execution".to_string(),
+            command: Some(Command {
+                code: "echo test".to_string(),
+                quiet: false,
+            }),
+            prompts: vec![],
+            conditions: None,
+        }];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
+        // No set_dry_run() call, should default to false
+
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+    }
+
+    #[test]
+    fn test_dry_run_vs_validate() {
+        // Dry-run should run through workflow logic (not just validate structure)
+        // It should follow conditional paths
+        let steps = vec![
+            Step {
+                number: StepNumber::new(1).unwrap(),
+                description: "Decision step".to_string(),
+                command: Some(Command {
+                    code: "exit 0".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditions: Some(Conditions {
+                    pass: Action::Goto(StepNumber::new(3).unwrap()),
+                    fail: Action::Stop(None),
+                }),
+            },
+            Step {
+                number: StepNumber::new(2).unwrap(),
+                description: "Skipped step".to_string(),
+                command: Some(Command {
+                    code: "echo skipped".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditions: None,
+            },
+            Step {
+                number: StepNumber::new(3).unwrap(),
+                description: "Target step".to_string(),
+                command: Some(Command {
+                    code: "echo reached".to_string(),
+                    quiet: false,
+                }),
+                prompts: vec![],
+                conditions: None,
+            },
+        ];
+
+        let mut runner = WorkflowRunner::new(steps, ExecutionMode::Guided);
+        runner.set_dry_run(true);
+
+        let result = runner.run().unwrap();
+        assert_eq!(result, ExecutionResult::Success);
+        // Should have jumped from step 1 to step 3, ending at step 3
+        assert_eq!(runner.current_step, 3);
     }
 }

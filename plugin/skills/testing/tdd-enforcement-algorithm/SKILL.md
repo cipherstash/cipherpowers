@@ -32,67 +32,70 @@ Agents follow **algorithmic decision trees** (100% compliance) better than **imp
 
 ## Decision Algorithm: When to Write Tests First
 
-# Step 1: Check for implementation code
+## 1. Check for implementation code
 
-**Prompt:** Are you about to write implementation code?
+Are you about to write implementation code?
 
-Fail: Go to Step 6
+- PASS: CONTINUE
+- FAIL: GOTO 6
 
-# Step 2: Check for prototype exception
+## 2. Check for prototype exception
 
-**Prompt:** Does throwaway prototype exception apply (user approved)?
+Does throwaway prototype exception apply (user approved)?
 
-Pass: Go to Step 6
+- PASS: GOTO 6
+- FAIL: CONTINUE
 
-# Step 3: Check for failing test
+## 3. Check for failing test
 
-**Prompt:** Does a failing test exist for this code?
+Does a failing test exist for this code?
 
-Pass: Go to Step 6
-Fail: Go to Step 4
+- PASS: GOTO 6
+- FAIL: CONTINUE
 
-# Step 4: Write failing test first
+## 4. Write failing test first
 
-**Prompt:** STOP writing implementation code. Write failing test first.
+STOP writing implementation code. Write failing test first.
 
-# Step 5: Verify test fails
-
-Pass: Go to Step 6
-Fail: Go to Step 2
+## 5. Verify test fails
 
 ```bash
 mise run test
 ```
 
-# Step 6: Proceed with implementation
+- PASS: GOTO 6
+- FAIL: GOTO 2
 
-**Prompt:** Test exists OR not writing code OR approved exception - proceed
+## 6. Proceed with implementation
+
+Test exists OR not writing code OR approved exception - proceed
 
 ## Recovery Algorithm: Already Wrote Code Without Tests?
 
-# Step 7: Check for implementation code
+## 7. Check for implementation code
 
-**Prompt:** Have you written ANY implementation code?
+Have you written ANY implementation code?
 
-Fail: Go to Step 11
+- PASS: CONTINUE
+- FAIL: GOTO 10
 
-# Step 8: Check for tests
+## 8. Check for tests
 
-**Prompt:** Does that code have tests that failed first?
+Does that code have tests that failed first?
 
-Pass: Go to Step 11
+- PASS: GOTO 10
+- FAIL: CONTINUE
 
-# Step 9: Delete untested code
+## 9. Delete untested code
 
-**Prompt:** Delete the untested code. Execute: git reset --hard OR rm [files]. Do not keep as "reference".
+Delete the untested code. Execute: git reset --hard OR rm [files]. Do not keep as "reference".
 
-STOP
+- PASS: STOP
+- FAIL: STOP
 
-# Step 10: [UNREACHABLE - Step 9 has STOP]
+## 10. Continue
 
-# Step 11: Continue
-
-**Prompt:** Tests exist OR no code written - continue
+Tests exist OR no code written - continue
 
 ## INVALID Conditions (NOT in algorithm, do NOT use)
 
