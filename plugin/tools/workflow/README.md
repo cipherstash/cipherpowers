@@ -84,7 +84,7 @@ Sequential execution with no skipping:
 Use for algorithmic workflows requiring 100% compliance (e.g., git-commit-algorithm).
 
 ```bash
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 ### Guided Mode (--guided)
@@ -105,7 +105,7 @@ workflow --guided docs/work/2025-10-19-feature/plan.md
 Parse and validate workflow structure without execution:
 
 ```bash
-workflow --validate plugin/practices/git-commit-algorithm.md
+workflow --validate plugin/workflows/git-commit.md
 ```
 
 **Validation checks:**
@@ -125,7 +125,7 @@ Use after migrating workflows to verify new syntax.
 Parse workflow and show execution flow without running commands:
 
 ```bash
-workflow --dry-run plugin/practices/git-commit-algorithm.md
+workflow --dry-run plugin/workflows/git-commit.md
 ```
 
 **Behavior:**
@@ -379,10 +379,10 @@ Prompts wait for y/n input. Answering 'n' or Enter stops workflow (exit 2).
 
 ## Integration with CipherPowers
 
-The workflow tool executes algorithmic workflows defined in `plugin/practices/`:
+The workflow tool executes algorithmic workflows defined in `plugin/workflows/`:
 
 ```bash
-workflow plugin/practices/your-algorithm.md
+workflow plugin/workflows/your-algorithm.md
 ```
 
 Agents can call this tool directly instead of trying to follow the algorithm themselves.

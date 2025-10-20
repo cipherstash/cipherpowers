@@ -16,7 +16,7 @@ Algorithmic enforcement of commit readiness prevents premature commits with fail
 
 ## Executable Workflow
 
-Run with: `workflow plugin/practices/git-commit-algorithm.md`
+Run with: `workflow plugin/workflows/git-commit.md`
 
 ---
 
