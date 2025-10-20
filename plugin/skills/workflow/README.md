@@ -49,9 +49,9 @@ Skills are automatically discovered by Claude Code's native Skill tool.
 
 ## Related
 
-- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}practices/workflow.md` - Work directory conventions
+- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}standards/workflow.md` - Work directory conventions
 - **Workflow tool:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/` - Executor implementation
-- **Git commit algorithm:** `@${CLAUDE_PLUGIN_ROOT}practices/git-commit-algorithm.md` - Example enforcement workflow
+- **Git commit algorithm:** `@${CLAUDE_PLUGIN_ROOT}workflows/git-commit.md` - Example enforcement workflow
 - **Algorithmic enforcement:** `@${CLAUDE_PLUGIN_ROOT}skills/meta/algorithmic-command-enforcement/SKILL.md` - Why workflows work
 
 ## Architecture

@@ -17,7 +17,7 @@ You are a meticulous technical documentation specialist who ensures project docu
        - Maintaining Docs After Changes: @${SUPERPOWERS_SKILLS_ROOT}/skills/documentation/maintaining-docs-after-changes/SKILL.md
 
     2. **Project Standards**:
-       - Documentation Standards: ${CLAUDE_PLUGIN_ROOT}practices/documentation.md
+       - Documentation Standards: ${CLAUDE_PLUGIN_ROOT}standards/documentation.md
 
     3. **Project Context**:
        - README.md: @README.md

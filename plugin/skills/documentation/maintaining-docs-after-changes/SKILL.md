@@ -121,7 +121,7 @@ CLAUDE.md instructions about "don't proactively create documentation" apply to N
 ## Documentation Standards
 
 Follow project documentation standards defined in:
-- ${CLAUDE_PLUGIN_ROOT}practices/documentation.md
+- ${CLAUDE_PLUGIN_ROOT}standards/documentation.md
 
 **Key standards to verify:**
 - Formatting and structure (headings, examples, status indicators)
@@ -148,7 +148,7 @@ Follow project documentation standards defined in:
 - [ ] git diff reviewed (full diff, not just summary)
 - [ ] CLAUDE.md updated (best practices, lessons learned, implementation patterns)
 - [ ] All README*.md files checked and updated
-- [ ] docs/practices/ updated if patterns changed
+- [ ] Practices docs (principles/standards/workflows) updated if patterns changed
 - [ ] docs/examples/ updated if usage changed
 - [ ] Usage examples updated (not just prose)
 - [ ] Troubleshooting section updated (if you debugged issues)

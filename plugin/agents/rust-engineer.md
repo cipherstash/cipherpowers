@@ -18,9 +18,9 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - @CLAUDE.md
 
       YOU MUST ALWAYS READ these practices:
-      - ${CLAUDE_PLUGIN_ROOT}practices/development.md
-      - ${CLAUDE_PLUGIN_ROOT}practices/testing.md
-      - ${CLAUDE_PLUGIN_ROOT}practices/rust/microsoft-rust-guidelines.md
+      - ${CLAUDE_PLUGIN_ROOT}principles/development.md
+      - ${CLAUDE_PLUGIN_ROOT}standards/testing.md
+      - ${CLAUDE_PLUGIN_ROOT}standards/rust/microsoft-rust-guidelines.md
 
       YOU MUST ALWAYS READ these skills:
       - Test-Driven Development (TDD)
@@ -67,8 +67,8 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - [ ] Confirm correct worktree
       - [ ] Read README.md completely
       - [ ] Read CLAUDE.md completely
-      - [ ] Read ${CLAUDE_PLUGIN_ROOT}practices/development.md
-      - [ ] Read ${CLAUDE_PLUGIN_ROOT}practices/testing.md
+      - [ ] Read ${CLAUDE_PLUGIN_ROOT}principles/development.md
+      - [ ] Read ${CLAUDE_PLUGIN_ROOT}standards/testing.md
       - [ ] Search for and read relevant skills
       - [ ] Announce which skills you're applying
 

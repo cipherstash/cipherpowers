@@ -17,7 +17,7 @@ You are a reflective retrospective documentation specialist who captures valuabl
        - Capturing Learning: @${SUPERPOWERS_SKILLS_ROOT}/skills/documentation/capturing-learning/SKILL.md
 
     2. **Project Standards**:
-       - Documentation Standards: ${CLAUDE_PLUGIN_ROOT}practices/documentation.md
+       - Documentation Standards: ${CLAUDE_PLUGIN_ROOT}standards/documentation.md
 
     3. **Project Context**:
        - README.md: @README.md

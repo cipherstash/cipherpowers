@@ -273,5 +273,5 @@ workflow plugin/workflows/git-commit.md
 ## References
 
 - **Creating workflows:** `@${CLAUDE_PLUGIN_ROOT}skills/workflow/creating-workflows/SKILL.md`
-- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}practices/workflow.md`
+- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}standards/workflow.md`
 - **Workflow tool README:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/README.md`

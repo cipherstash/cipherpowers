@@ -12,7 +12,7 @@ Review and update project documentation to ensure it stays synchronized with rec
      - Phase 2: Update (modify content, restructure, verify completeness)
 
 2. **The agent references project documentation standards:**
-   - `${CLAUDE_PLUGIN_ROOT}practices/documentation.md` - Formatting and completeness standards
+   - `${CLAUDE_PLUGIN_ROOT}standards/documentation.md` - Formatting and completeness standards
 
 **Key Principle:**
 Maintaining existing documentation after code changes is NOT "proactively creating docs" - it's keeping current docs accurate. If code changed, docs MUST update.

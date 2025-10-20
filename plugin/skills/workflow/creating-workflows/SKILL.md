@@ -626,7 +626,7 @@ rm -rf files-to-delete/
 ## References
 
 - **Executing workflows:** `@${CLAUDE_PLUGIN_ROOT}skills/workflow/executing-workflows/SKILL.md`
-- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}practices/workflow.md`
+- **Workflow practice:** `@${CLAUDE_PLUGIN_ROOT}standards/workflow.md`
 - **Workflow tool README:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/README.md`
 - **Example workflows:** `@${CLAUDE_PLUGIN_ROOT}tools/workflow/examples/`
-- **Git commit algorithm:** `@${CLAUDE_PLUGIN_ROOT}practices/git-commit-algorithm.md`
+- **Git commit algorithm:** `@${CLAUDE_PLUGIN_ROOT}workflows/git-commit.md`

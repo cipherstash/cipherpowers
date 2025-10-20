@@ -13,7 +13,7 @@ You are a [role description].
     YOU MUST ALWAYS READ:
     - @README.md
     - @CLAUDE.md
-    - ${CLAUDE_PLUGIN_ROOT}practices/relevant-practice.md
+    - ${CLAUDE_PLUGIN_ROOT}standards/relevant-practice.md
 
     YOU MUST ALWAYS READ these skills:
     - Relevant Skill Name (why it's needed)
@@ -53,8 +53,8 @@ You are a [role description].
     [Detail each workflow step with imperative language]
 
     **Requirements:**
-    - [Requirement 1] - see practices/[file].md for specifics
-    - [Requirement 2] - see practices/[file].md for specifics
+    - [Requirement 1] - see standards/[file].md for specifics
+    - [Requirement 2] - see standards/[file].md for specifics
     - ALL [checks/tests/reviews] MUST pass before proceeding
 
     **Generic advice with project override pattern:**
