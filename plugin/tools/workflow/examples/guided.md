@@ -4,7 +4,7 @@ Run with: `workflow --guided examples/guided.md`
 
 This workflow demonstrates guided mode. All conditionals work (Pass, Fail, GoTo), enabling flexible control flow.
 
-# Step 1: Check prerequisites
+## 1. Check prerequisites
 
 Fail: STOP (prerequisites not met)
 
@@ -15,7 +15,7 @@ exit 0
 
 If prerequisites check fails, stop early.
 
-# Step 2: Quick check
+## 2. Quick check
 
 Pass: Go to Step 4
 Fail: Continue
@@ -27,7 +27,7 @@ exit 0
 
 If quick check passes, skip detailed analysis (Go to Step 4).
 
-# Step 3: Detailed analysis
+## 3. Detailed analysis
 
 Only runs if quick check failed (Step 2 Fail: Continue).
 
@@ -35,17 +35,17 @@ Only runs if quick check failed (Step 2 Fail: Continue).
 echo "Running detailed analysis (only if quick check failed)..."
 ```
 
-# Step 4: Confirm action
+## 4. Confirm action
 
 **Prompt:** Ready to proceed?
 
-# Step 5: Execute
+## 5. Execute
 
 ```bash
 echo "Executing action..."
 ```
 
-# Step 6: Complete
+## 6. Complete
 
 ```bash
 echo "✓ Workflow complete!"

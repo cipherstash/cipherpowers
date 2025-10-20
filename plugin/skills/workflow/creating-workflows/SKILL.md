@@ -4,14 +4,14 @@ description: Design and write markdown-based workflows with steps, commands, con
 when_to_use: when documenting multi-step process, when creating algorithmic enforcement workflow, when existing workflow needs modification
 applies_to: developers, agents creating workflows
 related_skills: executing-workflows
-version: 1.0.0
+version: 2.0.0
 ---
 
 # Creating Workflows
 
 ## Overview
 
-Design and write markdown-based workflows that are both readable documentation and executable processes. Use conventional markdown syntax (headers, code blocks, Pass/Fail labels, bold) to create workflows that work in both enforcement and guided modes.
+Design and write markdown-based workflows that are both readable documentation and executable processes. Use conventional markdown syntax (headers, code blocks, PASS/FAIL labels) to create workflows that work in both enforcement and guided modes.
 
 **Announce at start:** "I'm creating a workflow for [task-name]."
 
@@ -43,18 +43,19 @@ Complex logic lives in agents, not workflows. Workflows describe steps, agents m
 
 **Good:**
 ```markdown
-# Step 1: Run tests
-
-Fail: STOP (fix tests)
+## 1. Run tests
 
 ```bash
 mise run test
 ```
+
+- PASS: CONTINUE
+- FAIL: STOP fix tests
 ```
 
 **Avoid:**
 ```markdown
-# Step 1: Run tests based on file type
+## 1. Run tests based on file type
 
 If TypeScript files changed:
   Run TypeScript tests
@@ -86,12 +87,12 @@ Same syntax works in both modes. Choose based on usage:
 
 **Enforcement workflows:**
 - Only use `STOP` with meaningful messages
-- Use `Continue` knowing it will be ignored (automatic)
-- No `Go to Step X` (sequential only)
+- Use `CONTINUE` knowing it will be ignored (automatic)
+- No `GOTO N` (sequential only)
 - Examples: git-commit, TDD enforcement
 
 **Guided workflows:**
-- Use `Continue`, `Go to Step X`, `STOP`
+- Use `CONTINUE`, `GOTO N`, `STOP`
 - Design flow for flexibility
 - Document why skips might happen
 - Examples: execute-plan, feature implementation
@@ -102,27 +103,27 @@ Same syntax works in both modes. Choose based on usage:
 
 Workflows use conventional markdown syntax. No special parser knowledge needed - if you know markdown, you know workflow syntax.
 
-### Steps (H1 Headers)
+### Steps (H2 Headers)
 
-Steps are level 1 headers with "Step N:" prefix:
+Steps are level 2 headers with numbered prefix:
 
 ```markdown
-# Step 1: Description of what this step does
-# Step 2: Another step description
-# Step 3: Final step
+## 1. Description of what this step does
+## 2. Another step description
+## 3. Final step
 ```
 
 **Requirements:**
-- Use `# ` (H1, one hash)
-- Include "Step N:" prefix
+- Use `## ` (H2, two hashes)
 - Number sequentially (1, 2, 3...)
+- Flexible separator after number: `. : - )` or space
 - Clear, concise description
 
-**Example:**
+**Examples:**
 ```markdown
-# Step 1: Run all tests
-# Step 2: Check code formatting
-# Step 3: Commit changes
+## 1. Run all tests
+## 2: Check code formatting
+## 3 - Commit changes
 ```
 
 ### Commands (Bash Code Blocks)
@@ -152,69 +153,75 @@ git status --porcelain
 
 **Example:**
 ````markdown
-# Step 1: Check for changes
+## 1. Check for changes
 
 ```bash quiet
 git status --porcelain
 ```
 
-# Step 2: Run tests
+## 2. Run tests
 
 ```bash
 mise run test
 ```
 ````
 
-### Conditionals (Pass/Fail Labels)
+### Conditionals (PASS/FAIL Lists)
 
-Conditionals control flow based on command exit codes:
+Conditionals control flow based on command exit codes using list syntax:
 
 ```markdown
-Pass: Continue
-Pass: Go to Step 5
-Fail: STOP (fix tests)
-Fail: Continue
+- PASS: CONTINUE
+- PASS: GOTO 5
+- FAIL: STOP fix tests
+- FAIL: CONTINUE
 ```
 
 **Convention:**
-- Exit code 0 = Pass
-- Exit code non-zero = Fail
+- Exit code 0 = PASS
+- Exit code non-zero = FAIL
 
-**Implicit defaults:**
-- Pass → Continue (omit if not overriding)
-- Fail → STOP (omit if not overriding)
+**Implicit defaults (most common):**
+- Commands without lists use: PASS → CONTINUE, FAIL → STOP
+- Prompts without lists use: Always CONTINUE
+- 90% of steps use implicit defaults (no list needed)
 
 **Available actions:**
-- `Continue` - Proceed to next step
+- `CONTINUE` - Proceed to next step
 - `STOP` - Stop workflow with no message
-- `STOP (message)` - Stop with helpful message
-- `Go to Step N` - Jump to specific step
+- `STOP message` - Stop with helpful message (no parentheses)
+- `GOTO N` - Jump to specific step number
 
 **Enforcement mode behavior:**
 - `STOP` works as written
-- `Continue` and `Go to Step X` ignored (automatic progression)
+- `CONTINUE` and `GOTO N` ignored (automatic progression)
 
 **Guided mode behavior:**
 - All conditionals work as written
 - Full control flow enabled
 
+**Atomic conditionals principle:**
+Either use defaults (no list) OR override both branches (2-item list).
+
 **Example:**
 ```markdown
-# Step 1: Run tests
-
-Fail: STOP (tests must pass before commit)
+## 1. Run tests
 
 ```bash
 mise run test
 ```
 
-# Step 2: Check for unstaged changes
+- PASS: CONTINUE
+- FAIL: STOP tests must pass before commit
 
-Fail: STOP (whitespace errors found)
+## 2. Check for unstaged changes
 
 ```bash quiet
 git diff --check
 ```
+
+- PASS: CONTINUE
+- FAIL: STOP whitespace errors found
 ```
 
 **Complex conditions:** Use wrapper scripts to translate logic to exit codes:
@@ -225,28 +232,33 @@ git status --porcelain | grep -q . && exit 0 || exit 1
 ```
 
 ```markdown
-# Step 1: Check for changes
-
-Fail: STOP (nothing to commit)
+## 1. Check for changes
 
 ```bash
 mise run check-has-changes
 ```
+
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
 ```
 
-### Prompts (Bold Text)
+### Prompts (Implicit Text)
 
-Prompts ask yes/no questions during execution:
+Prompts ask yes/no questions during execution. Steps without code blocks are treated as prompts:
 
 ```markdown
-**Prompt:** Are all functions covered by tests?
+## 2. Verify test coverage
 
-**Prompt:** Have you reviewed the changes?
+Are all functions covered by tests?
+
+## 5. Review changes
+
+Have you reviewed the changes?
 ```
 
 **Syntax:**
-- Use `**Prompt:**` (bold "Prompt:")
-- Follow with question
+- No `**Prompt:**` prefix needed (implicit)
+- Just write the question as step content
 - Execution waits for y/n answer
 - Answering 'n' or Enter stops workflow (exit 2)
 
@@ -257,11 +269,11 @@ Prompts ask yes/no questions during execution:
 
 **Example:**
 ```markdown
-# Step 3: Verify test coverage
+## 3. Verify test coverage
 
-**Prompt:** Do ALL new/modified functions have tests?
+Do ALL new/modified functions have tests?
 
-# Step 4: Commit changes
+## 4. Commit changes
 
 ```bash
 git commit
@@ -273,35 +285,40 @@ git commit
 Here's a workflow using all syntax elements:
 
 ```markdown
-# Step 1: Check for changes
+# Git Commit Workflow
 
-Fail: STOP (nothing to commit)
+## 1. Check for changes
 
 ```bash quiet
 mise run check-has-changes
 ```
 
-# Step 2: Verify tests exist
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
 
-**Prompt:** Do ALL new/modified functions have tests?
+## 2. Verify tests exist
 
-# Step 3: Run test suite
+Do ALL new/modified functions have tests?
 
-Fail: STOP (fix failing tests)
+## 3. Run test suite
 
 ```bash
 mise run test
 ```
 
-# Step 4: Check formatting
+- PASS: CONTINUE
+- FAIL: STOP fix failing tests
 
-Fail: STOP (run mise fmt to format)
+## 4. Check formatting
 
 ```bash quiet
 mise run fmt -- --check
 ```
 
-# Step 5: Commit changes
+- PASS: CONTINUE
+- FAIL: STOP run mise fmt to format
+
+## 5. Commit changes
 
 ```bash
 git add .
@@ -310,11 +327,12 @@ git commit
 ```
 
 **This workflow demonstrates:**
-- Steps (H1 headers with numbers)
+- Workflow title (H1 header)
+- Steps (H2 headers with sequential numbers)
 - One command per step (enforced)
-- Conditionals (Pass/Fail labels)
-- Prompts (manual verification)
-- Implicit defaults (Pass → Continue, Fail → STOP)
+- Conditionals (PASS/FAIL lists)
+- Prompts (implicit - steps without code blocks)
+- Explicit conditionals with list syntax
 
 ## Examples by Type
 
@@ -323,29 +341,34 @@ git commit
 For linear processes with no branching:
 
 ```markdown
-# Step 1: Setup
+# Setup and Test
 
-Fail: STOP (setup failed)
+## 1. Setup
 
 ```bash
 mise install
 ```
 
-# Step 2: Build
+- PASS: CONTINUE
+- FAIL: STOP setup failed
 
-Fail: STOP (build failed)
+## 2. Build
 
 ```bash
 mise run build
 ```
 
-# Step 3: Test
+- PASS: CONTINUE
+- FAIL: STOP build failed
 
-Fail: STOP (tests failed)
+## 3. Test
 
 ```bash
 mise run test
 ```
+
+- PASS: CONTINUE
+- FAIL: STOP tests failed
 ```
 
 **Use for:** CI/CD steps, setup processes, verification workflows
@@ -355,17 +378,19 @@ mise run test
 For processes requiring human judgment:
 
 ```markdown
-# Step 1: Generate documentation
+# Documentation Publishing
+
+## 1. Generate documentation
 
 ```bash
 mise run docs
 ```
 
-# Step 2: Review documentation
+## 2. Review documentation
 
-**Prompt:** Is the documentation complete and accurate?
+Is the documentation complete and accurate?
 
-# Step 3: Publish documentation
+## 3. Publish documentation
 
 ```bash
 mise run publish-docs
@@ -379,21 +404,24 @@ mise run publish-docs
 For processes with dynamic paths, use wrapper scripts:
 
 ```markdown
-# Step 1: Check if migration needed
+# Application Startup
 
-Pass: Go to Step 3
+## 1. Check if migration needed
 
 ```bash quiet
 mise run check-has-migrations  # Returns 0 if migrations exist, 1 if none
 ```
 
-# Step 2: Run migrations
+- PASS: GOTO 3
+- FAIL: CONTINUE
+
+## 2. Run migrations
 
 ```bash
 mise run migrate
 ```
 
-# Step 3: Start application
+## 3. Start application
 
 ```bash
 mise run start
@@ -413,47 +441,53 @@ mise run start
 Real example - git commit algorithm:
 
 ```markdown
-# Step 1: Verify changes exist
+# Git Commit Readiness
 
-Fail: STOP (nothing to commit)
+## 1. Verify changes exist
 
 ```bash quiet
 mise run check-has-changes
 ```
 
-# Step 2: Check tests pass
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
 
-Fail: STOP (fix tests before committing)
+## 2. Check tests pass
 
 ```bash
 mise run test
 ```
 
-# Step 3: Verify test coverage
+- PASS: CONTINUE
+- FAIL: STOP fix tests before committing
 
-**Prompt:** Do ALL new/modified functions have tests?
+## 3. Verify test coverage
 
-# Step 4: Check formatting
+Do ALL new/modified functions have tests?
 
-Fail: STOP (run mise fmt to format code)
+## 4. Check formatting
 
 ```bash quiet
 mise run fmt -- --check
 ```
 
-# Step 5: Check for debugging code
+- PASS: CONTINUE
+- FAIL: STOP run mise fmt to format code
 
-Fail: STOP (remove debugging code)
+## 5. Check for debugging code
 
 ```bash quiet
 mise run check-no-debug
 ```
 
-# Step 6: Verify atomic commit
+- PASS: CONTINUE
+- FAIL: STOP remove debugging code
 
-**Prompt:** Does this commit represent ONE logical change?
+## 6. Verify atomic commit
 
-# Step 7: Create commit
+Does this commit represent ONE logical change?
+
+## 7. Create commit
 
 ```bash
 git commit
@@ -539,38 +573,41 @@ workflow --guided workflow.md
 ### Pattern: Early Exit on Missing Precondition
 
 ```markdown
-# Step 1: Check precondition
-
-Fail: STOP (required-file.txt not found)
+## 1. Check precondition
 
 ```bash quiet
 test -f required-file.txt
 ```
+
+- PASS: CONTINUE
+- FAIL: STOP required-file.txt not found
 ```
 
 ### Pattern: Multiple Checks Before Action
 
 ```markdown
-# Step 1: Check condition A
-# Step 2: Check condition B
-# Step 3: Check condition C
-# Step 4: Perform action (only if all checks passed)
+## 1. Check condition A
+## 2. Check condition B
+## 3. Check condition C
+## 4. Perform action (only if all checks passed)
 ```
 
 ### Pattern: Confirmation Before Destructive Action
 
 ```markdown
-# Step 1: Show what will be deleted
+# File Deletion
+
+## 1. Show what will be deleted
 
 ```bash
 ls files-to-delete/
 ```
 
-# Step 2: Confirm deletion
+## 2. Confirm deletion
 
-**Prompt:** Proceed with deletion?
+Proceed with deletion?
 
-# Step 3: Delete files
+## 3. Delete files
 
 ```bash
 rm -rf files-to-delete/

@@ -23,11 +23,11 @@ The following conditional syntaxes are deprecated:
 
 **New syntax:**
 ```markdown
-Pass: Continue
-Fail: STOP
+- PASS: CONTINUE
+- FAIL: STOP
 ```
 
-**Rationale:** Pass/Fail is more intuitive and aligns with common workflow patterns. Exit code checking is now the command's responsibility (e.g., use `test` command or check return codes in scripts).
+**Rationale:** PASS/FAIL is more intuitive and aligns with common workflow patterns. Exit code checking is now the command's responsibility (e.g., use `test` command or check return codes in scripts).
 
 ### 2. Output-Based Conditionals
 
@@ -41,7 +41,7 @@ Fail: STOP
 Use wrapper scripts that return appropriate exit codes:
 
 ```markdown
-# Step 1: Check for errors
+## 1. Check for errors
 
 ```bash
 # Wrapper script that checks output and returns exit code
@@ -52,8 +52,8 @@ else
 fi
 ```
 
-Pass: Continue
-Fail: STOP (errors found)
+- PASS: CONTINUE
+- FAIL: STOP errors found
 ```
 
 **Rationale:** Output inspection belongs in the command logic, not in workflow conditionals. This separates concerns and makes workflows more composable.
@@ -68,11 +68,11 @@ Fail: STOP (errors found)
 
 **New syntax:**
 ```markdown
-Pass: Continue
-Fail: STOP (unexpected exit code)
+- PASS: CONTINUE
+- FAIL: STOP unexpected exit code
 ```
 
-**Rationale:** Fail covers all non-zero exit codes, eliminating the need for Otherwise.
+**Rationale:** FAIL covers all non-zero exit codes, eliminating the need for Otherwise.
 
 ## Migration Guide
 
@@ -100,14 +100,14 @@ mise run test
 
 **After:**
 ```markdown
-# Step 1: Run tests
+## 1. Run tests
 
 ```bash
 mise run test
 ```
 
-Pass: Continue
-Fail: STOP (fix tests)
+- PASS: CONTINUE
+- FAIL: STOP fix tests
 ```
 
 ### Step 3: Replace Output-Based Conditionals
@@ -126,15 +126,15 @@ git status --porcelain
 
 **After:**
 ```markdown
-# Step 1: Check for uncommitted changes
+## 1. Check for uncommitted changes
 
 ```bash
 # Exit 0 if no changes, 1 if changes exist
 [[ -z $(git status --porcelain) ]]
 ```
 
-Pass: Continue
-Fail: STOP (uncommitted changes)
+- PASS: CONTINUE
+- FAIL: STOP uncommitted changes
 ```
 
 ### Step 4: Test Your Workflows
@@ -146,10 +146,10 @@ workflow path/to/migrated-workflow.md
 ```
 
 Verify that:
-1. Pass conditions trigger on exit code 0
-2. Fail conditions trigger on non-zero exit codes
+1. PASS conditions trigger on exit code 0
+2. FAIL conditions trigger on non-zero exit codes
 3. STOP actions halt workflow with correct messages
-4. GoToStep actions jump to correct steps
+4. GOTO actions jump to correct steps
 
 ## Compatibility Period
 
@@ -158,7 +158,7 @@ During the compatibility period (v0.1.0 → v2.0.0):
 ✅ Both syntaxes work
 ✅ Legacy syntax shows deprecation warnings
 ✅ No runtime behavior changes
-⚠️ New workflows should use Pass/Fail only
+⚠️ New workflows should use PASS/FAIL only
 ⚠️ Existing workflows should be migrated
 
 ## After v2.0.0
@@ -167,7 +167,7 @@ After version 2.0.0:
 
 ❌ Legacy arrow syntax will not parse
 ❌ Workflows using legacy syntax will fail
-✅ Only Pass/Fail syntax supported
+✅ Only PASS/FAIL syntax supported
 
 ## Need Help?
 
@@ -193,8 +193,8 @@ The following `Conditional` enum variants are deprecated:
 
 Use these instead:
 
-- `Pass { action: Action }` - Matches exit code 0
-- `Fail { action: Action }` - Matches non-zero exit codes
+- `Pass { action: Action }` - Matches exit code 0 (keyword: PASS)
+- `Fail { action: Action }` - Matches non-zero exit codes (keyword: FAIL)
 
 ### Code Example
 
@@ -211,7 +211,7 @@ Conditional::ExitCode {
 **After:**
 ```rust
 Conditional::Pass {
-    action: Action::Continue,
+    action: Action::Continue,  // Rendered as "PASS: CONTINUE" in markdown
 }
 ```
 

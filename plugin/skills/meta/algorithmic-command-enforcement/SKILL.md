@@ -61,38 +61,62 @@ If you wrote code without tests, DELETE it and start over.
 ```markdown
 ## Decision Algorithm: When to Use /execute
 
-Step 1: Check: Does a file matching `docs/plans/*.md` exist?
-        → YES: Go to Step 2
-        → NO: Go to Step 5
+## 1. Check for plan file
 
-Step 2: Check: Is the task exploration/research only (no commits)?
-        → YES: Go to Step 5
-        → NO: Go to Step 3
+Does a file matching `docs/plans/*.md` exist?
 
-Step 3: Execute `/execute [plan-file-path]`
-        STOP reading this algorithm
-        Do not proceed to Step 4
+- PASS: CONTINUE
+- FAIL: GOTO 5
 
-Step 4: [UNREACHABLE - if you reach here, you violated Step 3]
+## 2. Check for exploration only
 
-Step 5: Proceed without /execute (valid cases only)
+Is the task exploration/research only (no commits)?
+
+- PASS: GOTO 5
+- FAIL: CONTINUE
+
+## 3. Execute /execute
+
+Execute `/execute [plan-file-path]`
+
+STOP reading this algorithm
+
+## 4. [UNREACHABLE - if you reach here, you violated Step 3]
+
+## 5. Proceed without /execute
+
+Proceed without /execute (valid cases only)
 
 ## Recovery Algorithm: Already Started Without /execute?
 
-Step 1: Check: Have you written ANY code?
-        → YES: Go to Step 2
-        → NO: Go to Step 4
+## 1. Check for code
 
-Step 2: Check: Does that code have tests?
-        → YES: Go to Step 4
-        → NO: Go to Step 3
+Have you written ANY code?
 
-Step 3: Delete the untested code
-        Execute: rm [files] OR git reset --hard
-        Then create/use plan file with /execute
-        STOP
+- PASS: CONTINUE
+- FAIL: GOTO 4
 
-Step 4: Continue current work (tests exist OR no code written yet)
+## 2. Check for tests
+
+Does that code have tests?
+
+- PASS: GOTO 4
+- FAIL: CONTINUE
+
+## 3. Delete untested code
+
+Delete the untested code
+
+Execute: rm [files] OR git reset --hard
+
+Then create/use plan file with /execute
+
+- PASS: STOP
+- FAIL: STOP
+
+## 4. Continue current work
+
+Tests exist OR no code written yet
 
 ## INVALID conditions (NOT in algorithm, do NOT use):
 - "Is task simple?" → NOT A VALID CONDITION
@@ -180,29 +204,49 @@ Demonstrates algorithm is deterministic. Reaching unreachable steps = violation.
 ```markdown
 ## Decision Algorithm: [When to Use X]
 
-Step 1: Check: [Boolean condition]?
-        → YES: Go to Step 2
-        → NO: Go to Step N (skip workflow)
+## 1. Check [Boolean condition]
 
-Step 2: Check: [Boolean exception]?
-        → YES: Go to Step N (skip workflow)
-        → NO: Go to Step 3
+[Boolean condition]?
 
-Step 3: Execute [action]
-        STOP reading this algorithm
+- PASS: CONTINUE
+- FAIL: GOTO N (skip workflow)
 
-Step N: [Alternative path or skip]
+## 2. Check [Boolean exception]
+
+[Boolean exception]?
+
+- PASS: GOTO N (skip workflow)
+- FAIL: CONTINUE
+
+## 3. Execute [action]
+
+Execute [action]
+
+STOP reading this algorithm
+
+## N. [Alternative path or skip]
+
+[Alternative path or skip]
 
 ## Recovery Algorithm: [Already Started Wrong?]
 
-Step 1: Check: [Have you done X]?
-        → YES: Go to Step 2
-        → NO: Go to Step N
+## 1. Check [Have you done X]
 
-Step 2: Delete/undo the work
-        STOP
+Have you done X?
 
-Step N: Continue
+- PASS: CONTINUE
+- FAIL: GOTO N
+
+## 2. Delete/undo the work
+
+Delete/undo the work
+
+- PASS: STOP
+- FAIL: STOP
+
+## N. Continue
+
+Continue
 
 ## INVALID conditions (NOT in algorithm):
 - "[Rationalization]" → NOT A VALID CONDITION

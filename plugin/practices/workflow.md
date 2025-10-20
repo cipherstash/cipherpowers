@@ -1,10 +1,10 @@
 ---
 name: Development Workflow
-description: Sequence development work in small increments through analysis, planning, implementation, verification, review, and summarization with organized work directories.
-when_to_use: when organizing and tracking development work from initial research through final documentation
+description: Sequence development work in small increments through analysis, planning, implementation, verification, review, and summarization with organized work directories. Includes executable workflow syntax specification.
+when_to_use: when organizing and tracking development work from initial research through final documentation, or when creating executable workflow files
 applies_to: all projects
 related_practices: git-guidelines.md, code-review.md
-version: 1.0.0
+version: 2.0.0
 ---
 
 # Development Workflow
@@ -26,6 +26,164 @@ The flow is not necessarily linear - we react and respond as new information, co
 Analysis and planning may be merged into a single step if the work is well-understood or simple to implement. For example, updating dependencies or fixing an issue does not need the same level of research and analysis as adding a completely new feature.
 
 In practice, implementation and verification are an iterative feedback loop. We implement and verify each task in turn.
+
+## Executable Workflows
+
+Workflows can be written in markdown format and executed using the `workflow` CLI tool (`plugin/tools/workflow`). This provides algorithmic enforcement of processes, preventing rationalization under pressure.
+
+**Two execution modes:**
+- **Enforcement mode (default):** Sequential execution, only STOP conditionals respected (100% compliance)
+- **Guided mode (--guided):** Full control flow enabled, workflow serves as guide
+
+**See also:**
+- Tool documentation: `plugin/tools/workflow/README.md`
+- Creating workflows: `plugin/skills/workflow/creating-workflows/SKILL.md`
+- Executing workflows: `plugin/skills/workflow/executing-workflows/SKILL.md`
+
+## Workflow Syntax
+
+Executable workflows use clean markdown with ALLCAPS keywords and minimal syntax.
+
+### Keywords (ALLCAPS)
+
+- `PASS` / `FAIL` - Condition branches (based on exit code)
+- `GOTO N` - Jump to step N
+- `STOP message` - Halt execution with optional message
+- `CONTINUE` - Proceed to next step
+
+### Structure
+
+**Workflow title (required):**
+```markdown
+# My Workflow Title
+```
+
+**Steps (H2, sequential numbering):**
+```markdown
+## 1. First step
+## 2. Second step
+## 3. Third step
+```
+
+**Commands (code blocks):**
+```markdown
+## 1. Run tests
+
+```bash
+cargo test
+```
+```
+
+**Prompts (no code block):**
+```markdown
+## 2. Review changes
+
+Are these changes focused on a single logical change?
+```
+
+**Explicit conditionals (list syntax):**
+```markdown
+## 3. Verify atomicity
+
+Are changes focused on single logical change?
+
+- PASS: CONTINUE
+- FAIL: GOTO 5
+```
+
+### Implicit Defaults
+
+Steps without explicit conditionals use defaults:
+- **Command steps:** PASS→CONTINUE, FAIL→STOP
+- **Prompt steps:** Always CONTINUE
+
+Only override when behavior differs from defaults.
+
+### Atomic Conditional Principle
+
+**Either:**
+- No list → Use implicit defaults
+- List present → Must have exactly 2 items (PASS and FAIL)
+
+**Invalid:**
+```markdown
+- FAIL: STOP  ❌ Missing PASS branch
+```
+
+**Valid:**
+```markdown
+- PASS: CONTINUE
+- FAIL: STOP fix first
+```
+
+### Validation
+
+```bash
+# Validate workflow structure without executing
+workflow --validate workflow.md
+
+# Dry run (show steps, don't execute commands)
+workflow --dry-run workflow.md
+
+# Execute in enforcement mode
+workflow workflow.md
+
+# Execute in guided mode (all conditionals enabled)
+workflow --guided workflow.md
+```
+
+**Validation checks:**
+- Exactly one H1 (workflow title)
+- All steps use H2 (`##`)
+- Sequential numbering (1, 2, 3...)
+- GOTO targets exist
+- Conditional lists have exactly 2 items (PASS and FAIL)
+- No duplicate PASS or FAIL branches
+- Keywords are ALLCAPS
+- No "Step" keyword in headers
+
+### Example Workflow
+
+```markdown
+# Git Commit Readiness
+
+## 1. Check for changes
+
+```bash quiet
+check-has-changes
+```
+
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
+
+## 2. Run tests
+
+```bash
+cargo test
+```
+
+- PASS: CONTINUE
+- FAIL: STOP fix tests first
+
+## 3. Review atomicity
+
+Are changes focused on single logical change?
+
+- PASS: CONTINUE
+- FAIL: GOTO 5
+
+## 4. Commit
+
+```bash
+git commit
+```
+
+## 5. Split changes
+
+Break into separate commits first.
+```
+
+**Note:** Steps 2 and 4 could omit explicit conditionals (would use implicit defaults), but shown here for clarity.
 
 ## Work directory
 

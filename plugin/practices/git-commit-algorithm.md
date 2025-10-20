@@ -20,67 +20,71 @@ Run with: `workflow plugin/practices/git-commit-algorithm.md`
 
 ---
 
-# Step 1: Check for changes
-
-Fail: STOP (nothing to commit)
+## 1. Check for changes
 
 ```bash quiet
 mise run check-has-changes
 ```
 
-# Step 2: Verify test coverage
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
 
-**Prompt:** Do ALL new/modified functions have tests?
+## 2. Verify test coverage
 
-# Step 3: Run tests
+Do ALL new/modified functions have tests?
 
-Fail: STOP (fix tests before committing)
+## 3. Run tests
 
 ```bash
 mise run test
 ```
 
-# Step 4: Run checks
+- PASS: CONTINUE
+- FAIL: STOP fix tests before committing
 
-Fail: STOP (run mise check to see failures)
+## 4. Run checks
 
 ```bash
 mise run check
 ```
 
-# Step 5: Check documentation
+- PASS: CONTINUE
+- FAIL: STOP run mise check to see failures
 
-**Prompt:** Is documentation updated for user-facing changes?
+## 5. Check documentation
 
-# Step 6: Verify atomic commit
+Is documentation updated for user-facing changes?
 
-**Prompt:** Do changes serve a single atomic purpose?
+## 6. Verify atomic commit
 
-# Step 7: Create commit
+Do changes serve a single atomic purpose?
+
+## 7. Create commit
 
 ```bash
 git add -p  # Review changes
 git commit  # Use conventional-commits.md format
 ```
 
-# Step 8: No changes to commit
+## 8. No changes to commit
 
 ```bash
 echo "No changes to commit - continue working"
 exit 0
 ```
 
-# Step 9: Fix issues before committing
+## 9. Fix issues before committing
 
-**Prompt:** Address the failing condition, then return to Step 1
+Address the failing condition, then return to Step 1
 
-# Step 10: Split into multiple commits
+## 10. Split into multiple commits
 
 ```bash
 git add -p  # Stage specific changes
 ```
 
-Pass: Go to Step 7
+- PASS: GOTO 7
+- FAIL: STOP
 
 ## INVALID Conditions for Committing Early
 

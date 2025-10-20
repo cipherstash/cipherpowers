@@ -4,14 +4,14 @@ use workflow::*;
 /// Used by integration tests to reduce boilerplate.
 pub fn simple_step(num: usize, description: &str, cmd: &str) -> models::Step {
     models::Step {
-        number: num,
+        number: models::StepNumber::new(num).unwrap(),
         description: description.to_string(),
         command: Some(models::Command {
             code: cmd.to_string(),
             quiet: false,
         }),
         prompts: vec![],
-        conditionals: vec![],
+        conditions: None,
     }
 }
 
@@ -24,17 +24,16 @@ pub fn step_with_fail_stop(
     message: &str,
 ) -> models::Step {
     models::Step {
-        number: num,
+        number: models::StepNumber::new(num).unwrap(),
         description: description.to_string(),
         command: Some(models::Command {
             code: cmd.to_string(),
             quiet: false,
         }),
         prompts: vec![],
-        conditionals: vec![models::Conditional::Fail {
-            action: models::Action::Stop {
-                message: Some(message.to_string()),
-            },
-        }],
+        conditions: Some(models::Conditions {
+            pass: models::Action::Continue,  // Default PASS action
+            fail: models::Action::Stop(Some(message.to_string())),
+        }),
     }
 }
