@@ -21,7 +21,7 @@ YOU MUST follow this exact workflow. No exceptions. No shortcuts.
    @${CLAUDE_PLUGIN_ROOT}plugin/skills/collaboration/validating-review-feedback/SKILL.md
 
 2. **Severity definitions (REQUIRED):**
-   @${CLAUDE_PLUGIN_ROOT}plugin/practices/code-review.md
+   @${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md
 
 3. **Plan file (path in prompt):**
    Read to understand scope and goals

@@ -37,7 +37,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - Enforcement mode (default): Sequential execution, no skipping
       - Guided mode: All conditionals enabled, agent retains flexibility
       - Syntax: `workflow/run <workflow-file.md>` or `workflow/run --guided <workflow-file.md>`
-      - Example: `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run ${CLAUDE_PLUGIN_ROOT}plugin/practices/git-commit-algorithm.md`
+      - Example: `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run ${CLAUDE_PLUGIN_ROOT}plugin/workflows/git-commit.md`
       - See `${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/README.md` for complete workflow syntax documentation
     </available_tools>
 
