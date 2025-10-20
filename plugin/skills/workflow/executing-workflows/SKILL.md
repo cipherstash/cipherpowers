@@ -119,7 +119,7 @@ workflow --list path/to/workflow.md
 
 ```bash
 # Git commit enforcement
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 
 # Execute plan (guided mode)
 workflow --guided docs/work/2025-10-19-feature/plan.md
@@ -147,7 +147,7 @@ workflow --guided docs/work/2025-10-19-feature/plan.md
 **Example:**
 ```bash
 # Git commit algorithm - must complete all 10 steps
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 **Risk prevented:** Agent rationalizes "I can skip this step because..." → 33% compliance drops to 0%
@@ -194,7 +194,7 @@ workflow --guided docs/work/2025-10-19-feature/plan.md
 ### Scenario 1: Workflow Stops with Message
 
 ```bash
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 Output:
@@ -207,7 +207,7 @@ Output:
 **Action:**
 1. Read the stop message: "tests failing"
 2. Fix the issue (make tests pass)
-3. Re-run workflow: `workflow plugin/practices/git-commit-algorithm.md`
+3. Re-run workflow: `workflow plugin/workflows/git-commit.md`
 
 ### Scenario 2: Guided Mode Skips Steps
 
@@ -248,7 +248,7 @@ Error: workflow.md:23: Invalid conditional syntax
 ### Scenario 4: Dry Run Preview
 
 ```bash
-workflow --dry-run plugin/practices/git-commit-algorithm.md
+workflow --dry-run plugin/workflows/git-commit.md
 ```
 
 **When to use:**
@@ -258,7 +258,7 @@ workflow --dry-run plugin/practices/git-commit-algorithm.md
 
 **Then execute:**
 ```bash
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 ## Remember
