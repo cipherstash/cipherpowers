@@ -85,8 +85,8 @@ Removed the obsolete bash script-based skill discovery system (find-skills, usin
 
 **Resolution:** Clarified that:
 - Skill tool uses auto-discovery (no paths needed)
-- find-practices references use `${CLAUDE_PLUGIN_ROOT}plugin/practices/`
-- Direct practice references in agents use `@${CLAUDE_PLUGIN_ROOT}plugin/practices/name.md`
+- find-practices references use `${CLAUDE_PLUGIN_ROOT}plugin/standards/`
+- Direct practice references in agents use `@${CLAUDE_PLUGIN_ROOT}plugin/standards/name.md`
 
 **Lesson:** When changing discovery mechanisms, document path resolution patterns explicitly.
 
@@ -320,7 +320,7 @@ Removed the obsolete bash script-based skill discovery system (find-skills, usin
 - `plugin/tools/find` (unified tool calling deleted script)
 
 **Related Documentation:**
-- `plugin/practices/documentation.md` (documentation standards)
+- `plugin/standards/documentation.md` (documentation standards)
 - `plugin/skills/documentation/capturing-learning/SKILL.md` (this retrospective methodology)
 
 ## Key Takeaways

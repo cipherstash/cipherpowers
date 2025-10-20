@@ -29,7 +29,7 @@ Applied algorithmic-command-enforcement pattern to three critical discipline-enf
    - Integrated as first section (WHEN) before existing workflow (HOW)
 
 3. **Git Commit Readiness** - Created practice with 10-step readiness algorithm
-   - File: `plugin/practices/git-commit-algorithm.md` (169 lines)
+   - File: `plugin/workflows/git-commit.md` (169 lines)
    - Decision algorithm: Tests → checks → docs → atomicity validation
    - Invalid conditions: 6 rationalizations ("WIP", "time pressure", "exhaustion")
    - Integrates with git-guidelines, conventional-commits, testing practices
@@ -92,7 +92,7 @@ Applied algorithmic-command-enforcement pattern to three critical discipline-enf
 
 **Options considered:**
 - A) Create skill in `plugin/skills/git/`
-- B) Create practice in `plugin/practices/`
+- B) Create practice in `plugin/standards/`
 
 **Chose B** because:
 - Git commit is project-specific (commands vary: mise/npm/cargo)
@@ -101,7 +101,7 @@ Applied algorithmic-command-enforcement pattern to three critical discipline-enf
 - Complements existing git-guidelines.md and conventional-commits.md practices
 - Discovery via find-practices (not find-skills) is appropriate
 
-**Implementation:** Created `plugin/practices/git-commit-algorithm.md` with Project Configuration section for command customization.
+**Implementation:** Created `plugin/workflows/git-commit.md` with Project Configuration section for command customization.
 
 **Trade-off:** Less discoverable via find-skills (acceptable - find-practices covers it, and git-related searches work)
 
@@ -394,7 +394,7 @@ b80a910 docs: document algorithmic workflow enforcement implementations
 
 5. **Create algorithmic template practice**
    - Standardize structure (decision tree, invalid conditions, self-test)
-   - Document pattern in `plugin/practices/algorithmic-workflow-template.md`
+   - Document pattern in `plugin/workflows/algorithmic-workflow-template.md`
    - Enable rapid conversion of other skills
 
 6. **Training documentation**

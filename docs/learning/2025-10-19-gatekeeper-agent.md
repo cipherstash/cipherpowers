@@ -627,7 +627,7 @@ d99be6f refactor: update code-reviewer agent to 2-level system
    - Agent that enforces validating-review-feedback workflow with persuasion principles
 
 ### Modified (3 files):
-1. `plugin/practices/code-review.md`
+1. `plugin/standards/code-review.md`
    - Simplified from 4-level to 2-level severity system (BLOCKING/NON-BLOCKING)
    - Updated review template to match new structure
 

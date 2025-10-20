@@ -242,7 +242,7 @@ cd /Users/tobyhede/src/cipherpowers/.worktrees/workflow-executor
 - `plugin/tools/workflow/README.md` (main documentation)
 - `plugin/skills/workflow/creating-workflows/SKILL.md` (creation guide)
 - `plugin/skills/workflow/executing-workflows/SKILL.md` (execution guide)
-- `plugin/practices/git-commit-algorithm.md` (executable workflow example)
+- `plugin/workflows/git-commit.md` (executable workflow example)
 - `plugin/tools/workflow/examples/simple-new-syntax.md` (examples)
 
 **Challenge:** 5 files needed consistent updates. Easy to miss one.
@@ -458,7 +458,7 @@ Addresses CR #1 (semantic ambiguity) from code-review.md.
 - [Algorithmic Command Enforcement](2025-10-16-algorithmic-command-enforcement.md) - Why algorithmic workflows work (100% compliance)
 
 **Applies to:**
-- `plugin/practices/git-commit-algorithm.md` - Now uses simplified syntax
+- `plugin/workflows/git-commit.md` - Now uses simplified syntax
 - `plugin/skills/workflow/creating-workflows/SKILL.md` - Guides users on new syntax
 - `plugin/skills/workflow/executing-workflows/SKILL.md` - Documents execution with new syntax
 
@@ -485,7 +485,7 @@ Addresses CR #1 (semantic ambiguity) from code-review.md.
 - `plugin/tools/workflow/MIGRATION.md` - Migration guide
 - `plugin/skills/workflow/creating-workflows/SKILL.md` - Creation guide
 - `plugin/skills/workflow/executing-workflows/SKILL.md` - Execution guide
-- `plugin/practices/git-commit-algorithm.md` - Executable workflow example
+- `plugin/workflows/git-commit.md` - Executable workflow example
 - `plugin/tools/workflow/examples/simple-new-syntax.md` - Examples
 
 **Total:** 24 files changed, 3555 insertions, 6 deletions

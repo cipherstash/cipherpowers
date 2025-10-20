@@ -10,7 +10,7 @@
 Migrated 3 critical workflow files from deprecated arrow syntax to simplified Pass/Fail labels, applying the syntax improvements designed in the workflow-executor simplification (2025-10-19). This migration surfaced a **critical discovery** about globally sequential step numbering requirements.
 
 **Files Migrated:**
-1. `plugin/practices/git-commit-algorithm.md` - Commit readiness enforcement (10 steps)
+1. `plugin/workflows/git-commit.md` - Commit readiness enforcement (10 steps)
 2. `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md` - TDD enforcement (11 steps across 2 algorithms)
 3. `plugin/skills/conducting-code-review/SKILL.md` - Code review decision trees
 4. `mise.toml` - Added 4 wrapper scripts for workflow conditionals

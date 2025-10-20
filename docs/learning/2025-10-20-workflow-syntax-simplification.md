@@ -25,7 +25,7 @@ Simplified workflow syntax by removing "Step" keyword, enforcing atomic conditio
 
 **Files Migrated:**
 1. `plugin/tools/workflow/README.md` - Complete example and syntax reference
-2. `plugin/practices/git-commit-algorithm.md` - Commit readiness enforcement
+2. `plugin/workflows/git-commit.md` - Commit readiness enforcement
 3. `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md` - TDD enforcement
 4. `plugin/skills/conducting-code-review/SKILL.md` - Code review workflows
 5. `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md` - Pattern documentation

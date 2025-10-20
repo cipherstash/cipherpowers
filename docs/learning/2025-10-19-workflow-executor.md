@@ -132,7 +132,7 @@ while current_step < steps.len() {  // Outer workflow loop
 
 **Direct usage:**
 ```bash
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 **Slash command would be:**
@@ -554,7 +554,7 @@ workflow --validate file.md
 **How agents use this:**
 ```bash
 # Direct binary invocation via Bash tool
-workflow plugin/practices/git-commit-algorithm.md
+workflow plugin/workflows/git-commit.md
 ```
 
 **Distinction:**
