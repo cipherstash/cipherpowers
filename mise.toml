@@ -72,3 +72,31 @@ fi
 
 exit 0
 """
+
+[tasks.build-workflow]
+description = "Compile the Rust workflow executor tool"
+run = """
+echo "🔧 Building workflow tool..."
+cd plugin/tools/workflow
+if cargo build --release; then
+  echo "✅ Workflow tool compiled successfully"
+  echo "   Binary: plugin/tools/workflow/target/release/workflow"
+else
+  echo "❌ Compilation failed"
+  echo "   Ensure Rust toolchain is installed: https://rustup.rs"
+  exit 1
+fi
+"""
+
+[tasks.setup]
+description = "Complete setup after cloning CipherPowers plugin"
+depends = ["build-workflow"]
+run = """
+echo ""
+echo "✅ CipherPowers plugin ready to use"
+echo ""
+echo "Next steps:"
+echo "  1. Add this plugin to Claude Code configuration"
+echo "  2. Restart Claude Code to load the plugin"
+echo ""
+"""
