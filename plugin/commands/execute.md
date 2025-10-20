@@ -465,9 +465,9 @@ If user updates plan file during execution:
 - `${CLAUDE_PLUGIN_ROOT}plugin/skills/documentation/capturing-learning/SKILL.md` - Retrospective workflow
 
 **Practices:**
-- `${CLAUDE_PLUGIN_ROOT}plugin/practices/code-review.md` - Review standards and severity levels
-- `${CLAUDE_PLUGIN_ROOT}plugin/practices/testing.md` - Test requirements
-- `${CLAUDE_PLUGIN_ROOT}plugin/practices/development.md` - Development standards
+- `${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md` - Review standards and severity levels
+- `${CLAUDE_PLUGIN_ROOT}plugin/standards/testing.md` - Test requirements
+- `${CLAUDE_PLUGIN_ROOT}plugin/principles/development.md` - Development standards
 
 **Commands:**
 - `/code-review` - Manual code review trigger
