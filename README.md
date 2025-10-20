@@ -164,6 +164,21 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 
 ## Key Features
 
+**Workflow Syntax Simplification (Oct 2025)**
+- Simplified markdown workflow syntax with ALLCAPS keywords and clean numbered headers
+- Type system prevents invalid states (atomic conditionals, StepNumber newtype)
+- New validation modes: `--validate` (syntax checking), `--dry-run` (test without execution)
+- 199 tests passing, 5 workflow files migrated to new syntax
+- Three-pass validation catches errors early (structure → numbering → GOTO targets)
+- Learning: [Workflow Syntax Simplification](docs/learning/2025-10-20-workflow-syntax-simplification.md)
+
+**Workflow Tool Integration (Oct 2025)**
+- Integrated Rust workflow executor with plugin architecture
+- Two-layer design: wrapper + mise tasks for optimal performance with graceful degradation
+- Setup: `mise run setup` or `mise run build-workflow`
+- Specialized agents can execute workflows programmatically
+- Learning: [Workflow Tool Integration](docs/learning/2025-10-20-workflow-tool-integration.md)
+
 **Algorithmic Workflow Enforcement (Oct 2025)**
 - Converted TDD, code review trigger, and git commit workflows to algorithmic format
 - Each includes: decision algorithm, recovery algorithm, invalid conditions, self-test

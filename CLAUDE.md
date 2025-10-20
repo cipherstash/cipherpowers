@@ -328,6 +328,7 @@ CipherPowers captures significant learnings from development work to build organ
 - [Remove Obsolete find-skills Discovery System](docs/learning/2025-10-19-remove-find-skills.md) - Removed bash script discovery system in favor of Claude Code's native Skill tool. Key insights: Per-batch code reviews caught 7 blockers early, native auto-discovery eliminated 300+ lines of code, comprehensive grep verification necessary but not sufficient.
 - [Simplify Workflow Syntax](docs/learning/2025-10-19-simplify-workflow-syntax.md) - Simplified workflow syntax from verbose arrow conditionals to clean Pass/Fail labels. Key insights: Clean breaks reduce complexity (660 lines removed), implicit defaults reduce cognitive load (90% of steps use minimal syntax), per-batch code reviews add 30% time but prevent 2-3x debugging time, TDD prevents debugging entirely.
 - [Workflow Syntax Migration](docs/learning/2025-10-20-workflow-syntax-migration.md) - Migrated 3 key workflow files from arrow syntax to Pass/Fail labels. Key insights: Executable workflows require globally sequential step numbering (multiple algorithms in one file need continuous numbering), flexible wrapper scripts better than rigid automation (warnings > false positives), per-batch code reviews caught 5 issues (30% time overhead prevented 3x debugging time), parser error messages can be cryptic (sequential step violations took 20 minutes to diagnose).
+- [Workflow Syntax Simplification](docs/learning/2025-10-20-workflow-syntax-simplification.md) - Complete workflow syntax refactor removing "Step" keyword, enforcing atomic conditional units, and strengthening type system. Key insights: Type system prevents invalid states (StepNumber newtype, atomic Conditions), three-pass validation catches errors early, flexible separator parsing reduces friction, 199 tests passing proves comprehensive coverage, --validate and --dry-run flags enable safe workflow testing, implicit defaults (90% of steps) reduce cognitive overhead.
 - [Gatekeeper Agent Implementation](docs/learning/2025-10-19-gatekeeper-agent.md) - Built quality gate that validates code review feedback against implementation plans, preventing scope creep and misinterpretation. Key insights: Real failure mode (Lambert recalculation) drove design, 2-level severity simplification (BLOCKING/NON-BLOCKING) reduces ambiguity, user checkpoints prevent silent scope expansion, [FIX] tags eliminate downstream ambiguity, three-layer separation (skill + practice + agent) enables DRY and reusability.
 - [Workflow Tool Integration](docs/learning/2025-10-20-workflow-tool-integration.md) - Integrated Rust workflow executor with plugin architecture using two-layer system (wrapper + mise). Key insights: Two-layer design balances optimal performance with graceful degradation (30s first-run vs instant when pre-built), per-batch code reviews add 30% overhead but prevent 3x debugging time (caught path mismatch before Batch 2 rework), living plan pattern (update plan during implementation) prevents future task confusion, documentation consistency enforcement (small fixes prevent long-term drift), filesystem vs documentation trade-off (updating docs simpler than restructuring when conflict exists).
 
@@ -359,10 +360,25 @@ workflow path/to/workflow.md
 ```bash
 workflow --guided path/to/workflow.md
 ```
-- All conditionals enabled (Continue, GoTo, STOP)
+- All conditionals enabled (CONTINUE, GOTO, STOP)
 - Agent uses tool but retains flexibility
 - Prevents "I don't need the workflow" rationalization
 - Use for: execute-plan, repeatable processes with judgment calls
+
+**Validation mode (--validate):**
+```bash
+workflow --validate path/to/workflow.md
+```
+- Parse and validate workflow structure without execution
+- Checks sequential numbering, GOTO targets, atomic conditionals
+- Use for: verifying workflow syntax after migration or editing
+
+**Dry-run mode (--dry-run):**
+```bash
+workflow --dry-run path/to/workflow.md
+```
+- Show commands without executing, display prompts, assume success
+- Use for: testing workflows before actual execution
 
 **Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
 
@@ -381,7 +397,14 @@ workflow --guided path/to/workflow.md
 
 **Why algorithmic?** LLMs treat algorithms as deterministic systems (execute them) but treat imperatives as suggestions (interpret them). Evidence: 33% imperative compliance vs 100% algorithmic compliance in pressure testing.
 
-**Workflow syntax:** Markdown with conventional headers (steps), code blocks (commands), arrows (conditionals), bold (prompts). See `plugin/tools/workflow/README.md` for full syntax.
+**Workflow syntax (Oct 2025 - Simplified):**
+- Headers: `## N. Step Title` (clean numbered format, no "Step" keyword)
+- Keywords: ALLCAPS (`PASS`, `FAIL`, `GOTO N`, `STOP message`, `CONTINUE`)
+- Conditionals: List syntax (`- PASS: CONTINUE`, `- FAIL: STOP reason`)
+- Atomic conditionals: Both PASS and FAIL required if list present (type system enforces)
+- Implicit defaults: Command steps (PASS→CONTINUE, FAIL→STOP), Prompts (CONTINUE)
+- Commands: Code blocks, Prompts: No code block
+- See `plugin/tools/workflow/README.md` for complete syntax reference and migration guide
 
 **Testing:** All algorithms include pressure test scenarios in `docs/tests/` validating resistance to time pressure, sunk cost, authority, and exhaustion.
 
