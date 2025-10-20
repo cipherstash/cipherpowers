@@ -32,16 +32,24 @@ Treat workflow files like shell scripts - review them before execution.
 
 ## Installation
 
-```bash
-cd plugin/tools/workflow
-cargo install --path .
-```
-
-Or from anywhere in the cipherpowers repo:
+When using CipherPowers as a local plugin, the workflow tool will auto-compile
+on first use. To avoid delays during agent execution, pre-build the tool after
+cloning:
 
 ```bash
-cargo install --path plugin/tools/workflow
+# From CipherPowers repository root
+mise run build-workflow
 ```
+
+This compiles the release binary to `target/release/workflow`.
+
+**Requirements:**
+- Rust toolchain 1.70+ (install from https://rustup.rs)
+- Cargo (included with Rust)
+
+**For agents:** The workflow tool is accessed via the wrapper script at
+`${CLAUDE_PLUGIN_ROOT}/plugin/tools/workflow/run`, which handles automatic
+compilation if needed.
 
 ## Usage
 
