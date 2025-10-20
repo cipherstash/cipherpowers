@@ -481,3 +481,43 @@ After completing all tasks:
 3. Consider code review via `/code-review` command
 4. Merge to main and test plugin installation
 5. Update team documentation if needed
+
+---
+
+## Deferred Items
+
+Items deferred during code review - can be addressed in follow-up or ignored.
+
+### From Batch 2 Review (2025-10-20-review-batch-2.md)
+
+- **[DEFERRED]** Inconsistent environment variable path pattern in workflow README
+  - Source: Task 4 (Update Workflow Tool README)
+  - Severity: NON-BLOCKING
+  - Reason: Documentation uses `${CLAUDE_PLUGIN_ROOT}/plugin/...` instead of `${CLAUDE_PLUGIN_ROOT}plugin/...` (missing slash). Does not affect functionality, but inconsistent with CLAUDE.md pattern.
+
+- **[DEFERRED]** Inconsistent wrapper script path in agent documentation
+  - Source: Task 5 (Update Agent Documentation)
+  - Severity: NON-BLOCKING
+  - Reason: Same path inconsistency as above in different file. Documentation polish issue.
+
+- **[DEFERRED]** Missing context about why installation matters
+  - Source: Task 4 (Update Workflow Tool README)
+  - Severity: NON-BLOCKING
+  - Reason: Installation section could better explain user experience impact of 30-second first-run delay. Enhancement, not blocker.
+
+- **[DEFERRED]** Agent documentation could link to workflow syntax reference
+  - Source: Task 5 (Update Agent Documentation)
+  - Severity: NON-BLOCKING
+  - Reason: Missing pointer to workflow syntax documentation. Would improve discoverability but not required for functionality.
+
+### From Batch 3 Review (2025-10-20-review-batch-3.md)
+
+- **[DEFERRED]** Verification file lacks detailed test evidence
+  - Source: Task 7 (End-to-End Verification)
+  - Severity: NON-BLOCKING
+  - Reason: Verification file documents that tests "passed" but provides no evidence or details about what was actually tested or what the output was. Future verification tasks should capture more detailed test evidence (commands run, output snippets, pass criteria). This is a learning opportunity for improving documentation practices, not a blocker for this merge.
+
+- **[DEFERRED]** Verification file uses .txt extension instead of .md
+  - Source: Task 7 (End-to-End Verification)
+  - Severity: NON-BLOCKING
+  - Reason: File named with `.txt` extension but contains structured test results that would benefit from markdown formatting. Inconsistent with other documentation in `docs/plans/` (most use `.md`). Very minor polish issue.
