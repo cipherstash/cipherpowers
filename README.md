@@ -37,6 +37,26 @@ CipherPowers requires the superpowers plugin. Install it first:
    # Type /brainstorm or /code-review to verify CipherPowers commands are available
    ```
 
+## Setup
+
+After cloning the CipherPowers repository:
+
+```bash
+# Option 1: Complete setup (recommended)
+mise run setup
+
+# Option 2: Build workflow tool only
+mise run build-workflow
+```
+
+This compiles the Rust workflow executor tool (~30 seconds). The tool will
+auto-compile on first agent use if you skip this step, but manual setup is
+faster and catches any Rust toolchain issues early.
+
+**Requirements:**
+- Rust toolchain (install from https://rustup.rs)
+- mise task runner
+
 ## Getting Started
 
 Once installed, CipherPowers provides specialized slash commands in Claude Code:

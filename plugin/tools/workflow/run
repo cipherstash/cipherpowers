@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Smart wrapper for workflow executor tool
+# Automatically compiles binary if missing, then executes with all arguments
+
+set -euo pipefail
+
+# Determine paths relative to this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BINARY_PATH="$SCRIPT_DIR/target/release/workflow"
+
+# Check if binary exists
+if [[ ! -f "$BINARY_PATH" ]]; then
+    echo "🔧 Workflow binary not found. Compiling from source..." >&2
+    echo "   This will take approximately 30 seconds on first run." >&2
+    echo "" >&2
+
+    # Navigate to Rust project directory (we're already in it)
+    cd "$SCRIPT_DIR" || {
+        echo "❌ ERROR: Cannot access workflow directory" >&2
+        exit 1
+    }
+
+    # Attempt compilation
+    if cargo build --release 2>&1; then
+        echo "" >&2
+        echo "✅ Compilation successful" >&2
+        echo "" >&2
+    else
+        echo "" >&2
+        echo "❌ ERROR: Compilation failed" >&2
+        echo "" >&2
+        echo "Possible causes:" >&2
+        echo "  1. Rust toolchain not installed (install from https://rustup.rs)" >&2
+        echo "  2. Cargo build dependencies missing" >&2
+        echo "" >&2
+        echo "Alternative: Run manual setup" >&2
+        echo "  cd to plugin root and run: mise run build-workflow" >&2
+        echo "" >&2
+        exit 1
+    fi
+fi
+
+# Execute the binary with all original arguments
+exec "$BINARY_PATH" "$@"
