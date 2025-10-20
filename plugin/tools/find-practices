@@ -51,44 +51,47 @@ search_practices() {
     local root=$1
     local label=$2
 
-    if [ ! -d "$root/practices" ]; then
-        return
-    fi
+    # Search all three directory types
+    for dir in principles standards workflows; do
+        if [ ! -d "$root/$dir" ]; then
+            continue
+        fi
 
-    if [ -z "$PATTERN" ]; then
-        # List all practices with metadata
-        find "$root/practices" -name "*.md" -type f | sort | while read -r practice; do
-            name=$(extract_field "$practice" "name")
-            description=$(extract_field "$practice" "description")
-            when_to_use=$(extract_field "$practice" "when_to_use")
+        if [ -z "$PATTERN" ]; then
+            # List all practices with metadata
+            find "$root/$dir" -name "*.md" -type f | sort | while read -r practice; do
+                name=$(extract_field "$practice" "name")
+                description=$(extract_field "$practice" "description")
+                when_to_use=$(extract_field "$practice" "when_to_use")
 
-            # Show path relative to practices/
-            rel_path=${practice#$root/practices/}
+                # Show path relative to directory type
+                rel_path=${practice#$root/$dir/}
 
-            if [ -n "$when_to_use" ]; then
-                echo "Use /$rel_path when $when_to_use"
-            elif [ -n "$description" ]; then
-                echo "[$label] $rel_path - $description"
-            else
-                echo "[$label] $rel_path"
-            fi
-        done
-    else
-        # Search for pattern in practices (frontmatter + content)
-        find "$root/practices" -name "*.md" -type f -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
-            name=$(extract_field "$practice" "name")
-            description=$(extract_field "$practice" "description")
+                if [ -n "$when_to_use" ]; then
+                    echo "Use /$rel_path when $when_to_use"
+                elif [ -n "$description" ]; then
+                    echo "[$label] $rel_path - $description"
+                else
+                    echo "[$label] $rel_path"
+                fi
+            done
+        else
+            # Search for pattern in practices (frontmatter + content)
+            find "$root/$dir" -name "*.md" -type f -exec grep -l -i "$PATTERN" {} \; | sort | while read -r practice; do
+                name=$(extract_field "$practice" "name")
+                description=$(extract_field "$practice" "description")
 
-            # Show path relative to practices/
-            rel_path=${practice#$root/practices/}
+                # Show path relative to directory type
+                rel_path=${practice#$root/$dir/}
 
-            if [ -n "$description" ]; then
-                echo "[$label] $rel_path - $description"
-            else
-                echo "[$label] $rel_path"
-            fi
-        done
-    fi
+                if [ -n "$description" ]; then
+                    echo "[$label] $rel_path - $description"
+                else
+                    echo "[$label] $rel_path"
+                fi
+            done
+        fi
+    done
 }
 
 # Search cipherpowers practices
