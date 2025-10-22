@@ -22,7 +22,7 @@ Run with: `workflow plugin/workflows/git-commit.md`
 
 ## 1. Check for changes
 
-```bash quiet
+```bash
 mise run check-has-changes
 ```
 
@@ -33,57 +33,48 @@ mise run check-has-changes
 
 Do ALL new/modified functions have tests?
 
-## 3. Run tests
+## 3. Run quality checks
 
 ```bash
-mise run test
+${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
 ```
 
 - PASS: CONTINUE
-- FAIL: STOP fix tests before committing
+- FAIL: STOP fix failing checks before committing
 
-## 4. Run checks
-
-```bash
-mise run check
-```
-
-- PASS: CONTINUE
-- FAIL: STOP run mise check to see failures
-
-## 5. Check documentation
+## 4. Check documentation
 
 Is documentation updated for user-facing changes?
 
-## 6. Verify atomic commit
+## 5. Verify atomic commit
 
 Do changes serve a single atomic purpose?
 
-## 7. Create commit
+## 6. Create commit
 
 ```bash
 git add -p  # Review changes
 git commit  # Use conventional-commits.md format
 ```
 
-## 8. No changes to commit
+## 7. No changes to commit
 
 ```bash
 echo "No changes to commit - continue working"
 exit 0
 ```
 
-## 9. Fix issues before committing
+## 8. Fix issues before committing
 
 Address the failing condition, then return to Step 1
 
-## 10. Split into multiple commits
+## 9. Split into multiple commits
 
 ```bash
 git add -p  # Stage specific changes
 ```
 
-- PASS: GOTO 7
+- PASS: GOTO 6
 - FAIL: STOP
 
 ## INVALID Conditions for Committing Early
@@ -101,21 +92,21 @@ These rationalizations are **NOT VALID ALGORITHM CONDITIONS:**
 
 ## Self-Test
 
-**Q1: I have code changes, all tests pass, checks pass, docs updated, atomic change. What does Step 7 say?**
+**Q1: I have code changes, all tests pass, checks pass, docs updated, atomic change. What does Step 6 say?**
 
 Answer: Commit is ready - stage files and commit with conventional format
 
 **Q2: Tests are failing but I want to commit WIP. Is this valid?**
 
-Answer: NO. Step 3 → NO leads to Step 9 (fix before commit). "WIP commit" is INVALID condition
+Answer: NO. Step 3 → NO leads to Step 8 (fix before commit). "WIP commit" is INVALID condition
 
 **Q3: I'm exhausted and want to save progress. Should I commit failing checks?**
 
 Answer: NO. Use git stash. "Exhaustion" is NOT A VALID CONDITION
 
-**Q4: Changes touch 3 unrelated concerns. What does Step 6 result in?**
+**Q4: Changes touch 3 unrelated concerns. What does Step 5 result in?**
 
-Answer: NO → Go to Step 10 (split into multiple commits)
+Answer: NO → Go to Step 9 (split into multiple commits)
 
 ## Integration with Existing Practices
 
@@ -146,9 +137,9 @@ Answer: NO → Go to Step 10 (split into multiple commits)
 
 **Solution:** Algorithm Steps 3, 4, 5 have binary YES/NO checks. No interpretation possible.
 
-- Step 3: "Do ALL tests pass?" → YES/NO (not "are they important?")
-- Step 4: "Does mise run check pass?" → YES/NO (not "is formatting critical?")
-- Step 5: "Is documentation updated?" → YES/NO (not "will users notice?")
+- Step 3: Runs test-check-build workflow (tests, checks, build must all pass)
+- Step 4: "Is documentation updated?" → YES/NO (not "will users notice?")
+- Step 5: "Do changes serve a single atomic purpose?" → YES/NO (not "is it close enough?")
 
 **Evidence:** Based on `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md` pattern showing 0% → 100% compliance improvement in pressure testing.
 
@@ -157,20 +148,25 @@ Answer: NO → Go to Step 10 (split into multiple commits)
 | Rationalization | How Algorithm Prevents |
 |-----------------|------------------------|
 | "WIP commit to save" | NOT A VALID CONDITION - Use git stash (algorithm doesn't check "need to save") |
-| "Will fix tests later" | NOT A VALID CONDITION - Step 3 checks tests NOW (not "will I fix later") |
+| "Will fix tests later" | NOT A VALID CONDITION - Step 3 runs test-check-build (tests must pass NOW) |
 | "Time pressure" | NOT A VALID CONDITION - Time not in algorithm, only readiness checks |
 | "Manual testing sufficient" | NOT A VALID CONDITION - Step 2 checks automated tests exist |
-| "Formatting trivial" | Step 4 checks "mise run check pass?" - YES/NO, no importance weighting |
+| "Formatting trivial" | Step 3 includes checks - YES/NO, no importance weighting |
 | "Changes too small to break" | NOT A VALID CONDITION - Complexity not in algorithm |
 
 ## Project Configuration
 
+**Workflows referenced:**
+- `test-check-build.md` - Runs tests, checks, and build (Step 3)
+
 **Commands referenced:**
-- `mise run test` - Run all tests (must pass for Step 3)
-- `mise run check` - Run linting, formatting, types (must pass for Step 4)
+- `mise run check-has-changes` - Verify there are changes to commit (Step 1)
+- `mise run test` - Run all tests (via test-check-build)
+- `mise run check` - Run linting, formatting, types (via test-check-build)
+- `mise run build` - Verify code builds (via test-check-build)
 
 **Adjust for your project:**
-If using different commands (npm, cargo, etc.), update Step 4 condition to match your project's check command.
+If using different commands (npm, cargo, etc.), update test-check-build.md to match your project's commands.
 
 ## Testing
 
