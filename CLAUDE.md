@@ -220,7 +220,7 @@ You MUST ALWAYS use the following structure to reference paths:
 
     ${CLAUDE_PLUGIN_ROOT}path/to/file
 
-    ${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+    ${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md
 
 
 ## Integration with Superpowers
@@ -387,17 +387,64 @@ workflow --dry-run path/to/workflow.md
    - 10-step algorithm: tests pass → checks pass → docs updated → atomic
    - Prevents WIP commits, "will fix later", exhaustion-driven commits
 
-2. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
+2. **Test-Check-Build** - `plugin/workflows/test-check-build.md`
+   - 4-step algorithm: tests pass → checks pass → build succeeds
+   - Essential quality gates used by commit, code review, and execute workflows
+
+3. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
    - Prevents code before tests via binary "Does failing test exist?" check
    - Recovery mandates deleting untested code (no sunk cost exceptions)
 
-3. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
+4. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
    - Requires review before merge via binary commit + review status checks
    - Invalidates "too small", "senior dev", "tests passing" rationalizations
 
 **Why algorithmic?** LLMs treat algorithms as deterministic systems (execute them) but treat imperatives as suggestions (interpret them). Evidence: 33% imperative compliance vs 100% algorithmic compliance in pressure testing.
 
 **Workflow syntax (Oct 2025 - Simplified):**
+
+Workflows use clean markdown with minimal syntax:
+
+```markdown
+# Git Commit Readiness
+
+## 1. Check for changes
+
+```bash
+mise run check-has-changes
+```
+
+- PASS: CONTINUE
+- FAIL: STOP nothing to commit
+
+## 2. Run tests
+
+```bash
+mise run test
+```
+
+- PASS: CONTINUE
+- FAIL: STOP fix tests first
+
+## 3. Review atomicity
+
+Are changes focused on single logical change?
+
+- PASS: CONTINUE
+- FAIL: GOTO 5
+
+## 4. Commit
+
+```bash
+git commit
+```
+
+## 5. Split changes
+
+Break into separate commits first.
+```
+
+**Key elements:**
 - Headers: `## N. Step Title` (clean numbered format, no "Step" keyword)
 - Keywords: ALLCAPS (`PASS`, `FAIL`, `GOTO N`, `STOP message`, `CONTINUE`)
 - Conditionals: List syntax (`- PASS: CONTINUE`, `- FAIL: STOP reason`)

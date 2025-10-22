@@ -135,7 +135,7 @@ Commands are bash code blocks that will be executed:
 mise run test
 ```
 
-```bash quiet
+```bash
 git status --porcelain
 ```
 ````
@@ -155,7 +155,7 @@ git status --porcelain
 ````markdown
 ## 1. Check for changes
 
-```bash quiet
+```bash
 git status --porcelain
 ```
 
@@ -216,7 +216,7 @@ mise run test
 
 ## 2. Check for unstaged changes
 
-```bash quiet
+```bash
 git diff --check
 ```
 
@@ -289,7 +289,7 @@ Here's a workflow using all syntax elements:
 
 ## 1. Check for changes
 
-```bash quiet
+```bash
 mise run check-has-changes
 ```
 
@@ -311,7 +311,7 @@ mise run test
 
 ## 4. Check formatting
 
-```bash quiet
+```bash
 mise run fmt -- --check
 ```
 
@@ -408,7 +408,7 @@ For processes with dynamic paths, use wrapper scripts:
 
 ## 1. Check if migration needed
 
-```bash quiet
+```bash
 mise run check-has-migrations  # Returns 0 if migrations exist, 1 if none
 ```
 
@@ -445,7 +445,7 @@ Real example - git commit algorithm:
 
 ## 1. Verify changes exist
 
-```bash quiet
+```bash
 mise run check-has-changes
 ```
 
@@ -467,7 +467,7 @@ Do ALL new/modified functions have tests?
 
 ## 4. Check formatting
 
-```bash quiet
+```bash
 mise run fmt -- --check
 ```
 
@@ -476,7 +476,7 @@ mise run fmt -- --check
 
 ## 5. Check for debugging code
 
-```bash quiet
+```bash
 mise run check-no-debug
 ```
 
@@ -575,7 +575,7 @@ workflow --guided workflow.md
 ```markdown
 ## 1. Check precondition
 
-```bash quiet
+```bash
 test -f required-file.txt
 ```
 

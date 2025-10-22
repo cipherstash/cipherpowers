@@ -104,15 +104,16 @@ Read these before conducting review:
 
 #### 2. Run tests and checks (NON-NEGOTIABLE)
 
-**MUST run these commands (from practices/code-review.md):**
+**MUST run test-check-build workflow:**
 
 ```bash
-# Run all tests - ALL must pass
-mise run test
-
-# Run all checks (linting, formatting, types) - ALL must pass
-mise run check
+${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
 ```
+
+This runs:
+- Tests (`mise run test`)
+- Checks (`mise run check`)
+- Build (`mise run build`)
 
 **Document results:** Note any failures explicitly in review output.
 

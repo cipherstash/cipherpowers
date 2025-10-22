@@ -146,6 +146,26 @@ workflow --dry-run plugin/workflows/git-commit.md
 - Can adapt to context while following process
 - Same workflow syntax works in both modes
 
+## Separation of Concerns
+
+**Workflows define WHAT (the process):**
+- Pure markdown describing steps, commands, conditionals
+- No opinion on whether execution is enforced or flexible
+- Same workflow file works in both modes
+
+**Callers define HOW (the enforcement):**
+- Agents/commands/skills decide execution mode
+- Enforcement mode (no flag): Use for algorithms requiring 100% compliance
+- Guided mode (--guided flag): Use for processes needing flexibility
+- The workflow itself remains unchanged
+
+**Example:**
+- `test-check-build.md` describes test → check → build steps
+- `/commit` calls it in enforcement mode (must pass)
+- `/execute` calls it in enforcement mode before completion
+- Other contexts could call it in guided mode if appropriate
+- Workflow file doesn't change based on caller
+
 ## Workflow Syntax
 
 Workflows use simple markdown conventions with clean, minimal syntax.
@@ -273,11 +293,15 @@ mise run test
 ```
 ```
 
-Add `quiet` flag to suppress output on success:
+**Interactive commands work naturally:**
+
+Commands that require user interaction (like `git add -p`, `git commit`, `vim`, etc.) work automatically because all commands inherit stdin/stdout/stderr:
 
 ```markdown
-```bash quiet
-git status --porcelain
+## 1. Stage changes interactively
+
+```bash
+git add -p
 ```
 ```
 
@@ -404,16 +428,17 @@ Evidence: Algorithmic enforcement achieves 100% compliance vs 0-33% with imperat
 ## Features
 
 - ✅ Parse markdown workflows (H1 headers for steps)
-- ✅ Execute bash commands with output capture
-- ✅ Quiet mode for commands (suppress output on success)
-- ✅ Conditional logic (exit codes, output matching, otherwise)
+- ✅ Execute bash commands with inherited stdio (supports interactive commands)
+- ✅ Conditional logic (exit codes based PASS/FAIL evaluation)
 - ✅ Actions (Continue, Stop, Go to Step)
 - ✅ Interactive prompts (y/n confirmation)
+- ✅ Interactive command support (`git add -p`, `git commit`, `vim`, etc.)
 - ✅ Step progress indicators (Step 1/5)
 - ✅ Infinite loop protection (max iterations = steps × 10)
 - ✅ Error handling with helpful messages
-- ✅ CLI flags (--list, --dry-run)
+- ✅ CLI flags (--list, --dry-run, --validate)
 - ✅ Distinct exit codes for different failure modes
+- ✅ Two execution modes (enforcement and guided)
 
 ## Example Workflows
 

@@ -149,7 +149,7 @@ workflow --guided workflow.md
 
 ## 1. Check for changes
 
-```bash quiet
+```bash
 check-has-changes
 ```
 

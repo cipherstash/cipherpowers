@@ -35,18 +35,16 @@ Read these before committing:
 
 #### 1. Run pre-commit checks
 
-**Execute quality checks:**
+**Execute quality checks using test-check-build workflow:**
 
 ```bash
-# Run linters and formatters (project-specific command)
-mise run check
-
-# Run tests if appropriate for changes
-mise run test
-
-# Ensure code builds without errors
-mise run build  # if project has build step
+${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
 ```
+
+This runs:
+- Tests (`mise run test`)
+- Checks (`mise run check`)
+- Build (`mise run build`)
 
 **Fix any failures before proceeding.**
 
@@ -101,7 +99,7 @@ git commit -m "..."
 
 #### 5. Write conventional commit message
 
-**Format (from practices/conventional-commits.md):**
+**Format (from standards/conventional-commits.md):**
 
 ```
 <type>(<optional-scope>): <description>
