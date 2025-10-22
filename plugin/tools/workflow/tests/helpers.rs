@@ -8,7 +8,6 @@ pub fn simple_step(num: usize, description: &str, cmd: &str) -> models::Step {
         description: description.to_string(),
         command: Some(models::Command {
             code: cmd.to_string(),
-            quiet: false,
         }),
         prompts: vec![],
         conditions: None,
@@ -28,7 +27,6 @@ pub fn step_with_fail_stop(
         description: description.to_string(),
         command: Some(models::Command {
             code: cmd.to_string(),
-            quiet: false,
         }),
         prompts: vec![],
         conditions: Some(models::Conditions {

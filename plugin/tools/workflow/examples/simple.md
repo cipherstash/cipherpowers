@@ -10,7 +10,7 @@ echo "Hello from workflow executor!"
 
 ## 2. Check directory
 
-```bash quiet
+```bash
 ls -la
 ```
 

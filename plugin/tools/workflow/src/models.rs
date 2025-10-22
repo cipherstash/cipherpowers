@@ -26,7 +26,6 @@ pub struct Step {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Command {
     pub code: String,
-    pub quiet: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -212,7 +211,6 @@ mod tests {
             description: "Test step".to_string(),
             command: Some(Command {
                 code: "echo test".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -229,7 +227,6 @@ mod tests {
             description: "Test step".to_string(),
             command: Some(Command {
                 code: "echo test".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: Some(Conditions {

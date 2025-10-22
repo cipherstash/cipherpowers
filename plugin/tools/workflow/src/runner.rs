@@ -79,9 +79,8 @@ impl WorkflowRunner {
                     execute_command(command)?
                 };
 
-                if !self.dry_run {
-                    self.display_command_output(&output, command.quiet)?;
-                }
+                // Output already displayed directly to terminal during execution
+                // (commands inherit stdio, so no need to display here)
 
                 debug!("Checking: {}", DEBUG_EVALUATION_CRITERIA);
 
@@ -221,34 +220,6 @@ impl WorkflowRunner {
         Ok(())
     }
 
-    fn display_command_output(&self, output: &CommandOutput, quiet: bool) -> Result<()> {
-        // Show stdout based on quiet flag (suppress successful quiet commands)
-        let should_suppress = quiet && output.success;
-        if !should_suppress {
-            print!("{}", output.stdout);
-        }
-
-        // Always show stderr (errors and warnings should be visible)
-        if !output.stderr.is_empty() {
-            eprint!("{}", output.stderr);
-        }
-
-        // Status
-        let status_symbol = if output.success { "✓" } else { "✗" };
-        let status_text = if output.success { "Passed" } else { "Failed" };
-        debug!(
-            "{} {} (exit {})",
-            status_symbol, status_text, output.exit_code
-        );
-
-        debug!(
-            exit_code = output.exit_code,
-            success = output.success,
-            "Command completed"
-        );
-
-        Ok(())
-    }
 
     fn execute_action(&self, action: Action, from_step: usize) -> Result<StepControl> {
         debug!(?action, "Executing action");
@@ -331,7 +302,6 @@ mod tests {
             description: "Test tracing".to_string(),
             command: Some(Command {
                 code: "echo 'test'".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -394,7 +364,6 @@ mod tests {
             description: "Test no conditionals".to_string(),
             command: Some(Command {
                 code: "echo 'success'".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -413,7 +382,6 @@ mod tests {
             description: "Test no conditionals with failure".to_string(),
             command: Some(Command {
                 code: "exit 1".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -509,75 +477,6 @@ mod tests {
                 message: Some("Test stop".to_string())
             })
         );
-    }
-
-    #[test]
-    fn test_display_command_output_quiet_success() {
-        // For quiet successful commands, output should be suppressed
-        let steps = vec![Step {
-            number: StepNumber::new(1).unwrap(),
-            description: "Test".to_string(),
-            command: None,
-            prompts: vec![],
-            conditions: None,
-        }];
-
-        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let output = CommandOutput {
-            stdout: "test output\n".to_string(),
-            stderr: String::new(),
-            exit_code: 0,
-            success: true,
-        };
-
-        // This should not panic and should suppress output
-        runner.display_command_output(&output, true).unwrap();
-    }
-
-    #[test]
-    fn test_display_command_output_quiet_failure() {
-        // For quiet failed commands, output should be shown
-        let steps = vec![Step {
-            number: StepNumber::new(1).unwrap(),
-            description: "Test".to_string(),
-            command: None,
-            prompts: vec![],
-            conditions: None,
-        }];
-
-        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let output = CommandOutput {
-            stdout: "error output\n".to_string(),
-            stderr: String::new(),
-            exit_code: 1,
-            success: false,
-        };
-
-        // This should not panic and should show output (failure case)
-        runner.display_command_output(&output, true).unwrap();
-    }
-
-    #[test]
-    fn test_display_command_output_stderr_always_shown() {
-        // Stderr should always be shown, even for quiet successful commands
-        let steps = vec![Step {
-            number: StepNumber::new(1).unwrap(),
-            description: "Test".to_string(),
-            command: None,
-            prompts: vec![],
-            conditions: None,
-        }];
-
-        let runner = WorkflowRunner::new(steps, ExecutionMode::Enforcement);
-        let output = CommandOutput {
-            stdout: "stdout\n".to_string(),
-            stderr: "warning: something\n".to_string(),
-            exit_code: 0,
-            success: true,
-        };
-
-        // Stderr should be shown even with quiet=true and success=true
-        runner.display_command_output(&output, true).unwrap();
     }
 
     #[test]
@@ -822,8 +721,7 @@ mod tests {
                 description: "Step 1 with Goto".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: Some(Conditions {
                     pass: Action::Goto(StepNumber::new(3).unwrap()),
@@ -835,8 +733,7 @@ mod tests {
                 description: "Step 2 - must be visited".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: None,
             },
@@ -845,8 +742,7 @@ mod tests {
                 description: "Step 3".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: None,
             },
@@ -870,7 +766,6 @@ mod tests {
             description: "Test dry-run".to_string(),
             command: Some(Command {
                 code: "nonexistent_command_should_fail".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -893,8 +788,7 @@ mod tests {
                 description: "Test dry-run assumes success".to_string(),
                 command: Some(Command {
                     code: "exit 1".to_string(), // Would fail in normal execution
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: Some(Conditions {
                     pass: Action::Continue,
@@ -906,8 +800,7 @@ mod tests {
                 description: "Second step".to_string(),
                 command: Some(Command {
                     code: "echo done".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: None,
             },
@@ -956,7 +849,6 @@ mod tests {
             description: "Test normal execution".to_string(),
             command: Some(Command {
                 code: "echo test".to_string(),
-                quiet: false,
             }),
             prompts: vec![],
             conditions: None,
@@ -979,8 +871,7 @@ mod tests {
                 description: "Decision step".to_string(),
                 command: Some(Command {
                     code: "exit 0".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: Some(Conditions {
                     pass: Action::Goto(StepNumber::new(3).unwrap()),
@@ -992,8 +883,7 @@ mod tests {
                 description: "Skipped step".to_string(),
                 command: Some(Command {
                     code: "echo skipped".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: None,
             },
@@ -1002,8 +892,7 @@ mod tests {
                 description: "Target step".to_string(),
                 command: Some(Command {
                     code: "echo reached".to_string(),
-                    quiet: false,
-                }),
+                    }),
                 prompts: vec![],
                 conditions: None,
             },

@@ -8,7 +8,7 @@ This workflow demonstrates guided mode. All conditionals work (Pass, Fail, GoTo)
 
 Fail: STOP (prerequisites not met)
 
-```bash quiet
+```bash
 echo "Checking prerequisites..."
 exit 0
 ```

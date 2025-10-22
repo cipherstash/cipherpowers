@@ -95,7 +95,6 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                 // Parse language tag properly using whitespace splitting
                 let parts: Vec<&str> = code_block_lang.split_whitespace().collect();
                 let is_bash = parts.first().is_some_and(|&lang| lang == "bash");
-                let quiet = parts.contains(&"quiet");
 
                 if is_bash {
                     if let Some(step) = current_step.as_mut() {
@@ -109,7 +108,6 @@ pub fn parse_workflow(markdown: &str) -> Result<Vec<Step>> {
                         }
                         step.command = Some(Command {
                             code: code_block_content.trim().to_string(),
-                            quiet,
                         });
                     }
                 }
@@ -452,7 +450,7 @@ mise run test
 
 ## 2. Check status
 
-```bash quiet
+```bash
 git status
 ```
 "#;
@@ -460,11 +458,9 @@ git status
             let steps = parse_workflow(markdown).unwrap();
             assert!(steps[0].command.is_some());
             assert_eq!(steps[0].command.as_ref().unwrap().code, "mise run test");
-            assert!(!steps[0].command.as_ref().unwrap().quiet);
 
             assert!(steps[1].command.is_some());
             assert_eq!(steps[1].command.as_ref().unwrap().code, "git status");
-            assert!(steps[1].command.as_ref().unwrap().quiet);
         }
 
         #[test]
@@ -510,33 +506,18 @@ echo "second"
         }
 
         #[test]
-        fn test_code_block_bashquiet_not_quiet() {
-            // "bashquiet" (no space) should NOT be treated as quiet
+        fn test_code_block_language_must_be_bash() {
+            // Non-bash code blocks should be ignored
             let markdown = r#"
 ## 1. Test
 
-```bashquiet
-echo test
+```python
+print("test")
 ```
 "#;
             let steps = parse_workflow(markdown).unwrap();
-            // Should not parse as bash at all since language is "bashquiet" not "bash"
+            // Should not parse non-bash code blocks
             assert!(steps[0].command.is_none());
-        }
-
-        #[test]
-        fn test_code_block_bash_quiet_is_quiet() {
-            // Verify the fix: "bash quiet" (with space) should be quiet
-            let markdown = r#"
-## 1. Test
-
-```bash quiet
-echo test
-```
-"#;
-            let steps = parse_workflow(markdown).unwrap();
-            assert!(steps[0].command.is_some());
-            assert!(steps[0].command.as_ref().unwrap().quiet);
         }
 
         #[test]
