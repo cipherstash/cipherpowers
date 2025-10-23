@@ -283,7 +283,7 @@ mise run check
 ## Related Practices
 
 **Before using this skill:**
-- Read: `${CLAUDE_PLUGIN_ROOT}/standards/development.md` - Code structure principles
+- Read: `${CLAUDE_PLUGIN_ROOT}/principles/development.md` - Code structure principles
 - Read: `${CLAUDE_PLUGIN_ROOT}/principles/testing.md` - Testing principles
 
 **After migration:**

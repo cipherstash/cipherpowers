@@ -30,7 +30,7 @@ The goal of code reviews is not to simply find errors, but to foster a culture o
 6.  **Highlight good code**
     Call out code that exemplifies quality. Specific examples reinforce good practices and build team culture. Look for: clear abstractions, effective tests, thoughtful design, clear naming.
 
-## Review Checklist & Severity
+## Review checklist & severity
 
 You will evaluate code and categorize feedback into the following severity levels.
 
@@ -140,9 +140,9 @@ When writing reviews, call out specific examples that demonstrate:
 - Well-structured PR descriptions explaining changes
 - Proactive identification of edge cases
 
-## Project Configuration
+## Project configuration
 
-### Code Review File
+### Code review file
 
 **Template**
 `plugin/templates/code-review-template.md`

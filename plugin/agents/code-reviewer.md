@@ -22,7 +22,7 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
     3. **Project Standards** (what quality looks like):
        - Code Review Standards: ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
        - Development Standards: ${CLAUDE_PLUGIN_ROOT}principles/development.md
-       - Testing Standards: ${CLAUDE_PLUGIN_ROOT}standards/testing.md
+       - Testing Standards: ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
     4. **Project Context**:
        - README.md: @README.md

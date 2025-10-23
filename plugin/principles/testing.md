@@ -48,6 +48,9 @@ For mathematical operations, algorithms with invariants, or domain logic with ma
 **Example pattern:**
 
 ```rust
+use proptest::prelude::*;
+use approx::assert_relative_eq;
+
 // Example-based test: Documents specific known case
 #[test]
 fn test_currency_conversion_known_case() {
