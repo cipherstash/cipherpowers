@@ -27,7 +27,7 @@ Analysis and planning may be merged into a single step if the work is well-under
 
 In practice, implementation and verification are an iterative feedback loop. We implement and verify each task in turn.
 
-## Executable Workflows
+## Executable workflows
 
 Workflows can be written in markdown format and executed using the `workflow` CLI tool (`plugin/tools/workflow`). This provides algorithmic enforcement of processes, preventing rationalization under pressure.
 
@@ -40,7 +40,7 @@ Workflows can be written in markdown format and executed using the `workflow` CL
 - Creating workflows: `plugin/skills/workflow/creating-workflows/SKILL.md`
 - Executing workflows: `plugin/skills/workflow/executing-workflows/SKILL.md`
 
-## Workflow Syntax
+## Workflow syntax
 
 Executable workflows use clean markdown with ALLCAPS keywords and minimal syntax.
 
@@ -91,7 +91,7 @@ Are changes focused on single logical change?
 - FAIL: GOTO 5
 ```
 
-### Implicit Defaults
+### Implicit defaults
 
 Steps without explicit conditionals use defaults:
 - **Command steps:** PASS→CONTINUE, FAIL→STOP
@@ -99,7 +99,7 @@ Steps without explicit conditionals use defaults:
 
 Only override when behavior differs from defaults.
 
-### Atomic Conditional Principle
+### Atomic conditional principle
 
 **Either:**
 - No list → Use implicit defaults
@@ -142,7 +142,7 @@ workflow --guided workflow.md
 - Keywords are ALLCAPS
 - No "Step" keyword in headers
 
-### Example Workflow
+### Example workflow
 
 ```markdown
 # Git Commit Readiness

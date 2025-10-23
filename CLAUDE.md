@@ -81,6 +81,7 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - `plugin/templates/agent-template.md` - Agent structure with persuasion principles
 - `plugin/templates/practice-template.md` - Practice structure with standards + config pattern
 - `plugin/templates/skill-template.md` - Practice structure with standards + config pattern
+- `plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 

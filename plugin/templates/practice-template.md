@@ -33,7 +33,7 @@ version: 1.0.0
 - Command: `[specific command]`
 - Requirements: [what must pass]
 
-**[Another task type]:**
+**[Task type]:**
 - Command: `[specific command]`
 - Requirements: [what must pass]
 

@@ -29,6 +29,14 @@ version: 1.0.0
   - Explain usage
   - Structure logically, grouping related topics together
 
+4. Use readable formatting patterns:
+  - For definition lists or titled items, separate titles from descriptions:
+    ```markdown
+    1. **Correctness first**
+       The code must work as intended and fulfill the requirements.
+    ```
+  - This makes titles stand out and improves scannability
+
 ## README guidelines
 
 The project README.md should include:

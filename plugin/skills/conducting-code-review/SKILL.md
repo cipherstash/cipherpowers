@@ -20,31 +20,39 @@ Use this algorithm to determine if code review is required before merge/PR/compl
 Have you made commits to a feature branch?
 
 - PASS: CONTINUE
-- FAIL: GOTO 5
+- FAIL: GOTO 6
 
 ## 2. Check for existing review
 
 Have these commits been reviewed?
 
-- PASS: GOTO 5
-- FAIL: CONTINUE
+- PASS: CONTINUE
+- FAIL: GOTO 4
 
-## 3. Check for completion
+## 3. Check for change request
 
-Are you about to merge, create PR, or mark work complete?
+If the commits have been reviewed, were changes requested due to BLOCKING issues?
 
 - PASS: CONTINUE
 - FAIL: GOTO 5
 
-## 4. Request code review
+## 4. Check for completion
+
+Are you about to merge, create PR, or mark work complete?
+
+- PASS: CONTINUE
+- FAIL: GOTO 6
+
+## 5. Request code review
 
 Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
 
-STOP - do not merge/PR/complete until review done
+STOP - Work is not complete without code review.
 
-## 5. Continue
+## 6. Continue
 
 No commits OR already reviewed OR still working - continue
+
 
 ### INVALID Conditions for Skipping Review
 

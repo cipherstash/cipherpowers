@@ -11,7 +11,7 @@ version: 1.0.0
 
 Our goal is to create software that is modular, maintainable, & extensible.
 
-## Core Principles
+## Core principles
 
 Simple (not elegant)
 Consistent (not stamped with individuality)
@@ -55,18 +55,4 @@ Documented (with the why)
   - Avoid unnecessary comments
   - Follow doc comment conventions for your language
   - Use doc tests where appropriate
-
-
-### File Structure
-- Keep files focused on a single responsibility
-- Keep code modular
-- Group related functionality together
-- Use consistent naming conventions
-
-
-### Code Structure
-
-- Objects and functions should have only one single responsibility
-- Use encapsulation to ensure loose coupling
-- Minimise dependencies between modules for flexibility
 

@@ -140,7 +140,7 @@ retrieved = "2025-10-01"
 </specification>
 
 <rationale>
-  ## Why Use Conventional Commits
+  ## Why use Conventional Commits
 
   * Automatically generating CHANGELOGs.
   * Automatically determining a semantic version bump (based on the types of commits landed).
