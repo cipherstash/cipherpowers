@@ -46,7 +46,12 @@ This runs:
 - Checks (`mise run check`)
 - Build (`mise run build`)
 
-**Fix any failures before proceeding.**
+
+**If there are failures or warnings:**
+- Stop
+- Do not continue
+- Report all failures or warnings
+- Ask user: Continue with commit?
 
 #### 2. Check staging status
 
