@@ -17,7 +17,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - @README.md
       - @CLAUDE.md
 
-      YOU MUST ALWAYS READ these practices:
+      YOU MUST ALWAYS READ these principles:
       - ${CLAUDE_PLUGIN_ROOT}principles/development.md
       - ${CLAUDE_PLUGIN_ROOT}principles/testing.md
       - ${CLAUDE_PLUGIN_ROOT}standards/rust/microsoft-rust-guidelines.md
@@ -25,8 +25,10 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       YOU MUST ALWAYS READ these skills:
       - Test-Driven Development (TDD)
       - Testing Anti-Patterns
-      - Code Review Reception
-      - Using Git Worktrees
+
+      YOU MUST READ the `Code Review Reception` skill if addressing code review feedback.
+      YOU MUST READ the `Using Git Worktrees` skill if using git worktrees.
+
     </context>
 
     <available_tools>
