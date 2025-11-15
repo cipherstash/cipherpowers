@@ -45,7 +45,7 @@ Are you about to merge, create PR, or mark work complete?
 
 ## 5. Request code review
 
-Use `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+Use `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
 
 STOP - Work is not complete without code review.
 
@@ -84,7 +84,7 @@ Answer: YES. "Are tests passing?" is NOT A VALID CONDITION
 ## Quick Reference
 
 **Before starting:**
-1. Read upstream skill: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+1. Read upstream skill: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
 2. Read project practices: `${CLAUDE_PLUGIN_ROOT}standards/code-review.md`
 
 **Core workflow:**
@@ -98,7 +98,7 @@ Answer: YES. "Are tests passing?" is NOT A VALID CONDITION
 ### Prerequisites
 
 Read these before conducting review:
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md` - Understand requester expectations
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md` - Understand requester expectations
 - `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` - Standards, severity levels, project commands
 
 ### Step-by-Step Workflow
@@ -180,10 +180,10 @@ See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
 ## Related Skills
 
 **Before using this skill:**
-- Requesting Code Review: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md`
+- Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
 
 **When receiving feedback on your review:**
-- Code Review Reception: `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/receiving-code-review/SKILL.md`
+- Code Review Reception: `${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md`
 
 ## Testing This Skill
 

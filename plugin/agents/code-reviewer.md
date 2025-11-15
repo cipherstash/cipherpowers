@@ -13,8 +13,8 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
     YOU MUST ALWAYS READ IN THIS ORDER:
 
     1. **Upstream Skills** (universal methodology):
-       - Requesting Code Review: @${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/requesting-code-review/SKILL.md
-       - Code Review Reception: @${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/receiving-code-review/SKILL.md
+       - Requesting Code Review: @${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md
+       - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md
 
     2. **Local Skill** (complete workflow):
        - Conducting Code Review: @skills/conducting-code-review/SKILL.md

@@ -37,8 +37,8 @@ Workflows can be written in markdown format and executed using the `workflow` CL
 
 **See also:**
 - Tool documentation: `plugin/tools/workflow/README.md`
-- Creating workflows: `plugin/skills/workflow/creating-workflows/SKILL.md`
-- Executing workflows: `plugin/skills/workflow/executing-workflows/SKILL.md`
+- Creating workflows: `plugin/skills/creating-workflows/SKILL.md`
+- Executing workflows: `plugin/skills/executing-workflows/SKILL.md`
 
 ## Workflow syntax
 

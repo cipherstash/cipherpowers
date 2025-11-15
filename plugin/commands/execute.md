@@ -130,7 +130,7 @@ This command orchestrates plan execution in main Claude context, dispatching to 
 
 ### 1. Follow the executing-plans skill
 
-Read: `@${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md`
+Read: `@${CLAUDE_PLUGIN_ROOT}plugin/skills/executing-plans/SKILL.md`
 
 This skill provides:
 - Plan loading and critical review
@@ -471,9 +471,9 @@ If user updates plan file during execution:
 ## Related
 
 **Skills:**
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` - Core execution workflow
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/executing-plans/SKILL.md` - Core execution workflow
 - `${CLAUDE_PLUGIN_ROOT}plugin/skills/selecting-agents/SKILL.md` - Agent selection guide
-- `${CLAUDE_PLUGIN_ROOT}plugin/skills/documentation/capturing-learning/SKILL.md` - Retrospective workflow
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/capturing-learning/SKILL.md` - Retrospective workflow
 
 **Practices:**
 - `${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md` - Review standards and severity levels

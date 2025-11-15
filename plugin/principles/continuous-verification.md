@@ -214,7 +214,7 @@ Task is now complete.
 ## References
 
 **Related Skills:**
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/verification/verification-before-completion/SKILL.md` - Final verification checklist
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/verification-before-completion/SKILL.md` - Final verification checklist
 - `${CLAUDE_PLUGIN_ROOT}/workflows/test-check-build.md` - Algorithmic verification workflow
 
 **Related Practices:**

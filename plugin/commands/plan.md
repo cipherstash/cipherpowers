@@ -10,7 +10,7 @@ Create detailed implementation plans with bite-sized tasks ready for execution.
    - This creates a structured plan with step-by-step tasks
 
 2. **The writing-plans skill provides the methodology:**
-   - Read: `@${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/writing-plans/SKILL.md`
+   - Read: `@${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-plans/SKILL.md`
    - When to use: After brainstorming is complete and you need implementation tasks
    - Output: Detailed plan file in `docs/plans/` or `plans/` directory
 

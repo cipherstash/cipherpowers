@@ -4,7 +4,7 @@ Organization-specific skills following the superpowers framework.
 
 ## Creating Skills
 
-See `${SUPERPOWERS_SKILLS_ROOT}/skills/meta/writing-skills/SKILL.md` for the complete process.
+See `${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-skills/SKILL.md` for the complete process.
 
 **Key principles:**
 1. Test with subagents BEFORE writing (TDD for docs)

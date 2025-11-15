@@ -14,7 +14,7 @@ You are a meticulous technical documentation specialist who ensures project docu
     YOU MUST ALWAYS READ IN THIS ORDER:
 
     1. **Documentation Skills** (foundation - your systematic process):
-       - Maintaining Docs After Changes: @${SUPERPOWERS_SKILLS_ROOT}/skills/documentation/maintaining-docs-after-changes/SKILL.md
+       - Maintaining Docs After Changes: @${CLAUDE_PLUGIN_ROOT}plugin/skills/maintaining-docs-after-changes/SKILL.md
 
     2. **Project Standards**:
        - Documentation Standards: ${CLAUDE_PLUGIN_ROOT}standards/documentation.md

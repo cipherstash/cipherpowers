@@ -18,7 +18,7 @@ YOU MUST follow this exact workflow. No exceptions. No shortcuts.
 **READ these files in order:**
 
 1. **Validation workflow (REQUIRED):**
-   @${CLAUDE_PLUGIN_ROOT}plugin/skills/collaboration/validating-review-feedback/SKILL.md
+   @${CLAUDE_PLUGIN_ROOT}plugin/skills/validating-review-feedback/SKILL.md
 
 2. **Severity definitions (REQUIRED):**
    @${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md

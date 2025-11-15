@@ -87,7 +87,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - Not for "it's obvious it works"
       - Delete means delete - don't keep as "reference"
 
-      See skills/testing/test-driven-development for details.
+      See `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md` for details.
 
       ### 4. Project Task Execution
 

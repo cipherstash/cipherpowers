@@ -141,7 +141,7 @@ Answer: NO → Go to Step 9 (split into multiple commits)
 - Step 4: "Is documentation updated?" → YES/NO (not "will users notice?")
 - Step 5: "Do changes serve a single atomic purpose?" → YES/NO (not "is it close enough?")
 
-**Evidence:** Based on `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md` pattern showing 0% → 100% compliance improvement in pressure testing.
+**Evidence:** Based on `plugin/skills/algorithmic-command-enforcement/SKILL.md` pattern showing 0% → 100% compliance improvement in pressure testing.
 
 ## Common Failure Modes Prevented
 
@@ -183,7 +183,7 @@ Pressure test scenarios: `docs/tests/git-commit-pressure-scenarios.md`
 
 ## Related Skills
 
-**Algorithmic pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
+**Algorithmic pattern:** `plugin/skills/algorithmic-command-enforcement/SKILL.md`
 
 **Git workflow:** See `git-guidelines.md` for branching, commit splitting details
 

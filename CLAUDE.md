@@ -30,19 +30,19 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 **Organization-specific skills:**
 
 **Workflow:**
-- **Executing workflows** (`skills/workflow/executing-workflows/`) - Use workflow executor tool with enforcement or guided modes
-- **Creating workflows** (`skills/workflow/creating-workflows/`) - Design and write markdown-based executable workflows
+- **Executing workflows** (`skills/executing-workflows/`) - Use workflow executor tool with enforcement or guided modes
+- **Creating workflows** (`skills/creating-workflows/`) - Design and write markdown-based executable workflows
 
 **Documentation:**
-- **Maintaining docs** (`skills/documentation/maintaining-docs-after-changes/`) - Two-phase sync process
-- **Capturing learning** (`skills/documentation/capturing-learning/`) - Retrospective capture process
+- **Maintaining docs** (`skills/maintaining-docs-after-changes/`) - Two-phase sync process
+- **Capturing learning** (`skills/capturing-learning/`) - Retrospective capture process
 
 **Meta:**
-- **Algorithmic enforcement** (`skills/meta/algorithmic-command-enforcement/`) - Why algorithms > imperatives
+- **Algorithmic enforcement** (`skills/algorithmic-command-enforcement/`) - Why algorithms > imperatives
 - **Using skills** (`skills/using-skills/`) - CipherPowers skill discovery
 
 **Testing:**
-- **TDD enforcement** (`skills/testing/tdd-enforcement-algorithm/`) - Prevent code before tests
+- **TDD enforcement** (`skills/tdd-enforcement-algorithm/`) - Prevent code before tests
 
 **Collaboration:**
 - **Code review** (`skills/conducting-code-review/`) - Complete review workflow
@@ -153,8 +153,8 @@ Skills enable discovery:
 
 **Example: Documentation Structure**
 - `plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
-- `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
-- `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
+- `skills/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
+- `skills/capturing-learning/` = Workflow (retrospective capture process)
 - `plugin/commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
 - `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
@@ -162,7 +162,7 @@ All five components work together without duplication. Change documentation stan
 
 **Example: Plan Execution with Automatic Agent Selection**
 - `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
@@ -258,7 +258,7 @@ Commands and agents reference skills and practices using environment variables:
 
 When creating or editing skills in `plugin/skills/`:
 
-1. **Read the meta-skill:** `${SUPERPOWERS_SKILLS_ROOT}/skills/meta/writing-skills/SKILL.md`
+1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider upstream:** Universal skills may be contributed to superpowers later
@@ -338,7 +338,7 @@ CipherPowers captures significant learnings from development work to build organ
 - When multiple approaches were tried
 - When work took longer than expected
 - When discovering non-obvious insights
-- See `plugin/skills/documentation/capturing-learning/SKILL.md` for methodology
+- See `plugin/skills/capturing-learning/SKILL.md` for methodology
 
 ## Algorithmic Workflow Enforcement
 
@@ -381,7 +381,7 @@ workflow --dry-run path/to/workflow.md
 - Show commands without executing, display prompts, assume success
 - Use for: testing workflows before actual execution
 
-**Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
+**Pattern:** `plugin/skills/algorithmic-command-enforcement/SKILL.md`
 
 **Implemented algorithms:**
 1. **Git Commit Readiness** - `plugin/workflows/git-commit.md`
@@ -392,7 +392,7 @@ workflow --dry-run path/to/workflow.md
    - 4-step algorithm: tests pass → checks pass → build succeeds
    - Essential quality gates used by commit, code review, and execute workflows
 
-3. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
+3. **TDD Enforcement** - `plugin/skills/tdd-enforcement-algorithm/SKILL.md`
    - Prevents code before tests via binary "Does failing test exist?" check
    - Recovery mandates deleting untested code (no sunk cost exceptions)
 
@@ -521,7 +521,7 @@ Let me explain the actual requirement before you continue
 - Complete current batch
 - Continue with work in progress
 
-**Reference:** See `plugin/skills/collaboration/emergency-stop/SKILL.md` for full protocol details.
+**Reference:** See `plugin/skills/emergency-stop/SKILL.md` for full protocol details.
 
 ## Team Usage
 
