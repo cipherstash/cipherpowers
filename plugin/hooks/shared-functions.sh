@@ -61,14 +61,14 @@ run_gate() {
 handle_action() {
   local action="$1"
   local gate_name="$2"
-  local status="$3"
+  local gate_status="$3"
   local output="$4"
   local config="$5"
 
   case "$action" in
     CONTINUE)
       # Continue to next gate in sequence
-      if [ "$status" = "failed" ]; then
+      if [ "$gate_status" = "failed" ]; then
         jq -n --arg msg "⚠️ Gate '\''$gate_name'\'' failed but continuing:\n$output" '{
           additionalContext: $msg
         }'
@@ -78,7 +78,7 @@ handle_action() {
 
     BLOCK)
       # Block execution, prevent subsequent gates
-      jq -n --arg reason "Gate '\''$gate_name'\'' $status. Output:\n$output" '{
+      jq -n --arg reason "Gate '\''$gate_name'\'' $gate_status. Output:\n$output" '{
         decision: "block",
         reason: $reason
       }'
@@ -87,7 +87,7 @@ handle_action() {
 
     STOP)
       # Stop Claude entirely
-      jq -n --arg msg "Gate '\''$gate_name'\'' $status. Stopping Claude.\n$output" '{
+      jq -n --arg msg "Gate '\''$gate_name'\'' $gate_status. Stopping Claude.\n$output" '{
         continue: false,
         message: $msg
       }'
