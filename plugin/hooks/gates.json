@@ -1,0 +1,32 @@
+{
+  "gates": {
+    "check": {
+      "description": "Run project quality checks (formatting, linting, types)",
+      "command": "mise run check",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    },
+    "test": {
+      "description": "Run project test suite",
+      "command": "mise run test",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    },
+    "build": {
+      "description": "Run project build",
+      "command": "mise run build",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    }
+  },
+  "hooks": {
+    "PostToolUse": {
+      "enabled_tools": ["Edit", "Write", "mcp__serena__replace_symbol_body"],
+      "gates": ["check"]
+    },
+    "SubagentStop": {
+      "enabled_agents": ["rust-engineer", "code-reviewer", "ultrathink-debugger"],
+      "gates": ["check", "test"]
+    }
+  }
+}
