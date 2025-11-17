@@ -42,9 +42,9 @@ ${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build
 ```
 
 This runs:
-- Tests (run the project's test suite - see CLAUDE.md for specific command)
-- Checks (run the project's quality checks - see CLAUDE.md for specific command)
-- Build (build/compile the project - see CLAUDE.md for specific command)
+- Run project test command
+- Run project check command
+- Run project build command
 
 
 **If there are failures or warnings:**

@@ -76,7 +76,7 @@ Task("Fix tool-approval-race-conditions.test.ts failures")
 When agents return:
 - Read each summary
 - Verify fixes don't conflict
-- Run full test suite
+- Run project test command
 - Integrate all changes
 
 ## Agent Prompt Structure

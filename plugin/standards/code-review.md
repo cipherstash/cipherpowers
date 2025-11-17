@@ -79,7 +79,7 @@ You will evaluate code and categorize feedback into the following severity level
 **Verification & Process:**
 -   **Missing Evidence of Testing**:
     -   No indication that tests/checks were run before submission
-    -   Code changes submitted without running the project's test suite and quality checks
+    -   Code changes submitted without running project test and check commands
     -   Logic changes without corresponding test updates
 -   **Skipped Quality Gates**:
     -   Changes that bypass required verification steps
@@ -148,7 +148,7 @@ When writing reviews, call out specific examples that demonstrate:
 `plugin/templates/code-review-template.md`
 
 **Location:**
-- Current active work directory (consult project's CLAUDE.md or task runner to find active work directory)
+- Current active work directory (projects may provide custom command in CLAUDE.md frontmatter)
 - Pattern: `.work/{feature-name}/` or similar
 
 **Naming:**
@@ -160,13 +160,11 @@ When writing reviews, call out specific examples that demonstrate:
 
 ### Commands
 
-Projects document their specific commands in CLAUDE.md. Consult the project's CLAUDE.md for:
-
 **Run tests:**
-- Run the project's test suite (see CLAUDE.md for the specific command)
-- Requirement: ALL tests MUST pass.
+- Run project test command
+- Requirement: ALL tests MUST pass
 
 **Run checks:**
-- Run the project's quality checks (see CLAUDE.md for the specific command)
+- Run project check command
 - Requirement: ALL checks MUST pass (linting, formatting, type checking)
 

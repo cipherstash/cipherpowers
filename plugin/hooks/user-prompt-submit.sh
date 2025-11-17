@@ -45,51 +45,31 @@ get_command() {
   ' CLAUDE.md
 }
 
-# Detect which commands are needed based on context
+# Detect which commands are needed based on canonical phrases
 detect_needed_commands() {
   local needs=""
 
-  # Command-specific detection (slash commands)
-  case "$COMMAND" in
-    /commit)
-      # Commits need all quality gates
-      needs="test check build"
-      ;;
-    /execute)
-      # Plan execution needs all verification
-      needs="test check build"
-      ;;
-    /code-review)
-      # Reviews need test and check
-      needs="test check"
-      ;;
-    /brainstorm|/plan)
-      # Planning doesn't need commands
-      needs=""
-      ;;
-  esac
+  if [ -z "$USER_MESSAGE" ]; then
+    return
+  fi
 
-  # Message content analysis (if no specific command matched)
-  if [ -z "$needs" ] && [ -n "$USER_MESSAGE" ]; then
-    # Check for test-related keywords
-    if echo "$USER_MESSAGE" | grep -qiE "\b(test|tests|testing|spec|verify|verification)\b"; then
-      needs="$needs test"
-    fi
+  # Detect canonical command phrases
+  # Pattern: "Run project <type> command"
 
-    # Check for check-related keywords
-    if echo "$USER_MESSAGE" | grep -qiE "\b(lint|check|checks|format|quality|clippy|typecheck)\b"; then
-      needs="$needs check"
-    fi
+  if echo "$USER_MESSAGE" | grep -qiE "run project test command"; then
+    needs="$needs test"
+  fi
 
-    # Check for build-related keywords
-    if echo "$USER_MESSAGE" | grep -qiE "\b(build|compile|package)\b"; then
-      needs="$needs build"
-    fi
+  if echo "$USER_MESSAGE" | grep -qiE "run project check command"; then
+    needs="$needs check"
+  fi
 
-    # Check for run-related keywords
-    if echo "$USER_MESSAGE" | grep -qiE "\b(run|start|execute the application)\b"; then
-      needs="$needs run"
-    fi
+  if echo "$USER_MESSAGE" | grep -qiE "run project build command"; then
+    needs="$needs build"
+  fi
+
+  if echo "$USER_MESSAGE" | grep -qiE "run project run command"; then
+    needs="$needs run"
   fi
 
   # Remove duplicates and trim

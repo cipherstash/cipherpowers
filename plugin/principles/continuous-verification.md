@@ -19,28 +19,13 @@ Run verification checks **during development**, not just before merge.
 
 ## Watch mode (recommended)
 
-For active development, run the project's quality checks (see CLAUDE.md for the specific command).
+For active development: **Run project check command**
 
 This typically runs all verification steps:
 - Fast compilation check
 - Unit tests
 - Linting (warnings as errors)
 - Formatting verification
-
-**Language-specific examples:**
-
-Projects document their specific commands in CLAUDE.md. Common patterns:
-
-```bash
-# Rust projects
-cargo check && cargo test --lib && cargo clippy -- -D warnings && cargo fmt --check
-
-# Python projects
-mypy . && pytest && ruff check . && black --check .
-
-# TypeScript projects
-tsc --noEmit && jest && eslint . && prettier --check .
-```
 
 ## Why during development
 
@@ -66,7 +51,7 @@ tsc --noEmit && jest && eslint . && prettier --check .
 
 **Scenario with continuous verification:**
 1. Agent implements function 1
-2. Agent runs quality checks (see CLAUDE.md) → 2 failures
+2. Agent: Run project check command → 2 failures
 3. Agent fixes immediately (2 minutes)
 4. Repeat for functions 2-5
 5. All tests pass, documentation accurate
@@ -93,7 +78,7 @@ Verification is part of **definition-of-done**, not cleanup.
 Task complete when:
 - [ ] Implementation done
 - [ ] Tests written
-- [ ] Verification passed (run quality checks per CLAUDE.md)
+- [ ] Verification passed (run project check command)
 - [ ] Documentation updated
 ```
 
@@ -143,7 +128,7 @@ If you're thinking ANY of these, you're violating continuous verification:
 | "Will fix clippy warnings before commit" | You'll forget, or run out of time |
 | "Code compiles, good enough for now" | Clippy/tests find bugs that compiler doesn't |
 
-**All of these mean:** STOP. Run quality checks (see CLAUDE.md for command). NOW.
+**All of these mean:** STOP. Run project check command. NOW.
 
 ## Evidence from retrospectives
 
@@ -159,19 +144,12 @@ If you're thinking ANY of these, you're violating continuous verification:
 
 ### Commands
 
-**Quality checks command:**
-
-Projects document their quality checks command in CLAUDE.md (see `Development Commands` section).
+**Quality checks:** Run project check command
 
 - What it runs: ALL verification steps with project-specific configuration
 - Requirement: MUST pass before marking task complete
 - Never skip this command
-
-**Why project-defined commands instead of direct tool commands:**
-- Project-specific configuration (flags, options)
-- Consistent workflow across different tools/languages
-- One command, all checks
-- Easier to enforce algorithmically
+- Command automatically injected via user-prompt-submit hook from CLAUDE.md frontmatter
 
 ## Future: Enforcement via workflow
 
@@ -191,7 +169,7 @@ Is implementation complete?
 
 ## 2. Run verification
 
-Run the project's quality checks (see CLAUDE.md for specific command)
+Run project check command
 
 - PASS: CONTINUE
 - FAIL: STOP fix failures first

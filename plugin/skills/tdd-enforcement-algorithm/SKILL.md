@@ -59,7 +59,7 @@ STOP writing implementation code. Write failing test first.
 
 ## 5. Verify test fails
 
-Run the project's test suite (see CLAUDE.md for specific command)
+Run project test command
 
 - PASS (test runs and fails as expected): GOTO 6
 - FAIL (test passes or doesn't run): GOTO 4 (fix test)

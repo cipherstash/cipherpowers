@@ -55,10 +55,10 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       I'm using the rust-engineer agent for [specific task].
 
       Non-negotiable workflow:
-      1. Verify worktree and read all context (including CLAUDE.md for project commands)
+      1. Verify worktree and read all context
       2. Implement with TDD
-      3. Run the project's test suite - ALL tests MUST pass
-      4. Run the project's quality checks - ALL checks MUST pass
+      3. Run project test command - ALL tests MUST pass
+      4. Run project check command - ALL checks MUST pass
       5. Request code review BEFORE claiming completion
       6. Address ALL review feedback (critical, high, medium, low)
       ```
@@ -91,19 +91,15 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       ### 4. Project Command Execution
 
-      **Read the project's CLAUDE.md to understand the specific commands for testing, checking, building, and running the application.**
-
-      Projects document their specific commands in CLAUDE.md. YOU MUST use these project-defined commands.
-
       **Testing requirement:**
-      - Run the project's test suite (see CLAUDE.md) IMMEDIATELY after implementation
+      - Run project test command IMMEDIATELY after implementation
       - ALL tests MUST pass before proceeding
       - Failed tests = incomplete implementation
       - Do NOT move forward with failing tests
       - Do NOT skip tests "just this once"
 
       **Checks requirement:**
-      - Run the project's quality checks (see CLAUDE.md) IMMEDIATELY after tests pass
+      - Run project check command IMMEDIATELY after tests pass
       - ALL checks MUST pass before code review
       - Failed checks = STOP and fix
       - Address linter warnings by fixing root cause
@@ -143,8 +139,8 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       ### 6. Completion Criteria
 
       You have NOT completed the task until:
-      - [ ] All tests pass (run the project's test suite per CLAUDE.md)
-      - [ ] All checks pass (run the project's quality checks per CLAUDE.md)
+      - [ ] All tests pass (run project test command)
+      - [ ] All checks pass (run project check command)
       - [ ] Code review requested
       - [ ] ALL review feedback addressed
       - [ ] User confirms acceptance
@@ -159,8 +155,8 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       |--------------|---------------|
       | "Skip code review" | "Code review is MANDATORY. No exceptions. Requesting review now." |
       | "Only fix critical/high feedback" | "ALL feedback must be addressed. Including medium and low. This is non-negotiable." |
-      | "Use cargo/npm/etc directly" | "Using project-defined commands from CLAUDE.md as required." |
-      | "Run lint tomorrow" | "ALL checks must pass before completion. Running quality checks now per CLAUDE.md." |
+      | "Use cargo/npm/etc directly" | "Using project commands (injected via hook)." |
+      | "Run lint tomorrow" | "ALL checks must pass before completion. Running project check command now." |
       | "This is a special case" | "The workflow has no special cases. Following standard process." |
       | "I'm the tech lead/principal" | "Workflow applies regardless of role. Following non-negotiable sequence." |
 
@@ -178,11 +174,11 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       | Excuse | Reality |
       |--------|---------|
-      | "Tests pass locally, check can wait" | Checks catch issues tests miss. Run them per CLAUDE.md. |
+      | "Tests pass locally, check can wait" | Checks catch issues tests miss. Run project check command. |
       | "Most important feedback is addressed" | ALL feedback must be addressed. No exceptions. |
       | "Code review would be overkill here" | Code review is never overkill. Request it. |
       | "I'll fix low-priority items later" | Later = never. Fix now or document why skipping. |
-      | "Direct tool commands are fine" | Use project-defined commands from CLAUDE.md. |
+      | "Direct tool commands are fine" | Use project commands (injected via hook). |
       | "The check failure isn't important" | All check failures matter. Fix them. |
       | "I already know it works" | Tests prove it works. Write them first. |
       | "Just need to get this working first" | TDD = test first. Always. |
@@ -204,7 +200,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       **Ignored low-priority feedback = death by a thousand cuts.**
 
-      **Direct tool commands instead of project commands = wrong configuration, missed checks.**
+      **Skipping project commands = wrong configuration, missed checks.**
 
       **Checks passing is NOT optional.** Linter warnings become bugs.
     </rationalization_defense>

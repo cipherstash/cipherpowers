@@ -2,7 +2,7 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
-**Note on project commands:** This command references the project's test suite and quality checks for validation. These commands should be documented in the project's CLAUDE.md file. The plugin is tool-agnostic and works with any build/test tooling (npm, cargo, mise, make, etc.).
+**Note:** This command uses canonical phrases "Run project test command" and "Run project check command" which are automatically injected by the user-prompt-submit hook from CLAUDE.md frontmatter.
 
 ## Decision Algorithm: When to Use This Command
 
@@ -319,9 +319,9 @@ Next: Address deferred items or create follow-up tasks?
    ```
 
    This runs:
-   - Tests (run the project's test suite - see CLAUDE.md for specific command)
-   - Checks (run the project's quality checks - see CLAUDE.md for specific command)
-   - Build (build/compile the project - see CLAUDE.md for specific command)
+   - Run project test command
+   - Run project check command
+   - Run project build command
 
    **If workflow fails:**
    - Report failure to user

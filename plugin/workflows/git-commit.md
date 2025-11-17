@@ -24,7 +24,7 @@ Run with: `workflow plugin/workflows/git-commit.md`
 
 Check if there are uncommitted changes in the working directory.
 
-- **Command:** See project's CLAUDE.md for the specific command, or use `git status`
+- **Command:** `git status`
 - **Result:**
   - PASS (changes exist): CONTINUE
   - FAIL (no changes): STOP - nothing to commit
@@ -160,14 +160,11 @@ Answer: NO → Go to Step 9 (split into multiple commits)
 - `test-check-build.md` - Runs tests, checks, and build (Step 3)
 
 **Commands:**
-Projects document their specific commands in CLAUDE.md. The workflow references:
-- **Check for changes** - Verify there are changes to commit (Step 1)
-- **Run tests** - Run the project's test suite (via test-check-build)
-- **Run checks** - Run quality checks: linting, formatting, type checking (via test-check-build)
-- **Build** - Verify code compiles/builds successfully (via test-check-build)
-
-**For your project:**
-Consult your project's CLAUDE.md for the specific commands for tests, checks, and build.
+The workflow references:
+- **Check for changes** - `git status` (Step 1)
+- **Run tests** - Run project test command (via test-check-build)
+- **Run checks** - Run project check command (via test-check-build)
+- **Build** - Run project build command (via test-check-build)
 
 ## Testing
 

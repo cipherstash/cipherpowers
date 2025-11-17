@@ -119,9 +119,9 @@ ${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build
 ```
 
 This runs:
-- Tests (run the project's test suite - see CLAUDE.md for specific command)
-- Checks (run the project's quality checks - see CLAUDE.md for specific command)
-- Build (build/compile the project - see CLAUDE.md for specific command)
+- Run project test command
+- Run project check command
+- Run project build command
 
 **Document results:** Note any failures explicitly in review output.
 
@@ -144,7 +144,7 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 **Get current work location:**
 
-Consult the project's CLAUDE.md for how to find the active work directory (may use task runner, directory convention, or other method).
+Projects may provide a command to find the active work directory (check CLAUDE.md frontmatter for custom commands).
 
 If no work tracking, save to root or ask user for location.
 

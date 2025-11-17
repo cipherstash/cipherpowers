@@ -46,9 +46,8 @@ rg "OldType" --type rust
 
 **Step 4: Run baseline tests**
 
-Run the project's test suite and quality checks (see CLAUDE.md for specific commands):
-- Tests: Run all tests to ensure they pass before starting
-- Checks: Run quality checks (linting, formatting, type checking)
+- Run project test command
+- Run project check command
 - Capture baseline to compare against
 
 ### Phase 2: Implementation
@@ -133,7 +132,7 @@ cargo check --all-targets
 
 **Step 2: Run all tests**
 
-Run the project's test suite (see CLAUDE.md for specific command)
+Run project test command
 - All unit tests must pass
 - All integration tests must pass
 
@@ -143,7 +142,7 @@ Run the project's test suite (see CLAUDE.md for specific command)
 
 **Step 4: Run checks**
 
-Run the project's quality checks (see CLAUDE.md for specific command)
+Run project check command
 - Linting, formatting, type checking
 
 **Step 5: Manual testing**
@@ -241,7 +240,7 @@ fn test_planning_system_queries() {
 mkdir -p docs/work/2025-10-23-type-safe-movement-state
 grep -r "MovementState" src/ > docs/work/2025-10-23-type-safe-movement-state/references.txt
 # Write integration test: tests/movement_integration.rs
-# Run tests to establish baseline (see CLAUDE.md for command)
+# Run project test command to establish baseline
 
 # Phase 2: Implementation
 # Create src/components/movement/states.rs with new MovementState
@@ -269,8 +268,8 @@ git commit -m "refactor: remove old MovementState definition"
 
 # Phase 5: Verification
 cargo check --all-targets
-# Run test suite - integration test MUST pass (see CLAUDE.md for command)
-# Run quality checks (see CLAUDE.md for command)
+# Run project test command - integration test MUST pass
+# Run project check command
 # Manual testing
 
 # Phase 6: Documentation
