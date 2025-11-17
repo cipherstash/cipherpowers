@@ -119,23 +119,33 @@ Actions determine what happens after a gate executes. An action can be:
 
 #### Gate Chaining
 
-Actions can reference other gates, creating execution chains:
+Actions can reference other gates, calling them like subroutines. After the chained gate completes, the original sequence resumes (if the chained gate returns CONTINUE).
 
 ```json
 {
-  "format": {
-    "on_pass": "check",
-    "on_fail": "STOP"
+  "gates": {
+    "format": {
+      "on_pass": "check",
+      "on_fail": "STOP"
+    },
+    "check": {
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
   },
-  "check": {
-    "on_pass": "CONTINUE",
-    "on_fail": "BLOCK"
+  "hooks": {
+    "SubagentStop": {
+      "gates": ["format", "test"]
+    }
   }
 }
 ```
 
-If `format` passes → runs `check` gate → if check passes → CONTINUE
-If `format` fails → STOP immediately
+Execution with gate chaining:
+- `format` passes → calls `check` gate (subroutine)
+- `check` passes → returns CONTINUE → sequence resumes → runs `test`
+- If `format` fails → STOP immediately (no test)
+- If `check` fails → BLOCK (halts sequence, no test)
 
 #### Execution Order
 
@@ -146,18 +156,41 @@ Gate execution follows these rules:
    - BLOCK prevents subsequent gates in the list from running
    - STOP halts everything immediately
    - CONTINUE proceeds to next gate in the list
-   - Gate reference chains to that gate (outcome passed to referenced gate)
-3. **Chaining supersedes sequence**: If action references a gate, that gate runs next (not the next gate in the list)
+   - Gate reference calls that gate like a subroutine
+3. **Chaining is a subroutine call**: When action references a gate, that gate executes and then the original sequence resumes
+
+Gate chaining behavior:
+- Chained gate executes immediately
+- Chained gate's action rules apply (CONTINUE/BLOCK/STOP/another chain)
+- If chained gate returns CONTINUE (default on_pass), original sequence resumes
+- If chained gate returns BLOCK/STOP, original sequence halts
 
 Example execution:
 ```json
-"gates": ["format", "test"]
+{
+  "gates": {
+    "check": {
+      "on_pass": "reticulate"
+    },
+    "reticulate": {
+      "description": "Reticulate splines"
+    }
+  },
+  "hooks": {
+    "SubagentStop": {
+      "gates": ["check", "test"]
+    }
+  }
+}
 ```
 
-- Run `format` gate
-  - If `format` passes and `on_pass: "check"` → run `check` gate (skips `test`)
-  - If `format` fails and `on_fail: "STOP"` → halt (skips `test`)
-  - If `format` passes and `on_pass: "CONTINUE"` → run `test` gate (next in list)
+Execution flow:
+1. Run `check` gate (first in sequence)
+2. Check passes → `on_pass: "reticulate"` calls reticulate gate
+3. Reticulate executes:
+   - If reticulate passes → CONTINUE (default) → sequence resumes
+   - If reticulate fails → BLOCK (default) → sequence halts
+4. If sequence resumed, run `test` gate (next in original sequence)
 
 #### Default Behavior
 
@@ -429,10 +462,11 @@ get_command() {
 - Example: Critical system failures or configuration errors
 
 **Gate Chaining** (action = gate name):
-- Executes the referenced gate immediately
-- Skips remaining gates in the original sequence
-- Outcome of chained gate determines next action
-- Example: `"on_pass": "check"` runs check gate after success
+- Executes the referenced gate immediately (like a subroutine call)
+- Original sequence resumes after chained gate completes
+- If chained gate returns CONTINUE, next gate in original sequence runs
+- If chained gate returns BLOCK/STOP, original sequence halts
+- Example: `gates: ["check", "test"]` with `check.on_pass: "reticulate"` → check passes → reticulate runs → if reticulate passes → test runs
 
 ### Hook Output Patterns
 
@@ -590,7 +624,7 @@ Projects opt into quality gates by:
 }
 ```
 
-**Gate chaining** (format → check → test):
+**Gate chaining as pipeline** (format → check → test):
 ```json
 {
   "gates": {
@@ -617,7 +651,35 @@ Projects opt into quality gates by:
   }
 }
 ```
-In this example, only "format" is listed in the gates array. If format passes, it chains to check. If check passes, it chains to test. This creates a pipeline without listing all gates explicitly.
+In this example, only "format" is listed in the gates array. If format passes, it chains to check. If check passes, it chains to test. This creates a pure pipeline without listing all gates explicitly.
+
+**Gate chaining as subroutine** (check → reticulate → test):
+```json
+{
+  "gates": {
+    "check": {
+      "description": "Quality checks",
+      "on_pass": "reticulate"
+    },
+    "reticulate": {
+      "description": "Reticulate splines"
+    },
+    "test": {
+      "description": "Test suite"
+    }
+  },
+  "hooks": {
+    "SubagentStop": {
+      "gates": ["check", "test"]
+    }
+  }
+}
+```
+Execution flow:
+1. Run `check` (first in sequence)
+2. If check passes → calls `reticulate` (subroutine)
+3. If reticulate passes → CONTINUE (default) → sequence resumes → runs `test`
+4. If reticulate fails → BLOCK (default) → sequence halts (test skipped)
 
 **Critical gates** (STOP on failure):
 ```json
