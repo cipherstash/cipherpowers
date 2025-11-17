@@ -26,7 +26,7 @@ run_gate() {
   fi
 
   # Get gate command from gates.json
-  local gate_cmd=$(jq -r ".gates.$gate_name.command // empty" "$config")
+  local gate_cmd=$(jq -r ".gates[\"$gate_name\"].command // empty" "$config")
 
   if [ -z "$gate_cmd" ]; then
     # Missing command field - STOP
@@ -38,9 +38,9 @@ run_gate() {
   fi
 
   # Get gate configuration
-  local on_pass=$(jq -r ".gates.$gate_name.on_pass // \"CONTINUE\"" "$config")
-  local on_fail=$(jq -r ".gates.$gate_name.on_fail // \"BLOCK\"" "$config")
-  local description=$(jq -r ".gates.$gate_name.description // \"\"" "$config")
+  local on_pass=$(jq -r ".gates[\"$gate_name\"].on_pass // \"CONTINUE\"" "$config")
+  local on_fail=$(jq -r ".gates[\"$gate_name\"].on_fail // \"BLOCK\"" "$config")
+  local description=$(jq -r ".gates[\"$gate_name\"].description // \"\"" "$config")
 
   # Run the gate
   local output
