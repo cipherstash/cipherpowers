@@ -117,7 +117,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`plugin/principles/`, `plugin/standards/`, `plugin/workflows/`)
+- Standards live in one place (`plugin/principles/`, `plugin/standards/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -200,7 +200,7 @@ The /execute command demonstrates:
 **CLAUDE_PLUGIN_ROOT**: Path to the cipherpowers plugin installation
 - Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
 - Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/standards/name.md`
-- Also used by `find-practices` tool for discovery
+- Use for all plugin-relative paths in commands and agents
 
 **SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
 - Provided by superpowers plugin
@@ -208,7 +208,7 @@ The /execute command demonstrates:
 
 **CIPHERPOWERS_MARKETPLACE_ROOT**: (Optional) Path to marketplace installation for shared practices
 - Set if using cipherpowers as a local marketplace
-- Enables `--upstream` flag in `find-practices`
+- Used for accessing shared practices from marketplace
 
 ## Directory Structure
 
@@ -223,12 +223,13 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **`./plugin/` - Plugin Content**
 - All content shipped with the plugin to users
-- **`plugin/principles/`, `plugin/standards/`, `plugin/workflows/`** - Coding standards, conventions, guidelines
+- **`plugin/principles/`, `plugin/standards/`** - Coding standards, conventions, guidelines
 - **`plugin/templates/`** - Templates for agents, practices, skills
 - **`plugin/agents/`** - Specialized subagent prompts
 - **`plugin/commands/`** - Slash commands
 - **`plugin/skills/`** - Organization-specific skills
-- **`plugin/tools/`** - Discovery and utility tools
+- **`plugin/hooks/`** - Quality enforcement hooks (PostToolUse, SubagentStop)
+- **`plugin/examples/`** - Example configurations and templates
 
 **Key distinction:**
 - `./docs/plans/` = Plans for building cipherpowers
@@ -255,25 +256,64 @@ CipherPowers integrates seamlessly with the superpowers plugin through Claude Co
 - No manual discovery scripts needed
 
 **Practices Discovery:**
-Custom `find-practices` tool (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
-- Searches `${CLAUDE_PLUGIN_ROOT}plugin/standards/` (local practices)
-- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/standards/` (marketplace practices, if available)
-- Extracts YAML frontmatter (name, description, when_to_use)
-- Flags: `--local`, `--upstream`, or default (both)
-
-**Usage:**
-```bash
-# Find practices
-./plugin/tools/find-practices "pattern"
-./plugin/tools/find-practices --local "pattern"    # cipherpowers only
-./plugin/tools/find-practices --upstream "pattern" # marketplace only
-```
+Browse `plugin/standards/` directory directly. Each practice includes YAML frontmatter with:
+- `name`: Practice name
+- `description`: Brief description
+- `when_to_use`: Guidance on when to apply
+- `applies_to`: Scope (all projects, specific languages, etc.)
 
 **Direct References:**
 Commands and agents reference skills and practices using environment variables:
 - `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 - Skills are invoked via Skill tool, not direct file references
+
+## Quality Hooks
+
+CipherPowers provides automated quality enforcement through Claude Code's hook system.
+
+**Hook Points:**
+- **PostToolUse**: Runs after code editing tools (Edit, Write, etc.)
+- **SubagentStop**: Runs when specialized agents complete their work
+
+**Configuration:**
+Quality hooks use project-level `gates.json` configuration files with priority:
+1. `.claude/gates.json` (recommended - project-specific)
+2. `gates.json` (project root)
+3. `${CLAUDE_PLUGIN_ROOT}/hooks/gates.json` (plugin default fallback)
+
+**Gate Actions:**
+- **CONTINUE**: Proceed (default on pass)
+- **BLOCK**: Prevent agent from proceeding (default on fail)
+- **STOP**: Stop Claude entirely
+- **{gate_name}**: Chain to another gate (subroutine call)
+
+**Setup:**
+```bash
+# Copy example configuration
+mkdir -p .claude
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
+
+# Customize for project's build tooling
+vim .claude/gates.json
+```
+
+**Example configurations:**
+- `examples/strict.json` - Block on all failures (production code)
+- `examples/permissive.json` - Warn only (prototyping)
+- `examples/pipeline.json` - Chained gates (format → check → test)
+
+**Documentation:**
+- `plugin/hooks/README.md` - Overview and examples
+- `plugin/hooks/SETUP.md` - Configuration guide
+- `plugin/hooks/INTEGRATION_TESTS.md` - Testing procedures
+
+**Benefits:**
+- Consistent quality enforcement across all agent work
+- Early issue detection at edit time or completion
+- Flexible per-gate actions (enforce, warn, stop, chain)
+- Tool-agnostic (works with npm, cargo, mise, make, etc.)
+- Self-contained project-level configuration
 
 ## Working with Skills in this Repository
 
@@ -308,10 +348,11 @@ When developing CipherPowers plugin components:
 **Directory Structure:**
 - `plugin/commands/` - Slash commands (thin dispatchers)
 - `plugin/agents/` - Specialized subagent prompts with enforced workflows
-- `plugin/principles/`, `plugin/standards/`, `plugin/workflows/` - Standards and project configuration
+- `plugin/principles/`, `plugin/standards/` - Standards and project configuration
 - `plugin/skills/` - Organization-specific skills
+- `plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
 - `plugin/templates/` - Templates for agents, practices, and skills
-- `plugin/tools/` - Discovery and utility tools
+- `plugin/examples/` - Example configurations and templates
 
 **Key Principles:**
 - Commands are thin dispatchers that reference agents or skills
@@ -325,7 +366,7 @@ When developing CipherPowers plugin components:
 2. For skills: Follow TDD approach with test scenarios before implementation
 3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 4. For practices: Separate universal standards from project-specific configuration
-5. Test components using discovery tools (`find-practices` for practices; skills are auto-discovered)
+5. Skills are auto-discovered; practices can be browsed in `plugin/standards/`
 6. Ensure proper references using environment variables
 
 **Environment Variables:**
