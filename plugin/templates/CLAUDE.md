@@ -1,10 +1,33 @@
+---
+commands:
+  test: "[your test command]"
+  check: "[your check command]"
+  build: "[your build command]"
+  run: "[your run command]"
+---
+
 # Project Name
 
 Brief description of what this project does.
 
 ## Development Commands
 
-CipherPowers uses a tool-agnostic approach. Document your project's specific commands here using the standardized vocabulary below.
+CipherPowers uses a tool-agnostic approach with context-aware command injection.
+
+**Two ways to define commands:**
+
+1. **Frontmatter (recommended)** - Parsed by hooks for automatic injection:
+   ```yaml
+   ---
+   commands:
+     test: "npm test"
+     check: "npm run lint && npm run typecheck"
+     build: "npm run build"
+     run: "npm start"
+   ---
+   ```
+
+2. **Development Commands section** - Human-readable documentation (optional if frontmatter exists)
 
 ### Core Commands
 
@@ -16,35 +39,47 @@ CipherPowers uses a tool-agnostic approach. Document your project's specific com
 ### Examples for Common Ecosystems
 
 **Node.js/npm:**
-```markdown
-- **Tests**: `npm test` - Run the project's test suite
-- **Checks**: `npm run lint && npm run typecheck` - Run quality checks
-- **Build**: `npm run build` - Build/compile the project
-- **Run**: `npm start` - Execute the application
+```yaml
+---
+commands:
+  test: "npm test"
+  check: "npm run lint && npm run typecheck"
+  build: "npm run build"
+  run: "npm start"
+---
 ```
 
 **Rust/Cargo:**
-```markdown
-- **Tests**: `cargo test` - Run the project's test suite
-- **Checks**: `cargo clippy -- -D warnings && cargo fmt --check` - Run quality checks
-- **Build**: `cargo build --release` - Build/compile the project
-- **Run**: `cargo run` - Execute the application
+```yaml
+---
+commands:
+  test: "cargo test"
+  check: "cargo clippy -- -D warnings && cargo fmt --check"
+  build: "cargo build --release"
+  run: "cargo run"
+---
 ```
 
 **Python/Poetry:**
-```markdown
-- **Tests**: `poetry run pytest` - Run the project's test suite
-- **Checks**: `poetry run ruff check && poetry run mypy .` - Run quality checks
-- **Build**: `poetry build` - Build/package the project
-- **Run**: `poetry run python -m myapp` - Execute the application
+```yaml
+---
+commands:
+  test: "poetry run pytest"
+  check: "poetry run ruff check && poetry run mypy ."
+  build: "poetry build"
+  run: "poetry run python -m myapp"
+---
 ```
 
 **Task Runners (mise, just, make):**
-```markdown
-- **Tests**: `mise run test` - Run the project's test suite
-- **Checks**: `mise run check` - Run quality checks
-- **Build**: `mise run build` - Build/compile the project
-- **Run**: `mise run start` - Execute the application
+```yaml
+---
+commands:
+  test: "mise run test"
+  check: "mise run check"
+  build: "mise run build"
+  run: "mise run start"
+---
 ```
 
 ## Architecture

@@ -15,6 +15,47 @@ CipherPowers workflows reference four standardized command concepts:
 
 ## How It Works
 
+### Convention: CLAUDE.md Frontmatter
+
+Projects define commands in CLAUDE.md frontmatter using YAML:
+
+```yaml
+---
+commands:
+  test: "npm test"
+  check: "npm run lint && npm run typecheck"
+  build: "npm run build"
+  run: "npm start"
+---
+```
+
+This follows **convention over configuration** - no separate config files needed.
+
+### Context-Aware Hook Injection
+
+The `user-prompt-submit.sh` hook automatically injects relevant commands based on:
+
+1. **Slash commands** - `/commit`, `/execute`, `/code-review` trigger specific commands
+2. **Message keywords** - "run tests", "check quality", "build" trigger relevant commands
+3. **No injection** - General questions don't inject commands (saves tokens)
+
+**Example flow:**
+```bash
+User: "Please commit my changes" + /commit
+→ Hook detects /commit
+→ Injects: test, check, build commands
+→ Agent sees: <project_commands><test>npm test</test>...</project_commands>
+
+User: "Run the tests"
+→ Hook detects "tests" keyword
+→ Injects: test command only
+→ Agent sees: <project_commands><test>npm test</test></project_commands>
+
+User: "How does authentication work?"
+→ Hook detects no command keywords
+→ No injection (saves tokens)
+```
+
 ### In Plugin Files
 
 Plugin files (skills, agents, workflows) use natural language to describe commands:
@@ -41,15 +82,20 @@ Each project documents its specific commands using the standardized vocabulary:
 - **Run**: `npm start` - Execute the application
 ```
 
-### How Agents Use This
+### How Agents Use Commands
 
-When an agent needs to run tests:
+**With hook injection (automatic):**
+1. User types message or slash command
+2. Hook detects needed commands and injects from frontmatter
+3. Agent sees commands in context: `<test>npm test</test>`
+4. Agent executes the command directly
 
+**Without hook (fallback):**
 1. Agent reads natural language instruction: "run the project's tests"
-2. Agent reads project's CLAUDE.md to find the **Tests** command
-3. Agent executes the project-specific command (`npm test`, `cargo test`, etc.)
+2. Agent reads CLAUDE.md frontmatter or Development Commands section
+3. Agent executes the project-specific command
 
-This approach leverages Claude's semantic understanding - agents naturally map "run tests" to the **Tests** entry in CLAUDE.md.
+The hook makes this seamless - commands are available when needed without agents having to read CLAUDE.md.
 
 ## Setting Up Your Project
 
@@ -59,31 +105,36 @@ This approach leverages Claude's semantic understanding - agents naturally map "
 cp ${CLAUDE_PLUGIN_ROOT}plugin/templates/CLAUDE.md ./CLAUDE.md
 ```
 
-### 2. Fill in Your Commands
+### 2. Define Commands in Frontmatter
 
-Replace the placeholder commands with your project's actual commands:
+Add YAML frontmatter at the top of CLAUDE.md:
+
+```yaml
+---
+commands:
+  test: "cargo test"
+  check: "cargo clippy -- -D warnings && cargo fmt --check"
+  build: "cargo build --release"
+  run: "cargo run --bin myapp"
+---
+```
+
+**The hook automatically parses this and injects commands when needed.**
+
+### 3. Optional: Document Commands for Humans
+
+If helpful for team documentation, add a Development Commands section:
 
 ```markdown
 ## Development Commands
 
-### Core Commands
-
-- **Tests**: `cargo test` - Run the project's test suite
-- **Checks**: `cargo clippy -- -D warnings && cargo fmt --check` - Run quality checks
-- **Build**: `cargo build --release` - Build/compile the project
-- **Run**: `cargo run --bin myapp` - Execute the application
+- **Tests**: `cargo test` - Run all tests
+- **Checks**: `cargo clippy -- -D warnings && cargo fmt --check` - Quality checks
+- **Build**: `cargo build --release` - Production build
+- **Run**: `cargo run --bin myapp` - Start application
 ```
 
-### 3. Optional: Add Composite Commands
-
-If your project has composite workflows, document them:
-
-```markdown
-### Composite Workflows
-
-- **test-check-build**: `mise run test && mise run check && mise run build` - Full quality gate
-- **review:active**: `mise run review:active` - Find current work directory
-```
+**Note:** With frontmatter, this section is optional - the hook works from frontmatter alone.
 
 ## Examples for Different Ecosystems
 
@@ -225,3 +276,90 @@ If you're migrating from a mise-specific setup:
 3. No code changes needed - just documentation
 
 This preserves your mise workflow while making the plugin tool-agnostic.
+
+## Hook Behavior Details
+
+### Command Detection
+
+The `user-prompt-submit.sh` hook detects needed commands through:
+
+**1. Slash Command Mapping:**
+- `/commit` → test, check, build
+- `/execute` → test, check, build
+- `/code-review` → test, check
+- `/brainstorm`, `/plan` → no injection
+
+**2. Keyword Detection:**
+- "test", "testing", "spec", "verify" → test
+- "lint", "check", "format", "quality", "clippy", "typecheck" → check
+- "build", "compile", "package" → build
+- "run", "start", "execute the application" → run
+
+**3. No Match:**
+- General questions, refactoring requests, etc. → no injection
+
+### Benefits
+
+✅ **Token efficiency** - Only inject when needed (saves ~100-200 tokens per message)
+✅ **Zero agent work** - Commands pre-injected, no CLAUDE.md reads required
+✅ **Context-aware** - Different commands for different tasks
+✅ **Automatic** - No agent configuration or prompt engineering needed
+✅ **Reliable** - Frontmatter parsing is deterministic
+
+### Example Token Savings
+
+Without hook:
+```
+User: "commit changes"
+Agent: reads CLAUDE.md (~500 tokens)
+Agent: extracts test command
+Agent: extracts check command
+Agent: extracts build command
+Total: ~600 tokens for command discovery
+```
+
+With hook:
+```
+User: "commit changes"
+Hook: injects <test>...<check>...<build> (~100 tokens)
+Agent: uses injected commands directly
+Total: ~100 tokens, 5x more efficient
+```
+
+## Advanced Usage
+
+### Custom Commands
+
+Beyond the core four, you can define custom project commands:
+
+```yaml
+---
+commands:
+  test: "npm test"
+  check: "npm run lint"
+  build: "npm run build"
+  run: "npm start"
+  deploy: "npm run deploy"
+  docs: "npm run docs:build"
+---
+```
+
+These won't be auto-injected by the hook (only test/check/build/run are), but agents can still reference them from CLAUDE.md when needed.
+
+### Scoped Commands (Optional)
+
+For fine-grained control:
+
+```yaml
+---
+commands:
+  test: "npm test"
+  test:unit: "npm run test:unit"
+  test:integration: "npm run test:integration"
+  check: "npm run check"
+  check:lint: "npm run lint"
+  check:types: "npm run typecheck"
+---
+```
+
+Hook will use base command (`test`) unless agent specifically requests scoped version (`test:unit`).
