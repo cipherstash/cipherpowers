@@ -3,6 +3,10 @@ set -euo pipefail
 
 # Source shared functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -f "${SCRIPT_DIR}/shared-functions.sh" ]; then
+  echo '{"continue": false, "message": "shared-functions.sh not found"}' | jq .
+  exit 1
+fi
 source "${SCRIPT_DIR}/shared-functions.sh"
 
 # Parse input
