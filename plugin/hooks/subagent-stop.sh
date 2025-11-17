@@ -14,11 +14,15 @@ INPUT=$(cat)
 AGENT_NAME=$(echo "$INPUT" | jq -r '.agent_name // .subagent_name // "unknown"')
 CWD=$(echo "$INPUT" | jq -r '.cwd')
 
-# Load gates config
-CONFIG="${CLAUDE_PLUGIN_ROOT}/hooks/gates.json"
-
-# Exit cleanly if config doesn't exist
-if [ ! -f "$CONFIG" ]; then
+# Load gates config - check project directory first, then plugin default
+if [ -f "${CWD}/.claude/gates.json" ]; then
+  CONFIG="${CWD}/.claude/gates.json"
+elif [ -f "${CWD}/gates.json" ]; then
+  CONFIG="${CWD}/gates.json"
+elif [ -f "${CLAUDE_PLUGIN_ROOT}/hooks/gates.json" ]; then
+  CONFIG="${CLAUDE_PLUGIN_ROOT}/hooks/gates.json"
+else
+  # No config found - exit cleanly
   exit 0
 fi
 
