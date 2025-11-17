@@ -11,10 +11,11 @@ Automated quality enforcement via Claude Code's hook system. Runs project test a
 ## Requirements
 
 - **Event-specific triggers**: Different gates at different hook points
-- **Action-based handling**: Configurable actions on pass/fail (CONTINUE, BLOCK, STOP, or custom commands)
+- **Action-based handling**: Configurable actions on pass/fail (CONTINUE, BLOCK, STOP, or gate chaining)
 - **Project-level config**: Configurable which agents use hooks
 - **Tool-agnostic**: Uses canonical command vocabulary (test, check, build, run)
 - **Integration**: Extends Claude Code's existing hook system
+- **Gate chaining**: Actions can reference other gates for complex workflows
 
 ## Architecture
 
@@ -64,8 +65,8 @@ Defines what gates run when:
   "gates": {
     "check": {
       "description": "Run project quality checks (formatting, linting, types)",
-      "on_pass": "CONTINUE",
-      "on_fail": "BLOCK"
+      "on_pass": "BLOCK",
+      "on_fail": "STOP"
     },
     "test": {
       "description": "Run project test suite"
@@ -74,9 +75,10 @@ Defines what gates run when:
       "description": "Run project build",
       "on_fail": "CONTINUE"
     },
-    "reticulate": {
-      "description": "Reticulate splines",
-      "on_fail": "./spline_reticulation_failure_handler.sh"
+    "format": {
+      "description": "Auto-format code",
+      "on_pass": "check",
+      "on_fail": "STOP"
     }
   },
   "hooks": {
@@ -94,24 +96,80 @@ Defines what gates run when:
 
 #### Gate Definition
 
-A gate is a command with optional on_pass and on_fail actions:
+A gate is a **named configuration** that references a command from CLAUDE.md, with optional on_pass and on_fail actions:
 
-- **command**: Resolved from CLAUDE.md frontmatter (e.g., "check" → "cargo clippy && cargo check")
+- **Gate name**: References a command in CLAUDE.md frontmatter (e.g., "check")
+- **Command resolution**: Gate name → CLAUDE.md lookup → actual command (e.g., "check" → "cargo clippy && cargo check")
 - **on_pass**: Action when gate passes (default: "CONTINUE")
 - **on_fail**: Action when gate fails (default: "BLOCK")
 
+Example:
+- Gate "check" is defined in gates.json
+- Command "check: 'cargo clippy && cargo check'" is defined in CLAUDE.md
+- When the hook runs "check" gate, it executes "cargo clippy && cargo check"
+
 #### Actions
 
-- **CONTINUE**: Hook returns success, execution continues normally
-- **BLOCK**: Hook returns `decision: "block"`, prevents agent from proceeding
-- **STOP**: Hook returns `continue: false`, stops Claude entirely
-- **{command}**: Execute shell command (e.g., `./fix-formatting.sh`)
+Actions determine what happens after a gate executes. An action can be:
+
+- **CONTINUE**: Proceed to next gate in sequence (or complete if last gate)
+- **BLOCK**: Stop execution, prevent agent from proceeding (returns `decision: "block"`)
+- **STOP**: Stop Claude entirely (returns `continue: false`)
+- **{gate_name}**: Chain to another gate (e.g., `"check"` → executes the "check" gate)
+
+#### Gate Chaining
+
+Actions can reference other gates, creating execution chains:
+
+```json
+{
+  "format": {
+    "on_pass": "check",
+    "on_fail": "STOP"
+  },
+  "check": {
+    "on_pass": "CONTINUE",
+    "on_fail": "BLOCK"
+  }
+}
+```
+
+If `format` passes → runs `check` gate → if check passes → CONTINUE
+If `format` fails → STOP immediately
+
+#### Execution Order
+
+Gate execution follows these rules:
+
+1. **Sequential by default**: Gates listed in `"gates": ["check", "test"]` run in order
+2. **Action is immediate**:
+   - BLOCK prevents subsequent gates in the list from running
+   - STOP halts everything immediately
+   - CONTINUE proceeds to next gate in the list
+   - Gate reference chains to that gate (outcome passed to referenced gate)
+3. **Chaining supersedes sequence**: If action references a gate, that gate runs next (not the next gate in the list)
+
+Example execution:
+```json
+"gates": ["format", "test"]
+```
+
+- Run `format` gate
+  - If `format` passes and `on_pass: "check"` → run `check` gate (skips `test`)
+  - If `format` fails and `on_fail: "STOP"` → halt (skips `test`)
+  - If `format` passes and `on_pass: "CONTINUE"` → run `test` gate (next in list)
 
 #### Default Behavior
 
 If `on_pass` or `on_fail` are omitted:
 - `on_pass`: "CONTINUE"
 - `on_fail`: "BLOCK"
+
+#### Missing Gate Handling
+
+- **Gate referenced but not defined** in gates.json: STOP with error
+- **Command not found** in CLAUDE.md: STOP with error
+- Rationale: Missing configuration is a critical error, not a silent skip
 
 ### Hook Script Implementation
 
@@ -142,9 +200,13 @@ fi
 # Get gates to run
 GATES=$(jq -r '.hooks.PostToolUse.gates[]' "$CONFIG")
 
-# Run each gate
+# Run each gate in sequence
 for gate in $GATES; do
   run_gate "$gate" "$CONFIG"
+  # If gate returns non-zero, stop execution (BLOCK or STOP action)
+  if [ $? -ne 0 ]; then
+    break
+  fi
 done
 ```
 
@@ -175,9 +237,13 @@ fi
 # Get gates to run
 GATES=$(jq -r '.hooks.SubagentStop.gates[]' "$CONFIG")
 
-# Run each gate
+# Run each gate in sequence
 for gate in $GATES; do
   run_gate "$gate" "$CONFIG"
+  # If gate returns non-zero, stop execution (BLOCK or STOP action)
+  if [ $? -ne 0 ]; then
+    break
+  fi
 done
 ```
 
@@ -204,17 +270,41 @@ get_command() {
   ' CLAUDE.md
 }
 
+# Check if gate exists in configuration
+gate_exists() {
+  local gate_name="$1"
+  local config="$2"
+
+  local exists=$(jq -r ".gates | has(\"$gate_name\")" "$config")
+  [ "$exists" = "true" ]
+}
+
 # Execute a gate and handle its result
+# Returns: exit code (0 = continue, 1 = stop execution)
 run_gate() {
   local gate_name="$1"
   local config="$2"
+
+  # Check if gate is defined in gates.json
+  if ! gate_exists "$gate_name" "$config"; then
+    # Missing gate definition - STOP
+    jq -n --arg gate "$gate_name" '{
+      continue: false,
+      message: ("Gate '\($gate)' referenced but not defined in gates.json")
+    }'
+    return 1
+  fi
 
   # Get gate command from CLAUDE.md
   local gate_cmd=$(get_command "$gate_name")
 
   if [ -z "$gate_cmd" ]; then
-    # Gate command not found in CLAUDE.md, skip
-    return 0
+    # Command not found in CLAUDE.md - STOP
+    jq -n --arg gate "$gate_name" '{
+      continue: false,
+      message: ("Command '\($gate)' not found in CLAUDE.md frontmatter")
+    }'
+    return 1
   fi
 
   # Get gate configuration
@@ -229,36 +319,40 @@ run_gate() {
 
   if [ $exit_code -eq 0 ]; then
     # Gate passed
-    handle_action "$on_pass" "$gate_name" "passed" "$output"
+    handle_action "$on_pass" "$gate_name" "passed" "$output" "$config"
   else
     # Gate failed
-    handle_action "$on_fail" "$gate_name" "failed" "$output"
+    handle_action "$on_fail" "$gate_name" "failed" "$output" "$config"
   fi
 }
 
-# Handle gate action (CONTINUE, BLOCK, STOP, or custom command)
+# Handle gate action (CONTINUE, BLOCK, STOP, or gate chaining)
+# Returns: exit code (0 = continue, 1 = stop execution)
 handle_action() {
   local action="$1"
   local gate_name="$2"
   local status="$3"
   local output="$4"
+  local config="$5"
 
   case "$action" in
     CONTINUE)
-      # Continue normally, optionally add context
+      # Continue to next gate in sequence
       if [ "$status" = "failed" ]; then
         jq -n --arg msg "⚠️ Gate '$gate_name' failed but continuing:\n$output" '{
           additionalContext: $msg
         }'
       fi
+      return 0
       ;;
 
     BLOCK)
-      # Block with reason
+      # Block execution, prevent subsequent gates
       jq -n --arg reason "Gate '$gate_name' $status. Output:\n$output" '{
         decision: "block",
         reason: $reason
       }'
+      return 1
       ;;
 
     STOP)
@@ -267,21 +361,22 @@ handle_action() {
         continue: false,
         message: $msg
       }'
+      return 1
       ;;
 
     *)
-      # Custom command - execute it
-      if [ -f "$action" ] || command -v "$action" &> /dev/null; then
-        local custom_output
-        custom_output=$(eval "$action" 2>&1) || true
-        jq -n --arg msg "Gate '$gate_name' $status. Ran custom action '$action':\n$custom_output" '{
-          additionalContext: $msg
-        }'
+      # Gate chaining - run the referenced gate
+      if gate_exists "$action" "$config"; then
+        # Chain to another gate
+        run_gate "$action" "$config"
+        return $?
       else
-        # Command not found, treat as CONTINUE with warning
-        jq -n --arg msg "⚠️ Gate '$gate_name' $status. Custom action '$action' not found." '{
-          additionalContext: $msg
+        # Referenced gate doesn't exist - STOP
+        jq -n --arg gate "$gate_name" --arg ref "$action" '{
+          continue: false,
+          message: ("Gate '\($gate)' references undefined gate '\($ref)'")
         }'
+        return 1
       fi
       ;;
   esac
@@ -318,31 +413,33 @@ get_command() {
 
 **CONTINUE**:
 - Hook outputs optional additionalContext with information
-- Agent sees message but continues normally
+- Proceeds to next gate in sequence (or completes if last gate)
 - Example: Non-critical warnings
 
 **BLOCK**:
 - Hook outputs `decision: "block"` with reason
+- Prevents subsequent gates from running
 - Agent cannot proceed until issue is fixed
 - Example: Test failures that must be resolved
 
 **STOP**:
 - Hook outputs `continue: false`
 - Stops Claude entirely (equivalent to Ctrl+C)
-- Example: Critical system failures
+- Halts all gate execution immediately
+- Example: Critical system failures or configuration errors
 
-**Custom Command**:
-- Hook executes specified shell command
-- Outputs additionalContext with command result
-- Agent sees output and continues
-- Example: Auto-formatting fixes
+**Gate Chaining** (action = gate name):
+- Executes the referenced gate immediately
+- Skips remaining gates in the original sequence
+- Outcome of chained gate determines next action
+- Example: `"on_pass": "check"` runs check gate after success
 
 ### Hook Output Patterns
 
-1. **CONTINUE (success)** - No output, hook exits 0
+1. **CONTINUE (success)** - No output, function returns 0
    ```bash
-   # Gate passed, continue normally
-   exit 0
+   # Gate passed, continue to next gate in sequence
+   return 0
    ```
 
 2. **CONTINUE (failure with warning)**
@@ -368,10 +465,18 @@ get_command() {
    }
    ```
 
-5. **Custom Command**
+5. **Gate Chaining** - Recursive call to run_gate
+   ```bash
+   # Action references another gate
+   run_gate "check" "$config"
+   return $?  # Pass through chained gate's result
+   ```
+
+6. **Missing Gate Error** - STOP
    ```json
    {
-     "additionalContext": "Gate 'check' failed. Ran custom action './fix-formatting.sh':\n<output>"
+     "continue": false,
+     "message": "Gate 'check' referenced but not defined in gates.json"
    }
    ```
 
@@ -381,15 +486,17 @@ get_command() {
 - Can fix issues and try again
 - Hook re-runs automatically on next completion attempt
 - Provides clear feedback about what failed and why
-- Custom commands can auto-fix certain issues (e.g., formatting)
+- Gate chaining enables complex workflows (e.g., format → check → test)
 
 ### Hook Script Safety
 
 - Scripts use `set -euo pipefail` for safety
 - Malformed JSON = hook fails safely (no block)
-- Missing config = hook exits cleanly
-- Command not found in CLAUDE.md = skip that gate
-- Custom command not found = treat as CONTINUE with warning
+- Missing config = hook exits cleanly (no gates run)
+- **Gate not defined in gates.json = STOP** (configuration error)
+- **Command not found in CLAUDE.md = STOP** (configuration error)
+- **Referenced gate doesn't exist = STOP** (chaining error)
+- All configuration errors halt execution to prevent silent failures
 
 ## Agent Integration
 
@@ -403,7 +510,8 @@ Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
 
 When you complete work:
 - SubagentStop hook will run project gates (check, test, etc.)
-- Gate failures may BLOCK, STOP, or run custom recovery commands
+- Gate actions: CONTINUE (proceed), BLOCK (fix required), STOP (critical error)
+- Gates can chain to other gates for complex workflows
 - You'll see results in additionalContext and must respond appropriately
 ```
 
@@ -451,10 +559,12 @@ Projects opt into quality gates by:
 {
   "gates": {
     "check": {
+      "description": "Quality checks",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
     },
     "test": {
+      "description": "Test suite",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
     }
@@ -467,10 +577,12 @@ Projects opt into quality gates by:
 {
   "gates": {
     "check": {
+      "description": "Quality checks",
       "on_pass": "CONTINUE",
       "on_fail": "CONTINUE"
     },
     "test": {
+      "description": "Test suite",
       "on_pass": "CONTINUE",
       "on_fail": "CONTINUE"
     }
@@ -478,21 +590,34 @@ Projects opt into quality gates by:
 }
 ```
 
-**Auto-fix mode** (run formatters on failure):
+**Gate chaining** (format → check → test):
 ```json
 {
   "gates": {
+    "format": {
+      "description": "Auto-format code",
+      "on_pass": "check",
+      "on_fail": "STOP"
+    },
     "check": {
-      "on_pass": "CONTINUE",
-      "on_fail": "./scripts/auto-fix.sh"
+      "description": "Quality checks",
+      "on_pass": "test",
+      "on_fail": "BLOCK"
     },
     "test": {
+      "description": "Test suite",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
+    }
+  },
+  "hooks": {
+    "SubagentStop": {
+      "gates": ["format"]
     }
   }
 }
 ```
+In this example, only "format" is listed in the gates array. If format passes, it chains to check. If check passes, it chains to test. This creates a pipeline without listing all gates explicitly.
 
 **Critical gates** (STOP on failure):
 ```json
@@ -507,22 +632,38 @@ Projects opt into quality gates by:
 }
 ```
 
+**Unusual configuration** (inverted logic for testing):
+```json
+{
+  "gates": {
+    "check": {
+      "description": "Quality checks that should fail",
+      "on_pass": "BLOCK",
+      "on_fail": "STOP"
+    }
+  }
+}
+```
+This example demonstrates flexibility: blocks when check passes, stops when it fails. Useful for testing gate behavior or enforcing that certain checks should fail in specific contexts.
+
 ## User Experience
 
 - **Transparent**: Agents see gate results in their context
 - **Automatic**: No manual `/check` commands needed
 - **Configurable**: Projects control which gates run and their actions via gates.json
 - **Tool-agnostic**: Uses canonical command vocabulary from CLAUDE.md
-- **Flexible**: Actions range from warnings to full stops, with custom command support
+- **Flexible**: Actions range from warnings to full stops, with gate chaining support
+- **Composable**: Build complex workflows by chaining gates together
 
 ## Benefits
 
 1. **Consistent Quality**: All agent work validated automatically
 2. **Early Detection**: Issues caught at edit time (PostToolUse) or completion (SubagentStop)
-3. **Flexible Enforcement**: Configure pass/fail actions per gate (CONTINUE, BLOCK, STOP, custom)
+3. **Flexible Enforcement**: Configure pass/fail actions per gate (CONTINUE, BLOCK, STOP, chaining)
 4. **Tool-Agnostic**: Works with any project using canonical commands
 5. **Existing Patterns**: Reuses command discovery from user-prompt-submit.sh
-6. **Auto-Remediation**: Custom commands can fix issues automatically (e.g., formatting)
+6. **Gate Chaining**: Build complex workflows (format → check → test) declaratively
+7. **Safe Defaults**: Missing configuration = STOP (fail-safe behavior)
 
 ## Implementation Files
 
@@ -530,4 +671,8 @@ Projects opt into quality gates by:
 - `plugin/hooks/gates.json` - Gate configuration
 - `plugin/hooks/post-tool-use.sh` - PostToolUse hook script
 - `plugin/hooks/subagent-stop.sh` - SubagentStop hook script
-- `plugin/hooks/shared-functions.sh` - Shared helper functions (get_command, run_gate, handle_action)
+- `plugin/hooks/shared-functions.sh` - Shared helper functions:
+  - `get_command()` - Extract command from CLAUDE.md
+  - `gate_exists()` - Check if gate is defined
+  - `run_gate()` - Execute gate and handle result
+  - `handle_action()` - Process CONTINUE/BLOCK/STOP/chaining
