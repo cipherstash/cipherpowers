@@ -112,15 +112,9 @@ Read these before conducting review:
 
 #### 2. Run tests and checks (NON-NEGOTIABLE)
 
-**MUST run test-check-build workflow:**
-
-```bash
-${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
-```
-
-This runs:
-- Run project test command
+**MUST run:**
 - Run project check command
+- Run project test command
 - Run project build command
 
 **Document results:** Note any failures explicitly in review output.

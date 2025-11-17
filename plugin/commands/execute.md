@@ -282,10 +282,10 @@ Extract count of [FIX] items (items that must be addressed now).
 - Dispatch fixing agent with:
   - Annotated review file path
   - Instruction: "Fix ONLY items marked [FIX]. Do not address [DEFERRED] or [WONTFIX] items."
-- After fixes applied, run test-check-build workflow:
-  ```bash
-  ${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
-  ```
+- After fixes applied, run check-test-build:
+    - Run project check command.
+    - Run project test command.
+    - Run project build command.
   - If pass → Continue to batch {N+1}
   - If fail → Repeat from Step 1 (new review cycle with incremented review filename)
 
@@ -313,14 +313,10 @@ Next: Address deferred items or create follow-up tasks?
    - All checks passing
    - All code review feedback addressed
 
-2. **Final verification using test-check-build workflow:**
-   ```bash
-   ${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
-   ```
+2. **Final verification using check-test-build:**
 
-   This runs:
-   - Run project test command
    - Run project check command
+   - Run project test command
    - Run project build command
 
    **If workflow fails:**

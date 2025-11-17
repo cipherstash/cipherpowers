@@ -23,6 +23,7 @@ Documented (with the why)
 - Keep it simple (not elegant)
 - Do the simplest thing that could possibly work
 - Implement requirements when actually needed
+- Embrace test-driven development to improve code design
 - Avoid over-engineering
 - Avoid unnecessary layers of abstraction
 - Avoid complex, convoluted & clever code
@@ -38,9 +39,9 @@ Documented (with the why)
 - Don't reinvent the wheel
   - Use third-party libraries, frameworks and dependencies
 - YOU MUST check formatting and style
-  - Run linters and formatters for your language
+  - Run checks, linters and formatters for your language
   - Address ALL linter warnings by fixing root cause
-  - Use disable/allow directives ONLY when unavoidable
+  - Use disable/allow/ignore directives ONLY when unavoidable
 
 
 ### Documented
@@ -49,6 +50,7 @@ Documented (with the why)
   - Explain the "why" not the "what"
 - Avoid complex, convoluted & clever code
   - Simple code is easier to understand
+- Use tests to document behaviour and semantics
 - Use clear, concise, & descriptive variable names
 - Use clear & concise comments
   - Provide context over description

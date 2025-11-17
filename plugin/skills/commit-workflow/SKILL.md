@@ -35,17 +35,11 @@ Read these before committing:
 
 #### 1. Run pre-commit checks
 
-**Execute quality checks using test-check-build workflow:**
+**Execute quality checks:**
 
-```bash
-${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build.md
-```
-
-This runs:
-- Run project test command
 - Run project check command
+- Run project test command
 - Run project build command
-
 
 **If there are failures or warnings:**
 - Stop
