@@ -2,7 +2,7 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
-**Note on mise commands:** This command references `mise run test` and `mise run check` for project validation. These commands are expected to be configured in your project's `mise.toml` or task configuration. The plugin itself does not provide mise configuration - it's designed to work with projects that already have testing and checking infrastructure set up.
+**Note on project commands:** This command references the project's test suite and quality checks for validation. These commands should be documented in the project's CLAUDE.md file. The plugin is tool-agnostic and works with any build/test tooling (npm, cargo, mise, make, etc.).
 
 ## Decision Algorithm: When to Use This Command
 
@@ -319,9 +319,9 @@ Next: Address deferred items or create follow-up tasks?
    ```
 
    This runs:
-   - Tests (`mise run test`)
-   - Checks (`mise run check`)
-   - Build (`mise run build`)
+   - Tests (run the project's test suite - see CLAUDE.md for specific command)
+   - Checks (run the project's quality checks - see CLAUDE.md for specific command)
+   - Build (build/compile the project - see CLAUDE.md for specific command)
 
    **If workflow fails:**
    - Report failure to user

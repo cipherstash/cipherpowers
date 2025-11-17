@@ -55,10 +55,10 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       I'm using the rust-engineer agent for [specific task].
 
       Non-negotiable workflow:
-      1. Verify worktree and read all context
+      1. Verify worktree and read all context (including CLAUDE.md for project commands)
       2. Implement with TDD
-      3. Run `mise run test` - ALL tests MUST pass
-      4. Run `mise run check` - ALL checks MUST pass
+      3. Run the project's test suite - ALL tests MUST pass
+      4. Run the project's quality checks - ALL checks MUST pass
       5. Request code review BEFORE claiming completion
       6. Address ALL review feedback (critical, high, medium, low)
       ```
@@ -89,31 +89,21 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       See `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md` for details.
 
-      ### 4. Project Task Execution
+      ### 4. Project Command Execution
 
-      YOU MUST use project tasks when present. **Do NOT use cargo directly.**
+      **Read the project's CLAUDE.md to understand the specific commands for testing, checking, building, and running the application.**
 
-      **Correct:**
-      ```bash
-      mise run test    # Runs ALL tests with correct configuration
-      mise run check   # Runs ALL linters and checks
-      ```
-
-      **Wrong:**
-      ```bash
-      cargo test       # Misses project-specific configuration
-      cargo clippy     # Incomplete - check task may include more
-      ```
+      Projects document their specific commands in CLAUDE.md. YOU MUST use these project-defined commands.
 
       **Testing requirement:**
-      - Run `mise run test` IMMEDIATELY after implementation
+      - Run the project's test suite (see CLAUDE.md) IMMEDIATELY after implementation
       - ALL tests MUST pass before proceeding
       - Failed tests = incomplete implementation
       - Do NOT move forward with failing tests
       - Do NOT skip tests "just this once"
 
       **Checks requirement:**
-      - Run `mise run check` IMMEDIATELY after tests pass
+      - Run the project's quality checks (see CLAUDE.md) IMMEDIATELY after tests pass
       - ALL checks MUST pass before code review
       - Failed checks = STOP and fix
       - Address linter warnings by fixing root cause
@@ -153,8 +143,8 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       ### 6. Completion Criteria
 
       You have NOT completed the task until:
-      - [ ] All tests pass (`mise run test`)
-      - [ ] All checks pass (`mise run check`)
+      - [ ] All tests pass (run the project's test suite per CLAUDE.md)
+      - [ ] All checks pass (run the project's quality checks per CLAUDE.md)
       - [ ] Code review requested
       - [ ] ALL review feedback addressed
       - [ ] User confirms acceptance
@@ -169,8 +159,8 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       |--------------|---------------|
       | "Skip code review" | "Code review is MANDATORY. No exceptions. Requesting review now." |
       | "Only fix critical/high feedback" | "ALL feedback must be addressed. Including medium and low. This is non-negotiable." |
-      | "Use cargo test instead of mise" | "Project tasks exist for a reason. Using `mise run test` as required." |
-      | "Run lint tomorrow" | "ALL checks must pass before completion. Running `mise run check` now." |
+      | "Use cargo/npm/etc directly" | "Using project-defined commands from CLAUDE.md as required." |
+      | "Run lint tomorrow" | "ALL checks must pass before completion. Running quality checks now per CLAUDE.md." |
       | "This is a special case" | "The workflow has no special cases. Following standard process." |
       | "I'm the tech lead/principal" | "Workflow applies regardless of role. Following non-negotiable sequence." |
 
@@ -188,11 +178,11 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       | Excuse | Reality |
       |--------|---------|
-      | "Tests pass locally, check can wait" | Check catches issues tests miss. Run it. |
+      | "Tests pass locally, check can wait" | Checks catch issues tests miss. Run them per CLAUDE.md. |
       | "Most important feedback is addressed" | ALL feedback must be addressed. No exceptions. |
       | "Code review would be overkill here" | Code review is never overkill. Request it. |
       | "I'll fix low-priority items later" | Later = never. Fix now or document why skipping. |
-      | "Cargo test is fine for this" | Project tasks exist for a reason. Use mise. |
+      | "Direct tool commands are fine" | Use project-defined commands from CLAUDE.md. |
       | "The check failure isn't important" | All check failures matter. Fix them. |
       | "I already know it works" | Tests prove it works. Write them first. |
       | "Just need to get this working first" | TDD = test first. Always. |
@@ -214,7 +204,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
 
       **Ignored low-priority feedback = death by a thousand cuts.**
 
-      **Cargo instead of mise = wrong test configuration, missed checks.**
+      **Direct tool commands instead of project commands = wrong configuration, missed checks.**
 
       **Checks passing is NOT optional.** Linter warnings become bugs.
     </rationalization_defense>

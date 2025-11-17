@@ -79,7 +79,7 @@ You will evaluate code and categorize feedback into the following severity level
 **Verification & Process:**
 -   **Missing Evidence of Testing**:
     -   No indication that tests/checks were run before submission
-    -   Code changes submitted without running `mise run test` and `mise run check`
+    -   Code changes submitted without running the project's test suite and quality checks
     -   Logic changes without corresponding test updates
 -   **Skipped Quality Gates**:
     -   Changes that bypass required verification steps
@@ -103,7 +103,7 @@ You will evaluate code and categorize feedback into the following severity level
 -   Style preferences (minor naming improvements, formatting not caught by linters).
 -   Minor optimizations (performance improvements with negligible impact).
 -   Future considerations (suggestions for future refactoring).
--   Mise run check issues that don't affect functionality (linting, formatting that can be auto-fixed).
+-   Quality check issues that don't affect functionality (linting, formatting that can be auto-fixed).
 
 ### Highlights (Examples of Quality Code)
 
@@ -148,7 +148,7 @@ When writing reviews, call out specific examples that demonstrate:
 `plugin/templates/code-review-template.md`
 
 **Location:**
-- Current active work directory (use project task to find: `mise run review:active`)
+- Current active work directory (consult project's CLAUDE.md or task runner to find active work directory)
 - Pattern: `.work/{feature-name}/` or similar
 
 **Naming:**
@@ -160,11 +160,13 @@ When writing reviews, call out specific examples that demonstrate:
 
 ### Commands
 
+Projects document their specific commands in CLAUDE.md. Consult the project's CLAUDE.md for:
+
 **Run tests:**
-- Command: `mise run test`
+- Run the project's test suite (see CLAUDE.md for the specific command)
 - Requirement: ALL tests MUST pass.
 
 **Run checks:**
-- Command: `mise run check`
+- Run the project's quality checks (see CLAUDE.md for the specific command)
 - Requirement: ALL checks MUST pass (linting, formatting, type checking)
 

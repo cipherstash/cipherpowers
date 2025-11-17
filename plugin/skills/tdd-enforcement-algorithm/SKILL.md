@@ -59,12 +59,10 @@ STOP writing implementation code. Write failing test first.
 
 ## 5. Verify test fails
 
-```bash
-mise run test
-```
+Run the project's test suite (see CLAUDE.md for specific command)
 
-- PASS: GOTO 6
-- FAIL: GOTO 2
+- PASS (test runs and fails as expected): GOTO 6
+- FAIL (test passes or doesn't run): GOTO 4 (fix test)
 
 ## 6. Proceed with implementation
 

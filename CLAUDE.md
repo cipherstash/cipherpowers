@@ -8,6 +8,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CipherPowers is a Claude Code plugin providing a comprehensive toolkit for development teams. Built on a three-layer plugin architecture, it separates skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to ensure team-wide consistency and maintainability.
 
+## Development Commands
+
+CipherPowers itself uses mise for task orchestration. These commands are used throughout the plugin's development workflow.
+
+### Core Commands
+
+- **Tests**: `mise run test` - Run the project's test suite
+- **Checks**: `mise run check` - Run quality checks (linting, formatting, type checking)
+- **Build**: `mise run build` - Build/package the plugin
+- **Run**: N/A - This is a plugin, not a runnable application
+
+### Additional Commands
+
+- **review:active**: `mise run review:active` - Find current active work directory
+- **check-has-changes**: `mise run check-has-changes` - Verify there are uncommitted changes
+
+**Note:** While CipherPowers itself uses mise, the plugin is tool-agnostic and works with any build/test tooling (npm, cargo, make, etc.). See `plugin/docs/configuring-project-commands.md` for details on the tool-agnostic approach.
+
 ## Architecture
 
 CipherPowers combines three layers:

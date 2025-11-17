@@ -22,12 +22,12 @@ Run with: `workflow plugin/workflows/git-commit.md`
 
 ## 1. Check for changes
 
-```bash
-mise run check-has-changes
-```
+Check if there are uncommitted changes in the working directory.
 
-- PASS: CONTINUE
-- FAIL: STOP nothing to commit
+- **Command:** See project's CLAUDE.md for the specific command, or use `git status`
+- **Result:**
+  - PASS (changes exist): CONTINUE
+  - FAIL (no changes): STOP - nothing to commit
 
 ## 2. Verify test coverage
 
@@ -159,14 +159,15 @@ Answer: NO → Go to Step 9 (split into multiple commits)
 **Workflows referenced:**
 - `test-check-build.md` - Runs tests, checks, and build (Step 3)
 
-**Commands referenced:**
-- `mise run check-has-changes` - Verify there are changes to commit (Step 1)
-- `mise run test` - Run all tests (via test-check-build)
-- `mise run check` - Run linting, formatting, types (via test-check-build)
-- `mise run build` - Verify code builds (via test-check-build)
+**Commands:**
+Projects document their specific commands in CLAUDE.md. The workflow references:
+- **Check for changes** - Verify there are changes to commit (Step 1)
+- **Run tests** - Run the project's test suite (via test-check-build)
+- **Run checks** - Run quality checks: linting, formatting, type checking (via test-check-build)
+- **Build** - Verify code compiles/builds successfully (via test-check-build)
 
-**Adjust for your project:**
-If using different commands (npm, cargo, etc.), update test-check-build.md to match your project's commands.
+**For your project:**
+Consult your project's CLAUDE.md for the specific commands for tests, checks, and build.
 
 ## Testing
 

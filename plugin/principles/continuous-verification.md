@@ -19,28 +19,27 @@ Run verification checks **during development**, not just before merge.
 
 ## Watch mode (recommended)
 
-For active development, use the consolidated check command:
+For active development, run the project's quality checks (see CLAUDE.md for the specific command).
 
-```bash
-mise run check
-```
-
-This runs all verification steps:
+This typically runs all verification steps:
 - Fast compilation check
 - Unit tests
 - Linting (warnings as errors)
 - Formatting verification
 
 **Language-specific examples:**
+
+Projects document their specific commands in CLAUDE.md. Common patterns:
+
 ```bash
-# Rust
-mise run check  # Runs: cargo check, test --lib, clippy, fmt --check
+# Rust projects
+cargo check && cargo test --lib && cargo clippy -- -D warnings && cargo fmt --check
 
-# Python
-mise run check  # Runs: mypy, pytest, ruff check, black --check
+# Python projects
+mypy . && pytest && ruff check . && black --check .
 
-# TypeScript
-mise run check  # Runs: tsc, jest, eslint, prettier --check
+# TypeScript projects
+tsc --noEmit && jest && eslint . && prettier --check .
 ```
 
 ## Why during development
@@ -67,7 +66,7 @@ mise run check  # Runs: tsc, jest, eslint, prettier --check
 
 **Scenario with continuous verification:**
 1. Agent implements function 1
-2. Agent runs `mise run check` → 2 failures
+2. Agent runs quality checks (see CLAUDE.md) → 2 failures
 3. Agent fixes immediately (2 minutes)
 4. Repeat for functions 2-5
 5. All tests pass, documentation accurate
@@ -94,7 +93,7 @@ Verification is part of **definition-of-done**, not cleanup.
 Task complete when:
 - [ ] Implementation done
 - [ ] Tests written
-- [ ] Verification passed (mise run check)
+- [ ] Verification passed (run quality checks per CLAUDE.md)
 - [ ] Documentation updated
 ```
 
@@ -144,7 +143,7 @@ If you're thinking ANY of these, you're violating continuous verification:
 | "Will fix clippy warnings before commit" | You'll forget, or run out of time |
 | "Code compiles, good enough for now" | Clippy/tests find bugs that compiler doesn't |
 
-**All of these mean:** STOP. Run `mise run check`. NOW.
+**All of these mean:** STOP. Run quality checks (see CLAUDE.md for command). NOW.
 
 ## Evidence from retrospectives
 
@@ -160,15 +159,17 @@ If you're thinking ANY of these, you're violating continuous verification:
 
 ### Commands
 
-**Primary command:**
-- Command: `mise run check`
+**Quality checks command:**
+
+Projects document their quality checks command in CLAUDE.md (see `Development Commands` section).
+
 - What it runs: ALL verification steps with project-specific configuration
 - Requirement: MUST pass before marking task complete
 - Never skip this command
 
-**Why `mise run check` instead of direct commands:**
+**Why project-defined commands instead of direct tool commands:**
 - Project-specific configuration (flags, options)
-- Consistent across languages
+- Consistent workflow across different tools/languages
 - One command, all checks
 - Easier to enforce algorithmically
 
@@ -190,9 +191,7 @@ Is implementation complete?
 
 ## 2. Run verification
 
-```bash
-mise run check
-```
+Run the project's quality checks (see CLAUDE.md for specific command)
 
 - PASS: CONTINUE
 - FAIL: STOP fix failures first

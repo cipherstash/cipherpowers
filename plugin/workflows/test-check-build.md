@@ -8,24 +8,35 @@ version: 1.0.0
 
 # Test-Check-Build
 
+Consult the project's CLAUDE.md to determine the specific commands for each step.
+
 ## 1. Run tests
 
-```bash
-mise run test
-```
+Run the project's test suite.
+
+- **Purpose:** Verify all unit tests, integration tests, and other automated tests pass
+- **Command:** See CLAUDE.md for the specific test command for this project
+- **Requirement:** ALL tests MUST pass
 
 ## 2. Run checks
 
-```bash
-mise run check
-```
+Run the project's quality checks.
+
+- **Purpose:** Verify linting, formatting, type checking, and other static analysis
+- **Command:** See CLAUDE.md for the specific check command for this project
+- **Requirement:** ALL checks MUST pass
 
 ## 3. Build
 
-```bash
-mise run build
-```
+Build/compile the project.
+
+- **Purpose:** Verify code compiles successfully and can be built
+- **Command:** See CLAUDE.md for the specific build command for this project
+- **Requirement:** Build MUST succeed without errors
 
 ## 4. Verify all checks passed
 
 Do all tests, checks, and build pass?
+
+- **YES:** Quality gates passed - code is ready
+- **NO:** Fix failing checks before proceeding

@@ -119,9 +119,9 @@ ${CLAUDE_PLUGIN_ROOT}plugin/tools/workflow/run plugin/workflows/test-check-build
 ```
 
 This runs:
-- Tests (`mise run test`)
-- Checks (`mise run check`)
-- Build (`mise run build`)
+- Tests (run the project's test suite - see CLAUDE.md for specific command)
+- Checks (run the project's quality checks - see CLAUDE.md for specific command)
+- Build (build/compile the project - see CLAUDE.md for specific command)
 
 **Document results:** Note any failures explicitly in review output.
 
@@ -144,10 +144,7 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 **Get current work location:**
 
-```bash
-# If project uses work tracking
-mise run review:active
-```
+Consult the project's CLAUDE.md for how to find the active work directory (may use task runner, directory convention, or other method).
 
 If no work tracking, save to root or ask user for location.
 

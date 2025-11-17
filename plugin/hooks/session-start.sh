@@ -10,8 +10,6 @@ CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 # Read skill files
 selecting_agents_content=$(cat "${CLAUDE_PLUGIN_ROOT}/skills/selecting-agents/SKILL.md" 2>&1 || echo "Error reading selecting-agents")
-emergency_stop_content=$(cat "${CLAUDE_PLUGIN_ROOT}/skills/collaboration/emergency-stop/SKILL.md" 2>&1 || echo "Error reading emergency-stop")
-
 
 # Build the additionalContext content
 additional_context="<EXTREMELY_IMPORTANT>
@@ -21,8 +19,6 @@ additional_context="<EXTREMELY_IMPORTANT>
 **The content below is from skills/selecting-agents/SKILL.md:**
 
 ${selecting_agents_content}
-
-
 
 
 </EXTREMELY_IMPORTANT>"
