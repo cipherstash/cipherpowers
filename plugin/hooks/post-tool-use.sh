@@ -12,7 +12,7 @@ source "${SCRIPT_DIR}/shared-functions.sh"
 # Parse input
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name')
-CWD=$(echo "$INPUT" | jq -r '.cwd')
+CWD=$(echo "$INPUT" | jq -r '.cwd')  # Used for project-level config resolution
 
 # Load gates config - check project directory first, then plugin default
 if [ -f "${CWD}/.claude/gates.json" ]; then

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Check if gate exists in configuration
 gate_exists() {
@@ -68,6 +69,7 @@ handle_action() {
   case "$action" in
     CONTINUE)
       # Continue to next gate in sequence
+      # Uses additionalContext field per Claude Code hook spec
       if [ "$gate_status" = "failed" ]; then
         jq -n --arg msg "⚠️ Gate '\''$gate_name'\'' failed but continuing:\n$output" '{
           additionalContext: $msg
@@ -78,6 +80,7 @@ handle_action() {
 
     BLOCK)
       # Block execution, prevent subsequent gates
+      # Uses decision/reason fields per Claude Code hook spec
       jq -n --arg reason "Gate '\''$gate_name'\'' $gate_status. Output:\n$output" '{
         decision: "block",
         reason: $reason
@@ -87,6 +90,7 @@ handle_action() {
 
     STOP)
       # Stop Claude entirely
+      # Uses continue/message fields per Claude Code hook spec
       jq -n --arg msg "Gate '\''$gate_name'\'' $gate_status. Stopping Claude.\n$output" '{
         continue: false,
         message: $msg

@@ -12,7 +12,7 @@ source "${SCRIPT_DIR}/shared-functions.sh"
 # Parse input
 INPUT=$(cat)
 AGENT_NAME=$(echo "$INPUT" | jq -r '.agent_name // .subagent_name // "unknown"')
-CWD=$(echo "$INPUT" | jq -r '.cwd')
+CWD=$(echo "$INPUT" | jq -r '.cwd')  # Used for project-level config resolution
 
 # Load gates config - check project directory first, then plugin default
 if [ -f "${CWD}/.claude/gates.json" ]; then
