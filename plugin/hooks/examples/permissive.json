@@ -1,0 +1,26 @@
+{
+  "gates": {
+    "check": {
+      "description": "Quality checks (warn only)",
+      "command": "mise run check",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    },
+    "test": {
+      "description": "Tests (warn only)",
+      "command": "mise run test",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    }
+  },
+  "hooks": {
+    "PostToolUse": {
+      "enabled_tools": ["Edit", "Write"],
+      "gates": ["check"]
+    },
+    "SubagentStop": {
+      "enabled_agents": ["rust-engineer"],
+      "gates": ["check", "test"]
+    }
+  }
+}
