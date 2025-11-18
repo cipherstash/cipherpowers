@@ -19,7 +19,7 @@ Maintaining existing documentation after code changes is NOT "proactively creati
 
 **Why this structure?**
 - Agent = Enforces workflow with non-negotiable steps
-- Skill = Universal process (can be upstreamed to superpowers)
+- Skill = Universal process (part of cipherpowers)
 - Practices = Project-specific standards (your docs format)
 - Command = Thin dispatcher (adds project context)
 </instructions>
