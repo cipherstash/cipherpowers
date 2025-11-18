@@ -37,6 +37,25 @@ CipherPowers requires the superpowers plugin. Install it first:
    # Type /brainstorm or /code-review to verify CipherPowers commands are available
    ```
 
+## Setup
+
+After cloning the CipherPowers repository, no additional setup is required - the plugin is ready to use immediately.
+
+**Optional: Quality Hooks Configuration**
+
+Configure project-specific quality gates for automated test/check enforcement:
+
+```bash
+# Copy example configuration (recommended)
+mkdir -p .claude
+cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
+
+# Customize for your project's commands
+vim .claude/gates.json
+```
+
+See `plugin/hooks/SETUP.md` for detailed configuration guide.
+
 ## Getting Started
 
 Once installed, CipherPowers provides specialized slash commands in Claude Code:
@@ -130,26 +149,27 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 
 **Skills:** Automatically discovered by Claude Code. All skills in `plugin/skills/` are available via the Skill tool.
 
-**Practices:** Use the find-practices tool to discover available practices:
-
-```bash
-./plugin/tools/find-practices "pattern"
-./plugin/tools/find-practices --local "pattern"    # cipherpowers only
-./plugin/tools/find-practices --upstream "pattern" # marketplace only
-```
+**Practices:** Browse `plugin/standards/` directory directly or reference practices using environment variables:
 
 **Direct references in agents/commands:**
-- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 
 ## Key Features
+
+**Quality Hooks (Nov 2025)**
+- Automated quality enforcement via Claude Code's hook system
+- Runs project test/check commands automatically when agents modify code
+- Project-level configuration with `gates.json` (supports any build tooling)
+- Configurable actions: BLOCK (enforce), CONTINUE (warn), STOP, or chain to other gates
+- Two hook points: PostToolUse (after code edits), SubagentStop (when agents complete)
+- See `plugin/hooks/` for setup and examples (strict, permissive, pipeline modes)
 
 **Algorithmic Workflow Enforcement (Oct 2025)**
 - Converted TDD, code review trigger, and git commit workflows to algorithmic format
 - Each includes: decision algorithm, recovery algorithm, invalid conditions, self-test
 - Pressure test scenarios validate resistance to common rationalizations
 - Skills: `tdd-enforcement-algorithm/`, `conducting-code-review` (trigger section)
-- Practice: `git-commit-algorithm.md`
 - Pattern: 0% → 100% compliance improvement under pressure (time, sunk cost, authority)
 
 ## Troubleshooting
@@ -173,10 +193,16 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 
 **Quick Start:** This README covers installation and basic usage.
 
+**Quality Hooks:** See `plugin/hooks/` directory for:
+- `README.md` - Overview and examples
+- `SETUP.md` - Project-level configuration guide
+- `INTEGRATION_TESTS.md` - Testing procedures
+- `examples/` - Strict, permissive, and pipeline configurations
+
 **Deep Dive:** See `CLAUDE.md` for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
 - Understand the three-layer architecture (skills, automation, documentation)
 - Create custom agents, commands, or practices
-- Learn about algorithmic workflow enforcement
+- Learn about quality hooks and algorithmic workflow enforcement
 - Contribute to CipherPowers development
 
 ## License

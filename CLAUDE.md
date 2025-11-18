@@ -1,3 +1,10 @@
+---
+commands:
+  test: "mise run test"
+  check: "mise run check"
+  build: "mise run build"
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -7,6 +14,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## CipherPowers
 
 CipherPowers is a Claude Code plugin providing a comprehensive toolkit for development teams. Built on a three-layer plugin architecture, it separates skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to ensure team-wide consistency and maintainability.
+
+## Development Commands
+
+CipherPowers itself uses mise for task orchestration. These commands are used throughout the plugin's development workflow.
+
+### Core Commands
+
+- **Tests**: `mise run test` - Run the project's test suite
+- **Checks**: `mise run check` - Run quality checks (linting, formatting, type checking)
+- **Build**: `mise run build` - Build/package the plugin
+- **Run**: N/A - This is a plugin, not a runnable application
+
+### Additional Commands
+
+- **review:active**: `mise run review:active` - Find current active work directory
+- **check-has-changes**: `mise run check-has-changes` - Verify there are uncommitted changes
+
+**Note:** While CipherPowers itself uses mise, the plugin is tool-agnostic and works with any build/test tooling (npm, cargo, make, etc.). See `plugin/docs/configuring-project-commands.md` for details on the tool-agnostic approach.
 
 ## Architecture
 
@@ -29,20 +54,16 @@ Reusable process knowledge documented using the superpowers framework. Skills ar
 
 **Organization-specific skills:**
 
-**Workflow:**
-- **Executing workflows** (`skills/workflow/executing-workflows/`) - Use workflow executor tool with enforcement or guided modes
-- **Creating workflows** (`skills/workflow/creating-workflows/`) - Design and write markdown-based executable workflows
-
 **Documentation:**
-- **Maintaining docs** (`skills/documentation/maintaining-docs-after-changes/`) - Two-phase sync process
-- **Capturing learning** (`skills/documentation/capturing-learning/`) - Retrospective capture process
+- **Maintaining docs** (`skills/maintaining-docs-after-changes/`) - Two-phase sync process
+- **Capturing learning** (`skills/capturing-learning/`) - Retrospective capture process
 
 **Meta:**
-- **Algorithmic enforcement** (`skills/meta/algorithmic-command-enforcement/`) - Why algorithms > imperatives
+- **Algorithmic enforcement** (`skills/algorithmic-command-enforcement/`) - Why algorithms > imperatives
 - **Using skills** (`skills/using-skills/`) - CipherPowers skill discovery
 
 **Testing:**
-- **TDD enforcement** (`skills/testing/tdd-enforcement-algorithm/`) - Prevent code before tests
+- **TDD enforcement** (`skills/tdd-enforcement-algorithm/`) - Prevent code before tests
 
 **Collaboration:**
 - **Code review** (`skills/conducting-code-review/`) - Complete review workflow
@@ -81,6 +102,7 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - `plugin/templates/agent-template.md` - Agent structure with persuasion principles
 - `plugin/templates/practice-template.md` - Practice structure with standards + config pattern
 - `plugin/templates/skill-template.md` - Practice structure with standards + config pattern
+- `plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
 
 ### 3. Documentation Layer (`docs/`)
 
@@ -95,7 +117,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`plugin/practices/`)
+- Standards live in one place (`plugin/principles/`, `plugin/standards/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -127,7 +149,7 @@ This three-layer separation achieves key software engineering principles:
 
 **Example: Code Review Workflow**
 - `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
-- `plugin/practices/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `plugin/standards/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
 - `plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
 - `plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
 - Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
@@ -140,8 +162,8 @@ All components work together without duplication:
 
 **Example: Commit Workflow**
 - `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
-- `plugin/practices/conventional-commits.md` = Commit message format standards
-- `plugin/practices/git-guidelines.md` = Git workflow standards
+- `plugin/standards/conventional-commits.md` = Commit message format standards
+- `plugin/standards/git-guidelines.md` = Git workflow standards
 - `plugin/commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
@@ -151,9 +173,9 @@ Skills enable discovery:
 - Update workflow in skill → all agents benefit
 
 **Example: Documentation Structure**
-- `plugin/practices/documentation.md` = Standards (formatting, completeness, structure)
-- `skills/documentation/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
-- `skills/documentation/capturing-learning/` = Workflow (retrospective capture process)
+- `plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
+- `skills/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
+- `skills/capturing-learning/` = Workflow (retrospective capture process)
 - `plugin/commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
 - `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
@@ -161,9 +183,9 @@ All five components work together without duplication. Change documentation stan
 
 **Example: Plan Execution with Automatic Agent Selection**
 - `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
-- `${SUPERPOWERS_SKILLS_ROOT}/skills/collaboration/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
+- `${CLAUDE_PLUGIN_ROOT}plugin/skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
-- `plugin/practices/code-review.md` = Review standards referenced at batch checkpoints
+- `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
 
 The /execute command demonstrates:
@@ -177,8 +199,8 @@ The /execute command demonstrates:
 
 **CLAUDE_PLUGIN_ROOT**: Path to the cipherpowers plugin installation
 - Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
-- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/practices/name.md`
-- Also used by `find-practices` tool for discovery
+- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/standards/name.md`
+- Use for all plugin-relative paths in commands and agents
 
 **SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
 - Provided by superpowers plugin
@@ -186,7 +208,7 @@ The /execute command demonstrates:
 
 **CIPHERPOWERS_MARKETPLACE_ROOT**: (Optional) Path to marketplace installation for shared practices
 - Set if using cipherpowers as a local marketplace
-- Enables `--upstream` flag in `find-practices`
+- Used for accessing shared practices from marketplace
 
 ## Directory Structure
 
@@ -201,16 +223,17 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **`./plugin/` - Plugin Content**
 - All content shipped with the plugin to users
-- **`plugin/practices/`** - Coding standards, conventions, guidelines
+- **`plugin/principles/`, `plugin/standards/`** - Coding standards, conventions, guidelines
 - **`plugin/templates/`** - Templates for agents, practices, skills
 - **`plugin/agents/`** - Specialized subagent prompts
 - **`plugin/commands/`** - Slash commands
 - **`plugin/skills/`** - Organization-specific skills
-- **`plugin/tools/`** - Discovery and utility tools
+- **`plugin/hooks/`** - Quality enforcement hooks (PostToolUse, SubagentStop)
+- **`plugin/examples/`** - Example configurations and templates
 
 **Key distinction:**
 - `./docs/plans/` = Plans for building cipherpowers
-- `./plugin/practices/` = Standards for users of cipherpowers
+- `./plugin/standards/` = Standards for users of cipherpowers
 
 **Referencing paths**
 n Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. This variable is intended to point to the root directory of the plugin, allowing commands to access scripts and resources relative to the plugin's location.
@@ -220,7 +243,7 @@ You MUST ALWAYS use the following structure to reference paths:
 
     ${CLAUDE_PLUGIN_ROOT}path/to/file
 
-    ${CLAUDE_PLUGIN_ROOT}practices/code-review.md
+    ${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md
 
 
 ## Integration with Superpowers
@@ -233,31 +256,70 @@ CipherPowers integrates seamlessly with the superpowers plugin through Claude Co
 - No manual discovery scripts needed
 
 **Practices Discovery:**
-Custom `find-practices` tool (`${CLAUDE_PLUGIN_ROOT}tools/find-practices`):
-- Searches `${CLAUDE_PLUGIN_ROOT}plugin/practices/` (local practices)
-- Searches `${CIPHERPOWERS_MARKETPLACE_ROOT}/plugin/practices/` (marketplace practices, if available)
-- Extracts YAML frontmatter (name, description, when_to_use)
-- Flags: `--local`, `--upstream`, or default (both)
-
-**Usage:**
-```bash
-# Find practices
-./plugin/tools/find-practices "pattern"
-./plugin/tools/find-practices --local "pattern"    # cipherpowers only
-./plugin/tools/find-practices --upstream "pattern" # marketplace only
-```
+Browse `plugin/standards/` directory directly. Each practice includes YAML frontmatter with:
+- `name`: Practice name
+- `description`: Brief description
+- `when_to_use`: Guidance on when to apply
+- `applies_to`: Scope (all projects, specific languages, etc.)
 
 **Direct References:**
 Commands and agents reference skills and practices using environment variables:
-- `@${CLAUDE_PLUGIN_ROOT}plugin/practices/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 - Skills are invoked via Skill tool, not direct file references
+
+## Quality Hooks
+
+CipherPowers provides automated quality enforcement through Claude Code's hook system.
+
+**Hook Points:**
+- **PostToolUse**: Runs after code editing tools (Edit, Write, etc.)
+- **SubagentStop**: Runs when specialized agents complete their work
+
+**Configuration:**
+Quality hooks use project-level `gates.json` configuration files with priority:
+1. `.claude/gates.json` (recommended - project-specific)
+2. `gates.json` (project root)
+3. `${CLAUDE_PLUGIN_ROOT}/hooks/gates.json` (plugin default fallback)
+
+**Gate Actions:**
+- **CONTINUE**: Proceed (default on pass)
+- **BLOCK**: Prevent agent from proceeding (default on fail)
+- **STOP**: Stop Claude entirely
+- **{gate_name}**: Chain to another gate (subroutine call)
+
+**Setup:**
+```bash
+# Copy example configuration
+mkdir -p .claude
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
+
+# Customize for project's build tooling
+vim .claude/gates.json
+```
+
+**Example configurations:**
+- `examples/strict.json` - Block on all failures (production code)
+- `examples/permissive.json` - Warn only (prototyping)
+- `examples/pipeline.json` - Chained gates (format → check → test)
+
+**Documentation:**
+- `plugin/hooks/README.md` - Overview and examples
+- `plugin/hooks/SETUP.md` - Configuration guide
+- `plugin/hooks/INTEGRATION_TESTS.md` - Testing procedures
+
+**Benefits:**
+- Consistent quality enforcement across all agent work
+- Early issue detection at edit time or completion
+- Flexible per-gate actions (enforce, warn, stop, chain)
+- Tool-agnostic (works with npm, cargo, mise, make, etc.)
+- Self-contained project-level configuration
 
 ## Working with Skills in this Repository
 
 When creating or editing skills in `plugin/skills/`:
 
-1. **Read the meta-skill:** `${SUPERPOWERS_SKILLS_ROOT}/skills/meta/writing-skills/SKILL.md`
+1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider upstream:** Universal skills may be contributed to superpowers later
@@ -286,10 +348,11 @@ When developing CipherPowers plugin components:
 **Directory Structure:**
 - `plugin/commands/` - Slash commands (thin dispatchers)
 - `plugin/agents/` - Specialized subagent prompts with enforced workflows
-- `plugin/practices/` - Standards and project configuration
+- `plugin/principles/`, `plugin/standards/` - Standards and project configuration
 - `plugin/skills/` - Organization-specific skills
+- `plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
 - `plugin/templates/` - Templates for agents, practices, and skills
-- `plugin/tools/` - Discovery and utility tools
+- `plugin/examples/` - Example configurations and templates
 
 **Key Principles:**
 - Commands are thin dispatchers that reference agents or skills
@@ -303,7 +366,7 @@ When developing CipherPowers plugin components:
 2. For skills: Follow TDD approach with test scenarios before implementation
 3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 4. For practices: Separate universal standards from project-specific configuration
-5. Test components using discovery tools (`find-practices` for practices; skills are auto-discovered)
+5. Skills are auto-discovered; practices can be browsed in `plugin/standards/`
 6. Ensure proper references using environment variables
 
 **Environment Variables:**
@@ -320,141 +383,18 @@ When developing CipherPowers plugin components:
 
 ## Learning and Retrospectives
 
-CipherPowers captures significant learnings from development work to build organizational knowledge:
+CipherPowers captures significant lessons from development work to build organizational knowledge.
 
-**Key Learnings:**
-- [Algorithmic vs Imperative Command Enforcement](docs/learning/2025-10-16-algorithmic-command-enforcement.md) - Discovered agents follow algorithms (100% compliance) better than imperatives (0-33% compliance). Use boolean decision trees for discipline-enforcing workflows.
-- [Workflow Executor Implementation](docs/learning/2025-10-19-workflow-executor.md) - Built Rust CLI tool for executing markdown workflows. Key insights: TDD prevented debugging time, batch reviews caught 12+ issues early, labeled loops solved GoToStep bug, security by documentation approach.
-- [Remove Obsolete find-skills Discovery System](docs/learning/2025-10-19-remove-find-skills.md) - Removed bash script discovery system in favor of Claude Code's native Skill tool. Key insights: Per-batch code reviews caught 7 blockers early, native auto-discovery eliminated 300+ lines of code, comprehensive grep verification necessary but not sufficient.
-- [Simplify Workflow Syntax](docs/learning/2025-10-19-simplify-workflow-syntax.md) - Simplified workflow syntax from verbose arrow conditionals to clean Pass/Fail labels. Key insights: Clean breaks reduce complexity (660 lines removed), implicit defaults reduce cognitive load (90% of steps use minimal syntax), per-batch code reviews add 30% time but prevent 2-3x debugging time, TDD prevents debugging entirely.
-- [Workflow Syntax Migration](docs/learning/2025-10-20-workflow-syntax-migration.md) - Migrated 3 key workflow files from arrow syntax to Pass/Fail labels. Key insights: Executable workflows require globally sequential step numbering (multiple algorithms in one file need continuous numbering), flexible wrapper scripts better than rigid automation (warnings > false positives), per-batch code reviews caught 5 issues (30% time overhead prevented 3x debugging time), parser error messages can be cryptic (sequential step violations took 20 minutes to diagnose).
-- [Gatekeeper Agent Implementation](docs/learning/2025-10-19-gatekeeper-agent.md) - Built quality gate that validates code review feedback against implementation plans, preventing scope creep and misinterpretation. Key insights: Real failure mode (Lambert recalculation) drove design, 2-level severity simplification (BLOCKING/NON-BLOCKING) reduces ambiguity, user checkpoints prevent silent scope expansion, [FIX] tags eliminate downstream ambiguity, three-layer separation (skill + practice + agent) enables DRY and reusability.
-
-**When to capture learning:**
+**When to capture:**
 - After completing significant features
 - When multiple approaches were tried
 - When work took longer than expected
 - When discovering non-obvious insights
-- See `plugin/skills/documentation/capturing-learning/SKILL.md` for methodology
+- See `plugin/skills/capturing-learning/SKILL.md` for methodology
 
-## Algorithmic Workflow Enforcement
-
-CipherPowers uses **algorithmic decision trees** instead of imperative instructions for discipline-enforcing workflows. This achieves 0% → 100% compliance improvement under pressure.
-
-**Workflow Executor Tool:** `plugin/tools/workflow`
-
-Executes markdown-based workflows with two modes:
-
-**Enforcement mode (default):**
-```bash
-workflow path/to/workflow.md
-```
-- Sequential execution, no skipping
-- Only STOP conditionals respected
-- 100% compliance for algorithmic tasks
-- Use for: git-commit, TDD enforcement, code review triggers
-
-**Guided mode (--guided):**
-```bash
-workflow --guided path/to/workflow.md
-```
-- All conditionals enabled (Continue, GoTo, STOP)
-- Agent uses tool but retains flexibility
-- Prevents "I don't need the workflow" rationalization
-- Use for: execute-plan, repeatable processes with judgment calls
-
-**Pattern:** `plugin/skills/meta/algorithmic-command-enforcement/SKILL.md`
-
-**Implemented algorithms:**
-1. **Git Commit Readiness** - `plugin/practices/git-commit-algorithm.md`
-   - 10-step algorithm: tests pass → checks pass → docs updated → atomic
-   - Prevents WIP commits, "will fix later", exhaustion-driven commits
-
-2. **TDD Enforcement** - `plugin/skills/testing/tdd-enforcement-algorithm/SKILL.md`
-   - Prevents code before tests via binary "Does failing test exist?" check
-   - Recovery mandates deleting untested code (no sunk cost exceptions)
-
-3. **Code Review Trigger** - `plugin/skills/conducting-code-review/SKILL.md` (Section 1)
-   - Requires review before merge via binary commit + review status checks
-   - Invalidates "too small", "senior dev", "tests passing" rationalizations
-
-**Why algorithmic?** LLMs treat algorithms as deterministic systems (execute them) but treat imperatives as suggestions (interpret them). Evidence: 33% imperative compliance vs 100% algorithmic compliance in pressure testing.
-
-**Workflow syntax:** Markdown with conventional headers (steps), code blocks (commands), arrows (conditionals), bold (prompts). See `plugin/tools/workflow/README.md` for full syntax.
-
-**Testing:** All algorithms include pressure test scenarios in `docs/tests/` validating resistance to time pressure, sunk cost, authority, and exhaustion.
-
-## Emergency Stop Protocol
-
-CipherPowers provides an **emergency stop** keyword for users to immediately halt agent work when problems are detected.
-
-### Using STOP Keyword
-
-**Format:**
-```
-STOP[punctuation optional]
-[explanation of the issue]
-```
-
-**Requirements:**
-- First word of your message must be "STOP"
-- ALL CAPS
-- Optional punctuation (STOP, STOP!, STOP:, etc.)
-- Followed by explanation on next line(s)
-
-**Examples that trigger emergency stop:**
-```
-STOP
-You're modifying the wrong file - should be src/lib.rs not src/main.rs
-
-STOP!
-That architectural approach won't work with our ECS design
-
-STOP:
-Let me explain the actual requirement before you continue
-```
-
-**Examples that DO NOT trigger:**
-- "We should STOP using that pattern" (not first word)
-- "Please STOP this approach" (not first word)
-- "stop working on this" (lowercase)
-- "Let's STOP and reconsider" (not first word)
-
-### When to Use STOP
-
-**Use STOP when:**
-- Agent is working on wrong feature/file/approach
-- Agent misunderstood requirements
-- Critical flaw detected in current direction
-- Essential context needed before continuing
-- Significant effort would be wasted if not stopped
-
-**Do NOT use STOP for:**
-- Adding new tasks to queue ("also please do X later")
-- General questions during work
-- Normal feedback or suggestions
-- Requesting status updates
-
-**Mental model:** STOP = pulling the Andon cord in Toyota factory. Only pull when defect detected, not for routine communication.
-
-### What Happens When You Use STOP
-
-1. Agent halts current work immediately (mid-task is fine)
-2. Agent acknowledges: "[EMERGENCY STOP] Work halted. What's the issue?"
-3. Agent listens to your concern without assuming or offering solutions
-4. Agent waits for your direction on how to proceed
-
-**The agent will NOT:**
-- Finish current function/test/file
-- Complete current batch
-- Continue with work in progress
-
-**Reference:** See `plugin/skills/collaboration/emergency-stop/SKILL.md` for full protocol details.
 
 ## Team Usage
 
 1. Install cipherpowers as a Claude Code plugin
-2. Install superpowers for universal skills
-3. Both collections work together seamlessly
-4. Commands dispatch to agents or main Claude with practice context
+2. Commands dispatch to agents or main Claude with practice context
 

@@ -1,0 +1,34 @@
+{
+  "gates": {
+    "format": {
+      "description": "Auto-format code",
+      "command": "mise run format",
+      "on_pass": "check",
+      "on_fail": "STOP"
+    },
+    "check": {
+      "description": "Quality checks",
+      "command": "mise run check",
+      "on_pass": "test",
+      "on_fail": "BLOCK"
+    },
+    "test": {
+      "description": "Run tests",
+      "command": "mise run test",
+      "on_pass": "build",
+      "on_fail": "BLOCK"
+    },
+    "build": {
+      "description": "Build project",
+      "command": "mise run build",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
+  },
+  "hooks": {
+    "SubagentStop": {
+      "enabled_agents": ["rust-engineer", "code-reviewer"],
+      "gates": ["format"]
+    }
+  }
+}

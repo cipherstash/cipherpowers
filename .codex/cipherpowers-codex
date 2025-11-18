@@ -1,0 +1,319 @@
+#!/usr/bin/env bash
+# CipherPowers CLI for Codex
+# Provides skill discovery and loading for Codex AI assistant
+
+set -euo pipefail
+
+# Auto-detect script location for smart defaults
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Paths - hybrid approach with auto-detection + environment variable overrides
+# Priority: env var > auto-detected > fallback to installed location
+
+# CipherPowers skills directory
+if [[ -n "${CIPHERPOWERS_SKILLS_DIR:-}" ]]; then
+    CIPHERPOWERS_SKILLS="$CIPHERPOWERS_SKILLS_DIR"
+elif [[ -d "$REPO_ROOT/plugin/skills" ]]; then
+    CIPHERPOWERS_SKILLS="$REPO_ROOT/plugin/skills"
+else
+    CIPHERPOWERS_SKILLS="${HOME}/.codex/cipherpowers/plugin/skills"
+fi
+
+# Personal skills directory
+PERSONAL_SKILLS="${PERSONAL_SKILLS_DIR:-${HOME}/.codex/skills}"
+
+# Bootstrap file
+if [[ -n "${CIPHERPOWERS_BOOTSTRAP:-}" ]]; then
+    BOOTSTRAP_FILE="$CIPHERPOWERS_BOOTSTRAP"
+elif [[ -f "$SCRIPT_DIR/cipherpowers-bootstrap.md" ]]; then
+    BOOTSTRAP_FILE="$SCRIPT_DIR/cipherpowers-bootstrap.md"
+else
+    BOOTSTRAP_FILE="${HOME}/.codex/cipherpowers/.codex/cipherpowers-bootstrap.md"
+fi
+
+# Colors for output (optional)
+BOLD='\033[1m'
+RESET='\033[0m'
+
+# Extract YAML frontmatter from skill file
+# Usage: extract_frontmatter <file> <key>
+extract_frontmatter() {
+    local file="$1"
+    local key="$2"
+
+    awk -v key="$key" '
+        BEGIN { in_frontmatter=0; value="" }
+        /^---$/ {
+            if (in_frontmatter) exit;
+            in_frontmatter=1;
+            next;
+        }
+        in_frontmatter && $0 ~ "^" key ":" {
+            sub("^" key ":[[:space:]]*", "");
+            value=$0;
+        }
+        END { print value }
+    ' "$file"
+}
+
+# Find skill file by name
+# Returns: skill file path or empty string
+find_skill_file() {
+    local skill_name="$1"
+    local force_cipherpowers="${2:-false}"
+
+    # Remove namespace prefix if present
+    skill_name="${skill_name#cipherpowers:}"
+
+    # If not forcing cipherpowers, check personal skills first
+    if [[ "$force_cipherpowers" != "true" ]] && [[ -d "$PERSONAL_SKILLS" ]]; then
+        local personal_skill="$PERSONAL_SKILLS/$skill_name/SKILL.md"
+        if [[ -f "$personal_skill" ]]; then
+            echo "$personal_skill"
+            return 0
+        fi
+    fi
+
+    # Check cipherpowers skills
+    if [[ -d "$CIPHERPOWERS_SKILLS" ]]; then
+        local cipherpowers_skill="$CIPHERPOWERS_SKILLS/$skill_name/SKILL.md"
+        if [[ -f "$cipherpowers_skill" ]]; then
+            echo "$cipherpowers_skill"
+            return 0
+        fi
+    fi
+
+    # Not found
+    return 1
+}
+
+# Print skill metadata for listing
+print_skill_info() {
+    local skill_path="$1"
+    local source_type="$2"
+    local skill_file="$skill_path/SKILL.md"
+
+    # Skip if SKILL.md doesn't exist (not a valid skill directory)
+    [[ ! -f "$skill_file" ]] && return 0
+
+    # Get skill name (directory name)
+    local skill_name
+    skill_name=$(basename "$skill_path")
+
+    # Add namespace prefix if cipherpowers skill
+    if [[ "$source_type" == "cipherpowers" ]]; then
+        echo "cipherpowers:$skill_name"
+    else
+        echo "$skill_name"
+    fi
+
+    # Extract and print metadata
+    local description
+    local when_to_use
+    description=$(extract_frontmatter "$skill_file" "description")
+    when_to_use=$(extract_frontmatter "$skill_file" "when_to_use")
+
+    [[ -n "$description" ]] && echo "  $description"
+    [[ -n "$when_to_use" ]] && echo "  When to use: $when_to_use"
+    echo ""
+}
+
+# Command: find-skills
+# Lists all available skills with metadata
+cmd_find_skills() {
+    echo "Available skills:"
+    echo "=================="
+    echo ""
+
+    local found_skills=()
+
+    # Find personal skills first (they take precedence)
+    if [[ -d "$PERSONAL_SKILLS" ]]; then
+        while IFS= read -r -d '' skill_path; do
+            local skill_name
+            skill_name=$(basename "$skill_path")
+            found_skills+=("$skill_name")
+            print_skill_info "$skill_path" "personal"
+        done < <(find "$PERSONAL_SKILLS" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
+    fi
+
+    # Find cipherpowers skills (skip if already found in personal)
+    if [[ -d "$CIPHERPOWERS_SKILLS" ]]; then
+        while IFS= read -r -d '' skill_path; do
+            local skill_name
+            skill_name=$(basename "$skill_path")
+
+            # Skip if already found in personal skills
+            local skip=false
+            for found in "${found_skills[@]}"; do
+                if [[ "$found" == "$skill_name" ]]; then
+                    skip=true
+                    break
+                fi
+            done
+
+            [[ "$skip" == "false" ]] && print_skill_info "$skill_path" "cipherpowers"
+        done < <(find "$CIPHERPOWERS_SKILLS" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
+    fi
+
+    echo "Usage:"
+    echo "  cipherpowers-codex use-skill <skill-name>   # Load a specific skill"
+    echo ""
+    echo "Skill naming:"
+    echo "  CipherPowers skills: cipherpowers:skill-name (from ~/.codex/cipherpowers/plugin/skills/)"
+    echo "  Personal skills: skill-name (from ~/.codex/skills/)"
+    echo "  Personal skills override cipherpowers skills when names match."
+    echo ""
+}
+
+# Command: use-skill <name>
+# Loads and displays a specific skill
+cmd_use_skill() {
+    local skill_name="${1:-}"
+
+    if [[ -z "$skill_name" ]]; then
+        echo "Usage: cipherpowers-codex use-skill <skill-name>"
+        echo "Examples:"
+        echo "  cipherpowers-codex use-skill cipherpowers:brainstorming  # Load cipherpowers skill"
+        echo "  cipherpowers-codex use-skill brainstorming               # Load personal skill (or cipherpowers if not found)"
+        echo "  cipherpowers-codex use-skill my-custom-skill             # Load personal skill"
+        return 1
+    fi
+
+    # Check if forcing cipherpowers namespace
+    local force_cipherpowers=false
+    if [[ "$skill_name" == cipherpowers:* ]]; then
+        force_cipherpowers=true
+    fi
+
+    # Find the skill file
+    local skill_file
+    if ! skill_file=$(find_skill_file "$skill_name" "$force_cipherpowers"); then
+        echo "Error: Skill not found: $skill_name"
+        echo ""
+        echo "Available skills:"
+        cmd_find_skills
+        return 1
+    fi
+
+    # Determine source type for display
+    local source_type="cipherpowers"
+    local display_name="${skill_name#cipherpowers:}"
+    if [[ "$skill_file" == "$PERSONAL_SKILLS"* ]]; then
+        source_type="personal"
+        echo "# Loading personal skill: $display_name"
+    else
+        echo "# Loading cipherpowers skill: cipherpowers:$display_name"
+    fi
+    echo "# Source: $skill_file"
+    echo ""
+
+    # Extract metadata
+    local name description when_to_use
+    name=$(extract_frontmatter "$skill_file" "name")
+    description=$(extract_frontmatter "$skill_file" "description")
+    when_to_use=$(extract_frontmatter "$skill_file" "when_to_use")
+
+    # Display header
+    echo "# ${name:-$display_name}"
+    [[ -n "$description" ]] && echo "# $description"
+    [[ -n "$when_to_use" ]] && echo "# When to use: $when_to_use"
+    echo "# Supporting tools and docs are in $(dirname "$skill_file")"
+    echo "# ============================================"
+    echo ""
+
+    # Display skill content (strip frontmatter)
+    awk '
+        BEGIN { in_frontmatter=0; frontmatter_ended=0 }
+        /^---$/ {
+            if (in_frontmatter) {
+                frontmatter_ended=1;
+                next;
+            }
+            in_frontmatter=1;
+            next;
+        }
+        frontmatter_ended || !in_frontmatter { print }
+    ' "$skill_file"
+}
+
+# Command: bootstrap
+# Full bootstrap with instructions + skills list + auto-load using-skills
+cmd_bootstrap() {
+    echo "# CipherPowers Bootstrap for Codex"
+    echo "# =================================="
+    echo ""
+
+    # Show bootstrap instructions
+    if [[ -f "$BOOTSTRAP_FILE" ]]; then
+        echo "## Bootstrap Instructions:"
+        echo ""
+        cat "$BOOTSTRAP_FILE"
+        echo ""
+        echo "---"
+        echo ""
+    fi
+
+    # List available skills
+    echo "## Available Skills:"
+    echo ""
+    cmd_find_skills
+
+    echo ""
+    echo "---"
+    echo ""
+
+    # Auto-load the using-skills skill (meta-skill)
+    echo "## Auto-loading cipherpowers:using-skills skill:"
+    echo ""
+    if cmd_use_skill "cipherpowers:using-skills" 2>/dev/null; then
+        :
+    else
+        echo "Note: using-skills meta-skill not found - proceeding with bootstrap"
+    fi
+
+    echo ""
+    echo "---"
+    echo ""
+    echo "# Bootstrap Complete!"
+    echo "# You now have access to all cipherpowers skills."
+    echo "# Use \"cipherpowers-codex use-skill <skill>\" to load and apply skills."
+    echo "# Remember: If a skill applies to your task, you MUST use it!"
+}
+
+# Main CLI dispatch
+main() {
+    local command="${1:-help}"
+
+    case "$command" in
+        bootstrap)
+            cmd_bootstrap
+            ;;
+        use-skill)
+            cmd_use_skill "${2:-}"
+            ;;
+        find-skills)
+            cmd_find_skills
+            ;;
+        help|--help|-h)
+            echo "CipherPowers for Codex"
+            echo "Usage:"
+            echo "  cipherpowers-codex bootstrap              # Run complete bootstrap with all skills"
+            echo "  cipherpowers-codex use-skill <skill-name> # Load a specific skill"
+            echo "  cipherpowers-codex find-skills            # List all available skills"
+            echo ""
+            echo "Examples:"
+            echo "  cipherpowers-codex bootstrap"
+            echo "  cipherpowers-codex use-skill cipherpowers:brainstorming"
+            echo "  cipherpowers-codex use-skill my-custom-skill"
+            ;;
+        *)
+            echo "Error: Unknown command: $command"
+            echo "Run 'cipherpowers-codex help' for usage information."
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

@@ -28,8 +28,8 @@ Structured commit process ensuring code quality through pre-commit verification,
 ### Prerequisites
 
 Read these before committing:
-- `${CLAUDE_PLUGIN_ROOT}practices/conventional-commits.md` - Commit message format
-- `${CLAUDE_PLUGIN_ROOT}practices/git-guidelines.md` - Git workflow standards
+- `${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md` - Commit message format
+- `${CLAUDE_PLUGIN_ROOT}standards/git-guidelines.md` - Git workflow standards
 
 ### Step-by-Step Workflow
 
@@ -37,18 +37,15 @@ Read these before committing:
 
 **Execute quality checks:**
 
-```bash
-# Run linters and formatters (project-specific command)
-mise run check
+- Run project check command
+- Run project test command
+- Run project build command
 
-# Run tests if appropriate for changes
-mise run test
-
-# Ensure code builds without errors
-mise run build  # if project has build step
-```
-
-**Fix any failures before proceeding.**
+**If there are failures or warnings:**
+- Stop
+- Do not continue
+- Report all failures or warnings
+- Ask user: Continue with commit?
 
 #### 2. Check staging status
 
@@ -101,7 +98,7 @@ git commit -m "..."
 
 #### 5. Write conventional commit message
 
-**Format (from practices/conventional-commits.md):**
+**Format (from standards/conventional-commits.md):**
 
 ```
 <type>(<optional-scope>): <description>
