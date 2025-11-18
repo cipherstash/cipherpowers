@@ -54,7 +54,7 @@ Framework designed to resist rationalization under pressure:
 
 ## Testing Approach
 
-Created 4 validation tests following `${CLAUDE_PLUGIN_ROOT}plugin/skills/testing-skills-with-subagents/SKILL.md`:
+Created 4 validation tests following `${CLAUDE_PLUGIN_ROOT}skills/testing-skills-with-subagents/SKILL.md`:
 
 ### Test 1: Academic Context (No Pressure)
 - Simple bug, no time pressure
@@ -82,7 +82,7 @@ Created 4 validation tests following `${CLAUDE_PLUGIN_ROOT}plugin/skills/testing
 - Flowchart for "fix failed" decision
 
 ### Enhancement 1: TDD Reference
-- Added link to `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md`
+- Added link to `${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md`
 - Note explaining TDD's "simplest code" ≠ debugging's "root cause"
 - Prevents confusion between methodologies
 

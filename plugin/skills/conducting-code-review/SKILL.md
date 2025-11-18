@@ -14,7 +14,7 @@ Systematic code review process ensuring correctness, security, and maintainabili
 ## Quick Reference
 
 **Before starting:**
-1. Read upstream skill: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
+1. Read upstream skill: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md`
 2. Read project practices: `${CLAUDE_PLUGIN_ROOT}standards/code-review.md`
 
 **Core workflow:**
@@ -28,7 +28,7 @@ Systematic code review process ensuring correctness, security, and maintainabili
 ### Prerequisites
 
 Read these before conducting review:
-- `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md` - Understand requester expectations
+- `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md` - Understand requester expectations
 - `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` - Standards, severity levels, project commands
 
 ### Step-by-Step Workflow
@@ -98,10 +98,10 @@ See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
 ## Related Skills
 
 **Requestion code review:**
-- Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
+- Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md`
 
 **When receiving feedback on your review:**
-- Code Review Reception: `${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md`
+- Code Review Reception: `${CLAUDE_PLUGIN_ROOT}skills/receiving-code-review/SKILL.md`
 
 ## Testing This Skill
 

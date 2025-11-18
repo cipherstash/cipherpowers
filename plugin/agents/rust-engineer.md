@@ -26,7 +26,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
     - @CLAUDE.md
 
     Important related skills:
-      - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md
+      - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}skills/receiving-code-review/SKILL.md
 
     YOU MUST READ the `Code Review Reception` skill if addressing code review feedback.
   </context>
@@ -75,7 +75,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
     - Not for "it's obvious it works"
     - Delete means delete - don't keep as "reference"
 
-    See `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md` for details.
+    See `${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md` for details.
 
     ### 4. Project Command Execution
 

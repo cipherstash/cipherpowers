@@ -304,7 +304,7 @@ See test artifacts for full RED-GREEN-REFACTOR campaign:
 - `docs/tests/execute-command-algorithmic.md` - Algorithmic version (REFACTOR) results
 - `docs/learning/2025-10-16-algorithmic-command-enforcement.md` - Complete retrospective
 
-**Methodology:** Following `${CLAUDE_PLUGIN_ROOT}plugin/skills/testing-skills-with-subagents/SKILL.md` - pressure scenarios with time, sunk cost, authority, and exhaustion combined.
+**Methodology:** Following `${CLAUDE_PLUGIN_ROOT}skills/testing-skills-with-subagents/SKILL.md` - pressure scenarios with time, sunk cost, authority, and exhaustion combined.
 
 ## Agent vs Command Documentation
 

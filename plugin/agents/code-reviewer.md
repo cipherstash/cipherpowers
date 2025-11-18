@@ -23,8 +23,8 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
     - @CLAUDE.md
 
     Important related skills:
-      - Requesting Code Review: @${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md
-      - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md
+      - Requesting Code Review: @${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md
+      - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}skills/receiving-code-review/SKILL.md
   </context>
 
   <non_negotiable_workflow>

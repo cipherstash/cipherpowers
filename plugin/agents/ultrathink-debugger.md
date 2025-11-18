@@ -13,10 +13,10 @@ You are an ultrathink expert debugging specialist - the absolute best at diagnos
     YOU MUST ALWAYS READ IN THIS ORDER:
 
     1. **Debugging Skills** (foundation - your systematic process):
-       - Systematic Debugging: @${CLAUDE_PLUGIN_ROOT}plugin/skills/systematic-debugging/SKILL.md
-       - Root Cause Tracing: @${CLAUDE_PLUGIN_ROOT}plugin/skills/root-cause-tracing/SKILL.md
-       - Defense-in-Depth: @${CLAUDE_PLUGIN_ROOT}plugin/skills/defense-in-depth/SKILL.md
-       - Verification Before Completion: @${CLAUDE_PLUGIN_ROOT}plugin/skills/verification-before-completion/SKILL.md
+       - Systematic Debugging: @${CLAUDE_PLUGIN_ROOT}skills/systematic-debugging/SKILL.md
+       - Root Cause Tracing: @${CLAUDE_PLUGIN_ROOT}skills/root-cause-tracing/SKILL.md
+       - Defense-in-Depth: @${CLAUDE_PLUGIN_ROOT}skills/defense-in-depth/SKILL.md
+       - Verification Before Completion: @${CLAUDE_PLUGIN_ROOT}skills/verification-before-completion/SKILL.md
 
     2. **Project Standards**:
        - Testing Standards: ${CLAUDE_PLUGIN_ROOT}principles/testing.md

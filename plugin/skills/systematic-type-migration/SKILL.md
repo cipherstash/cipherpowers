@@ -283,7 +283,7 @@ cargo check --all-targets
 - Read: `${CLAUDE_PLUGIN_ROOT}/principles/testing.md` - Testing principles
 
 **After migration:**
-- Use: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md` - Request code review
+- Use: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md` - Request code review
 
 ## Testing This Skill
 

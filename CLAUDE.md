@@ -183,7 +183,7 @@ All five components work together without duplication. Change documentation stan
 
 **Example: Plan Execution with Automatic Agent Selection**
 - `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
-- `${CLAUDE_PLUGIN_ROOT}plugin/skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
+- `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
@@ -199,7 +199,8 @@ The /execute command demonstrates:
 
 **CLAUDE_PLUGIN_ROOT**: Path to the cipherpowers plugin installation
 - Set automatically when plugin is loaded (value: `${PLUGIN_DIR}`)
-- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}plugin/standards/name.md`
+- Points to `plugin/` directory due to marketplace.json `"source": "./plugin/"`
+- Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}standards/name.md`
 - Use for all plugin-relative paths in commands and agents
 
 **SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
@@ -236,14 +237,15 @@ CipherPowers uses a clear separation between project documentation and plugin co
 - `./plugin/standards/` = Standards for users of cipherpowers
 
 **Referencing paths**
-n Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. This variable is intended to point to the root directory of the plugin, allowing commands to access scripts and resources relative to the plugin's location.
-Command Structure
+In Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. Due to marketplace.json configuration (`"source": "./plugin/"`), this variable points directly to the plugin/ directory, so paths should NOT include the /plugin/ prefix.
 
 You MUST ALWAYS use the following structure to reference paths:
 
     ${CLAUDE_PLUGIN_ROOT}path/to/file
 
-    ${CLAUDE_PLUGIN_ROOT}plugin/standards/code-review.md
+Example:
+
+    ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 
 ## Integration with Superpowers
@@ -264,7 +266,7 @@ Browse `plugin/standards/` directory directly. Each practice includes YAML front
 
 **Direct References:**
 Commands and agents reference skills and practices using environment variables:
-- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
+- `@${CLAUDE_PLUGIN_ROOT}standards/practice-name.md` - Direct practice reference
 - `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 - Skills are invoked via Skill tool, not direct file references
 
@@ -319,7 +321,7 @@ vim .claude/gates.json
 
 When creating or editing skills in `plugin/skills/`:
 
-1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-skills/SKILL.md`
+1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}skills/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider upstream:** Universal skills may be contributed to superpowers later

@@ -207,7 +207,7 @@ Demonstrates algorithm is deterministic. Reaching Step 5 = violation.
 **This algorithm provides:** WHEN to write tests (before implementation)
 
 **For complete TDD methodology, see:**
-- `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md`
+- `${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md`
   - RED-GREEN-REFACTOR cycle
   - How to write failing tests
   - How to write minimal implementation
@@ -250,6 +250,6 @@ Pressure test scenarios: `docs/tests/tdd-enforcement-pressure-scenarios.md`
 
 **Algorithmic pattern:** `plugin/skills/algorithmic-command-enforcement/SKILL.md`
 
-**TDD methodology:** `${CLAUDE_PLUGIN_ROOT}plugin/skills/test-driven-development/SKILL.md`
+**TDD methodology:** `${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md`
 
-**Testing anti-patterns:** `${CLAUDE_PLUGIN_ROOT}plugin/skills/testing-anti-patterns/SKILL.md`
+**Testing anti-patterns:** `${CLAUDE_PLUGIN_ROOT}skills/testing-anti-patterns/SKILL.md`

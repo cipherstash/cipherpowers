@@ -87,13 +87,13 @@ After all tasks complete and verified:
 ## Related Skills
 
 **Agent selection guidance:**
-- Selecting Agents: `${CLAUDE_PLUGIN_ROOT}plugin/skills/selecting-agents/SKILL.md`
+- Selecting Agents: `${CLAUDE_PLUGIN_ROOT}skills/selecting-agents/SKILL.md`
 
 **Code review workflow:**
-- Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
+- Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md`
 
 **Finishing work:**
-- Finishing a Development Branch: `${CLAUDE_PLUGIN_ROOT}plugin/skills/finishing-a-development-branch/SKILL.md`
+- Finishing a Development Branch: `${CLAUDE_PLUGIN_ROOT}skills/finishing-a-development-branch/SKILL.md`
 
 ## Remember
 - Review plan critically first
