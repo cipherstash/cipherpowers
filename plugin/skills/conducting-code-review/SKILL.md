@@ -1,7 +1,7 @@
 ---
 name: Conducting Code Review
 description: Complete workflow for conducting thorough code reviews with test verification and structured feedback
-when_to_use: when you have uncommitted changes OR completed work OR about to merge, to determine if code review is required. Also when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
+when_to_use: when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
 version: 3.0.0
 ---
 
@@ -10,76 +10,6 @@ version: 3.0.0
 ## Overview
 
 Systematic code review process ensuring correctness, security, and maintainability through test verification, practice adherence, and structured feedback.
-
-## Decision Algorithm: When Code Review is Required
-
-Use this algorithm to determine if code review is required before merge/PR/completion:
-
-## 1. Check for commits
-
-Have you made commits to a feature branch?
-
-- PASS: CONTINUE
-- FAIL: GOTO 6
-
-## 2. Check for existing review
-
-Have these commits been reviewed?
-
-- PASS: CONTINUE
-- FAIL: GOTO 4
-
-## 3. Check for change request
-
-If the commits have been reviewed, were changes requested due to BLOCKING issues?
-
-- PASS: CONTINUE
-- FAIL: GOTO 5
-
-## 4. Check for completion
-
-Are you about to merge, create PR, or mark work complete?
-
-- PASS: CONTINUE
-- FAIL: GOTO 6
-
-## 5. Request code review
-
-Use `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
-
-STOP - Work is not complete without code review.
-
-## 6. Continue
-
-No commits OR already reviewed OR still working - continue
-
-
-### INVALID Conditions for Skipping Review
-
-These rationalizations are **NOT VALID ALGORITHM CONDITIONS:**
-
-- "Are changes too small?" → NOT A VALID CONDITION
-- "Am I a senior developer?" → NOT A VALID CONDITION
-- "Is there time pressure?" → NOT A VALID CONDITION
-- "Did I review it myself?" → NOT A VALID CONDITION
-- "Is this a hotfix?" → NOT A VALID CONDITION (still needs review)
-- "Are tests passing?" → NOT A VALID CONDITION (tests ≠ review)
-
-**All of these mean:** Run the algorithm. Follow what it says.
-
-### Self-Test: Review Trigger
-
-**Q1: I committed 3 changes, ready to merge. What does Step 4 say?**
-
-Answer: Request code review, STOP, do not merge until reviewed
-
-**Q2: "These are just documentation changes, too small for review" - is this valid?**
-
-Answer: NO. Listed under INVALID conditions
-
-**Q3: Tests are all passing. Do I still need review?**
-
-Answer: YES. "Are tests passing?" is NOT A VALID CONDITION
 
 ## Quick Reference
 
@@ -134,24 +64,21 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 **Empty sections are GOOD if you actually checked.** Missing sections mean you didn't check.
 
-#### 4. Find active work directory
+#### 4. Save structured review
 
-**Get current work location:**
+**Template**
+`${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
-Projects may provide a command to find the active work directory (check CLAUDE.md frontmatter for custom commands).
-
-If no work tracking, save to root or ask user for location.
-
-#### 5. Save structured review
 
 **File naming and template:**
-
 See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
+- Save into `.work` directory
 - File naming convention (`{YYYY-MM-DD}-review-{N}.md`)
 - Complete template structure with all sections
 - Examples of review file organization
 
-**Use template exactly as specified in practices.**
+**Use template exactly as specified.**
+
 
 ## What NOT to Skip
 
@@ -170,7 +97,7 @@ See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
 
 ## Related Skills
 
-**Before using this skill:**
+**Requestion code review:**
 - Requesting Code Review: `${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md`
 
 **When receiving feedback on your review:**
