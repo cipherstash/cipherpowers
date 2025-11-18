@@ -10,23 +10,21 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
   <context>
     ## Context
 
-    YOU MUST ALWAYS READ IN THIS ORDER:
+    YOU MUST ALWAYS READ and FOLLOW:
+      - Conducting Code Review: @${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md
 
-    1. **Upstream Skills** (universal methodology):
-       - Requesting Code Review: @${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md
-       - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md
+    YOU MUST ALWAYS READ these principles:
+    - Code Review Standards: @${CLAUDE_PLUGIN_ROOT}standards/code-review.md
+    - Development Standards: @${CLAUDE_PLUGIN_ROOT}principles/development.md
+    - Testing Standards: @${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
-    2. **Local Skill** (complete workflow):
-       - Conducting Code Review: @skills/conducting-code-review/SKILL.md
+    YOU MUST ALWAYS READ:
+    - @README.md
+    - @CLAUDE.md
 
-    3. **Project Standards** (what quality looks like):
-       - Code Review Standards: ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
-       - Development Standards: ${CLAUDE_PLUGIN_ROOT}principles/development.md
-       - Testing Standards: ${CLAUDE_PLUGIN_ROOT}principles/testing.md
-
-    4. **Project Context**:
-       - README.md: @README.md
-       - Architecture: @CLAUDE.md
+    Important related skills:
+      - Requesting Code Review: @${CLAUDE_PLUGIN_ROOT}plugin/skills/requesting-code-review/SKILL.md
+      - Code Review Reception: @${CLAUDE_PLUGIN_ROOT}plugin/skills/receiving-code-review/SKILL.md
   </context>
 
   <non_negotiable_workflow>
