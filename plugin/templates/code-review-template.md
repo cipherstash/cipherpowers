@@ -10,6 +10,21 @@ version: 1.0.0
 
 ## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]
 
+
+## Test Results
+- Status: [PASS/FAIL]
+- Details: [test failures or "all passed"]
+
+
+## Check Results
+- Status: [PASS/FAIL]
+- Details: [warnings or "clean"]
+
+
+## Next Steps
+[Actions required]
+
+
 ## BLOCKING (Must Fix Before Merge)
 
 [Issues or "None"]
@@ -23,6 +38,7 @@ version: 1.0.0
 - Description: [clear description]
 - Location: [file:line]
 - Action: [specific, actionable suggestion]
+
 
 ## NON-BLOCKING (May Be Deferred)
 
@@ -38,9 +54,10 @@ version: 1.0.0
 - Location: [file:line]
 - Action: [specific & actionable suggestion]
 
+
 ## Highlights
 
-[Call out specific examples: clear abstractions, effective tests, thoughtful design, clear naming]
+[Concise reference to specific examples: clear abstractions, effective tests, thoughtful design, clear naming]
 
 **[Example]:**
 - What: [what makes this good]
@@ -50,14 +67,3 @@ version: 1.0.0
 - What: [what makes this good]
 - Location: [file:line]
 
-
-## Test Results
-- Status: [PASS/FAIL]
-- Details: [test failures or "all passed"]
-
-## Check Results
-- Status: [PASS/FAIL]
-- Details: [warnings or "clean"]
-
-## Next Steps
-[Actions required]
