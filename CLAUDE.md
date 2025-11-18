@@ -39,18 +39,17 @@ CipherPowers combines three layers:
 
 ### 1. Skills Layer (`skills/`)
 
-Reusable process knowledge documented using the superpowers framework. Skills are testable, discoverable guides for techniques and workflows.
+Reusable process knowledge documented as testable, discoverable guides for techniques and workflows.
 
 **Key principles:**
 - Written following TDD: test with subagents before writing
 - Include rich `when_to_use` frontmatter for discovery
-- Follow superpowers SKILL.md structure
-- Can reference upstream superpowers skills
+- Follow consistent SKILL.md structure
 
 **Scope:**
 - Organization-specific workflows and practices
-- Universal skills under development (before upstreaming)
-- Extensions to superpowers skills for team context
+- Universal skills that can be shared across projects
+- Team-specific extensions and customizations
 
 **Organization-specific skills:**
 
@@ -76,8 +75,6 @@ Commands and agents that dispatch to skills or provide project-specific workflow
 
 **Commands:** Slash commands users type
 - CipherPowers commands: `/brainstorm`, `/plan`, `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
-- CipherPowers provides wrappers for superpowers `/brainstorm` and `/plan` workflows
-- Integrates with superpowers `/execute-plan` command (direct access)
 - Thin dispatchers providing context
 - Reference practices for project-specific configuration
 - Reference skills for process guidance
@@ -129,10 +126,10 @@ This three-layer separation achieves key software engineering principles:
 - Each component has exactly one reason to change
 
 ✅ **Reusability**
-- Skills are universal workflows (portable, can be upstreamed to superpowers)
+- Skills are universal workflows (portable, can be shared across projects)
 - Practices are project-specific standards (customized for your team)
 - Commands add project context to universal workflows
-- Mix local and upstream skills seamlessly
+- Skills can be reused across different teams and organizations
 
 ✅ **Testability**
 - Skills include TDD test scenarios using subagents
@@ -152,7 +149,6 @@ This three-layer separation achieves key software engineering principles:
 - `plugin/standards/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
 - `plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
 - `plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
-- Skills: References upstream "Requesting Code Review" and "Code Review Reception" skills
 
 All components work together without duplication:
 - Update severity standards in practices → agent uses new standards automatically
@@ -203,10 +199,6 @@ The /execute command demonstrates:
 - Use in agents/commands for practice references: `@${CLAUDE_PLUGIN_ROOT}standards/name.md`
 - Use for all plugin-relative paths in commands and agents
 
-**SUPERPOWERS_SKILLS_ROOT**: Path to superpowers skills installation
-- Provided by superpowers plugin
-- Use for universal skill references: `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md`
-
 **CIPHERPOWERS_MARKETPLACE_ROOT**: (Optional) Path to marketplace installation for shared practices
 - Set if using cipherpowers as a local marketplace
 - Used for accessing shared practices from marketplace
@@ -248,14 +240,13 @@ Example:
     ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 
-## Integration with Superpowers
-
-CipherPowers integrates seamlessly with the superpowers plugin through Claude Code's native skills system.
+## Skills and Practices Discovery
 
 **Skill Discovery:**
-- Skills from both plugins are automatically discovered
-- Use the Skill tool in conversations: `Skill(command: "plugin-name:skill-name")`
+- Skills are automatically discovered by Claude Code
+- Use the Skill tool in conversations: `Skill(command: "cipherpowers:skill-name")`
 - No manual discovery scripts needed
+- All skills in `plugin/skills/` are automatically available
 
 **Practices Discovery:**
 Browse `plugin/standards/` directory directly. Each practice includes YAML frontmatter with:
@@ -267,7 +258,6 @@ Browse `plugin/standards/` directory directly. Each practice includes YAML front
 **Direct References:**
 Commands and agents reference skills and practices using environment variables:
 - `@${CLAUDE_PLUGIN_ROOT}standards/practice-name.md` - Direct practice reference
-- `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
 - Skills are invoked via Skill tool, not direct file references
 
 ## Quality Hooks
@@ -324,7 +314,7 @@ When creating or editing skills in `plugin/skills/`:
 1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}skills/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
-4. **Consider upstream:** Universal skills may be contributed to superpowers later
+4. **Consider sharing:** Universal skills can be shared across projects and teams
 5. **Skills are auto-discovered:** Once created in `plugin/skills/`, they're automatically available via the Skill tool
 
 ## Creating Agents and Practices
@@ -373,15 +363,14 @@ When developing CipherPowers plugin components:
 
 **Environment Variables:**
 - Use `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths
-- Use `${SUPERPOWERS_SKILLS_ROOT}` for upstream skill references
-- These enable proper path resolution in all contexts
+- This enables proper path resolution in all contexts
 
 **Plugin Structure Best Practices:**
 - Keep commands thin - they should only dispatch to agents or skills
 - Put workflow logic in agents, not commands
 - Reference practices for project-specific configuration (don't hardcode)
 - Make agent workflows non-negotiable with explicit rationalization defenses
-- Skills should be universal and potentially upstreamable to superpowers
+- Skills should be universal and reusable across projects and teams
 
 ## Learning and Retrospectives
 

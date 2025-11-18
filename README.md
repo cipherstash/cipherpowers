@@ -2,21 +2,15 @@
 
 Comprehensive development toolkit for Claude Code that enforces consistent workflows across your team. CipherPowers provides reusable skills, specialized agents, and project standards through a modular plugin architecture, ensuring everyone follows the same practices for code review, testing, documentation, and planning.
 
+## Acknowledgements
+
+CipherPowers was originally inspired by and built upon the [Superpowers plugin](https://github.com/clavcode/superpowers). While CipherPowers is now a standalone plugin, we're grateful for the foundational concepts and patterns that Superpowers introduced to the Claude Code ecosystem.
+
 ## Prerequisites
 
 Before installing CipherPowers, you need:
 
 1. **Claude Code CLI** - Install from [claude.ai/code](https://claude.ai/code)
-2. **Superpowers Plugin** - CipherPowers builds on the superpowers plugin for universal skills
-
-### Installing Superpowers Dependency
-
-CipherPowers requires the superpowers plugin. Install it first:
-
-```bash
-# Add superpowers plugin to your Claude Code configuration
-# Follow instructions at: https://github.com/clavcode/superpowers
-```
 
 ## Installation
 
@@ -25,13 +19,7 @@ CipherPowers requires the superpowers plugin. Install it first:
    git clone https://github.com/cipherstash/cipherpowers.git ~/.config/claude/plugins/cipherpowers
    ```
 
-2. **Verify superpowers is installed:**
-   ```bash
-   # In a Claude Code session, check that superpowers commands work:
-   # /execute-plan or /superpowers:brainstorm should be available
-   ```
-
-3. **Verify CipherPowers installation:**
+2. **Verify CipherPowers installation:**
    ```bash
    # Start Claude Code in any project
    # Type /brainstorm or /code-review to verify CipherPowers commands are available
@@ -126,8 +114,8 @@ For best results when implementing new features or tackling complex tasks, follo
 ### CipherPowers Commands
 
 **Planning Workflow:**
-- `/brainstorm` - Refine ideas using Socratic method (invokes superpowers brainstorming)
-- `/plan` - Create detailed implementation plans (invokes superpowers plan writing)
+- `/brainstorm` - Refine ideas using Socratic method
+- `/plan` - Create detailed implementation plans
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
 
 **Code Quality:**
@@ -138,13 +126,6 @@ For best results when implementing new features or tackling complex tasks, follo
 - `/doc-review` - Sync documentation with code changes
 - `/summarise` - Capture learning and create retrospectives
 
-### Superpowers Commands (Required Dependency)
-
-CipherPowers provides wrapper commands for superpowers workflows. The following superpowers command is also available:
-
-**Direct Superpowers Access:**
-- `/execute-plan` - Execute plans in batches with review checkpoints (superpowers base workflow, use `/execute` for enhanced CipherPowers version)
-
 ## Skills and Practices
 
 **Skills:** Automatically discovered by Claude Code. All skills in `plugin/skills/` are available via the Skill tool.
@@ -152,8 +133,7 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 **Practices:** Browse `plugin/standards/` directory directly or reference practices using environment variables:
 
 **Direct references in agents/commands:**
-- `@${CLAUDE_PLUGIN_ROOT}plugin/standards/practice-name.md` - Direct practice reference
-- `@${SUPERPOWERS_SKILLS_ROOT}/skills/category/skill-name/SKILL.md` - Upstream skill reference
+- `@${CLAUDE_PLUGIN_ROOT}standards/practice-name.md` - Direct practice reference
 
 ## Key Features
 
@@ -179,15 +159,10 @@ CipherPowers provides wrapper commands for superpowers workflows. The following 
 - Restart Claude Code session
 - Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
 
-**Superpowers commands not working:**
-- Verify superpowers plugin is installed first
-- Check `${SUPERPOWERS_SKILLS_ROOT}` environment variable is set
-- Superpowers must be installed before CipherPowers
-
 **Skills not available:**
 - Skills are auto-discovered - no manual discovery needed
 - Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
-- Verify both cipherpowers and superpowers plugins are installed correctly
+- Verify CipherPowers plugin is installed correctly
 
 ## Documentation
 
