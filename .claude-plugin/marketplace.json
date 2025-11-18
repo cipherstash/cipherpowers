@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "cipherpowers",
-      "source": "./plugin/",
+      "source": "./plugin",
       "description": "Comprehensive development toolkit with skills, commands, and documentation standards",
       "version": "0.1.0"
     }

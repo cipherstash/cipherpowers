@@ -34,6 +34,7 @@ Quality hooks integrate with Claude Code's event system to automatically run qua
 
 - **PostToolUse**: Runs after code modifications (Edit, Write tools)
 - **SubagentStop**: Runs when specialized agents complete their work
+- **UserPromptSubmit**: Runs when user submits a prompt (e.g., inject project commands)
 
 **Configuration is project-specific** - each project has its own `gates.json` with commands tailored to that project's tooling.
 
@@ -41,22 +42,28 @@ Quality hooks integrate with Claude Code's event system to automatically run qua
 
 ### 1. Hook Registration (`hooks.json`)
 
-Registers hook scripts with Claude Code:
+Registers hook scripts with Claude Code. All hooks use the universal dispatcher:
 
 ```json
 {
   "hooks": {
     "PostToolUse": [{
       "matcher": ".*",
-      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.sh"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
     }],
     "SubagentStop": [{
       "matcher": ".*",
-      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/subagent-stop.sh"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
+    }],
+    "UserPromptSubmit": [{
+      "matcher": ".*",
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
     }]
   }
 }
 ```
+
+The dispatcher routes hook events to configured gates based on `gates.json`.
 
 ### 2. Gate Configuration (`gates.json`)
 
@@ -93,9 +100,22 @@ Self-contained configuration defining gates, commands, and actions:
 
 ### 3. Hook Scripts
 
-- **post-tool-use.sh**: Runs gates after code editing tools
-- **subagent-stop.sh**: Runs gates when specialized agents complete
-- **shared-functions.sh**: Common gate execution logic
+- **dispatcher.sh**: Universal hook dispatcher - routes all hook events to configured gates
+- **session-start.sh**: Special hook for session initialization (injects skills context)
+- **shared-functions.sh**: Common gate execution logic (`run_gate`, `handle_action`)
+
+### 4. Gate Scripts (`gates/`)
+
+Gates can be either shell commands or custom scripts in `plugin/hooks/gates/`:
+
+- **gates/commands.sh**: Built-in gate that **always runs first** on UserPromptSubmit events to inject project commands from CLAUDE.md frontmatter
+
+**Special behavior for UserPromptSubmit:**
+- `commands.sh` runs automatically before any configured gates
+- Projects don't need to configure it in `gates.json`
+- Additional gates can optionally be configured to run after commands injection
+
+Custom gate scripts receive hook context via `HOOK_INPUT` environment variable and output JSON.
 
 ## Gate Actions
 
@@ -105,6 +125,56 @@ Gates support four action types:
 - **BLOCK**: Prevent agent from proceeding (default on fail)
 - **STOP**: Stop Claude entirely
 - **{gate_name}**: Chain to another gate (subroutine call)
+
+## Creating Custom Gate Scripts
+
+Gate scripts are executables in `plugin/hooks/gates/` that receive hook context and output JSON.
+
+**Input:** `HOOK_INPUT` environment variable (JSON with hook event data)
+
+**Output:** JSON with one of:
+- `{"additionalContext": "..."}` - Add context to conversation
+- `{"decision": "block", "reason": "..."}` - Block execution
+- `{"continue": false, "message": "..."}` - Stop Claude
+
+**Example:** `plugin/hooks/gates/commands.sh` injects project commands from CLAUDE.md:
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+# Parse hook input
+USER_MESSAGE=$(echo "$HOOK_INPUT" | jq -r '.user_message // ""')
+
+# Your logic here...
+
+# Output JSON
+jq -n --arg content "$result" '{
+  additionalContext: $content
+}'
+```
+
+**Register in gates.json (optional - for running after built-in commands.sh):**
+```json
+{
+  "gates": {
+    "my-custom-gate": {
+      "description": "My custom gate",
+      "command": "${CLAUDE_PLUGIN_ROOT}/hooks/gates/my-custom-gate.sh",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    }
+  },
+  "hooks": {
+    "UserPromptSubmit": {
+      "enabled": true,
+      "gates": ["my-custom-gate"]
+    }
+  }
+}
+```
+
+**Note:** `commands.sh` still runs first automatically, then `my-custom-gate` runs.
 
 ## Gate Chaining
 
@@ -240,10 +310,13 @@ Test hooks with mock input:
 
 ```bash
 # PostToolUse
-echo '{"tool_name": "Edit", "cwd": "/test"}' | plugin/hooks/post-tool-use.sh
+echo '{"hook_event": "PostToolUse", "tool_name": "Edit", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
 
 # SubagentStop
-echo '{"agent_name": "rust-engineer", "cwd": "/test"}' | plugin/hooks/subagent-stop.sh
+echo '{"hook_event": "SubagentStop", "agent_name": "rust-engineer", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
+
+# UserPromptSubmit
+echo '{"hook_event": "UserPromptSubmit", "user_message": "run tests", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
 ```
 
 ## Error Handling
