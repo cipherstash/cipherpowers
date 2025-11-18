@@ -18,7 +18,6 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
       - Testing Anti-Patterns: @${CLAUDE_PLUGIN_ROOT}skills/testing-anti-patterns/SKILL.md
 
     YOU MUST ALWAYS READ these principles:
-    - Code Review Standards: ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
     - Development Principles: ${CLAUDE_PLUGIN_ROOT}principles/development.md
     - Testing Principles: ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
