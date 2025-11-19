@@ -1,29 +1,51 @@
 # Commit
 
-Use the commit-workflow skill for systematic commit process.
+Systematic git commit with atomic commits and conventional messages.
 
-<instructions>
-## Instructions
+## Algorithmic Dispatch
 
-1. **Follow the commit-workflow skill:**
-   - Read: `${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md`
-   - This skill contains the complete workflow:
-     - Pre-commit checks (linters, formatters, tests)
-     - Staging and diff review
-     - Atomic commit composition
-     - Conventional commit message formatting
+**Decision tree (follow exactly, no interpretation):**
 
-2. **Use the code-committer agent:**
-   - The agent implements the workflow from the skill
-   - Ensures non-negotiable steps with persuasion principles
-   - Agent will reference the skill automatically
+1. Is this a commit request?
+   - YES → Continue to step 2
+   - NO → This command was invoked incorrectly
 
-3. **The skill references project practices:**
-   - `${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md` - Message format
-   - `${CLAUDE_PLUGIN_ROOT}standards/git-guidelines.md` - Git workflow standards
+2. Have you already dispatched to code-committer agent?
+   - YES → Wait for agent to complete
+   - NO → Continue to step 3
 
-**Why this structure?**
-- Skill = Discoverable workflow (automatically available via Skill tool)
-- Practices = Project-specific standards (conventional commit rules)
-- Command = Thin dispatcher (user entry point)
-</instructions>
+3. **DISPATCH TO AGENT NOW:**
+
+```
+Use Task tool with:
+  subagent_type: "cipherpowers:code-committer"
+  description: "Commit workflow"
+  prompt: """
+  [User's original request or task context]
+
+  Follow the commit-workflow skill exactly as written.
+  """
+```
+
+4. **STOP. Do not proceed in main context.**
+
+## Why Algorithmic Dispatch?
+
+- **100% reliability**: No interpretation, no rationalization
+- **Agent enforcement**: Persuasion principles prevent shortcuts
+- **Consistent quality**: Every commit follows non-negotiable workflow
+- **Skill integration**: Agent reads commit-workflow skill automatically
+
+## What the Agent Does
+
+The code-committer agent implements:
+- Staging status check
+- Diff review and understanding
+- Atomic commit analysis
+- Conventional commit message formatting
+- Commit verification
+
+**References:**
+- Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-committer.md`
+- Skill: `${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md`
+- Standards: `${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md`

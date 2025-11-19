@@ -2,19 +2,51 @@
 
 Create detailed implementation plans with bite-sized tasks ready for execution.
 
-<instructions>
-## Instructions
+## Algorithmic Workflow
 
-1. **Use the writing-plans skill exactly as written**
+**Decision tree (follow exactly, no interpretation):**
 
-2. **The writing-plans skill provides the methodology:**
-   - Read: `@${CLAUDE_PLUGIN_ROOT}plugin/skills/writing-plans/SKILL.md`
-   - When to use: After brainstorming is complete and you need implementation tasks
-   - Output: Detailed plan file in `.work` directory
+1. Is this a planning request?
+   - YES → Continue to step 2
+   - NO → This command was invoked incorrectly
 
-**Why this structure?**
-- Skill = Universal plan writing methodology
-- Command = Thin wrapper (CipherPowers entry point)
-- Integration = Seamless workflow from brainstorm → plan → execute
-</instructions>
+2. Has brainstorming been completed?
+   - YES → Continue to step 3
+   - NO → Run `/brainstorm` first, then return here
+
+3. **USE WRITING-PLANS SKILL:**
+
+```
+Use Skill tool with:
+  skill: "cipherpowers:writing-plans"
+```
+
+4. **FOLLOW THE SKILL EXACTLY:**
+   - The skill defines the complete planning methodology
+   - Create detailed plan file in `.work` directory
+   - Break work into bite-sized, independent tasks
+   - Include verification steps and success criteria
+
+5. **STOP when plan is complete and saved.**
+
+## Why Algorithmic Workflow?
+
+- **100% reliability**: No interpretation, no skipping brainstorming
+- **Skill integration**: Automatic discovery via Skill tool
+- **Consistent structure**: Every plan follows proven template
+- **Ready for execution**: Plans integrate with `/execute` command
+
+## What the Skill Does
+
+The writing-plans skill provides:
+- When to use planning vs direct implementation
+- How to structure tasks for agent execution
+- Task granularity guidelines (bite-sized, independent)
+- Verification and success criteria
+- Integration with code review checkpoints
+
+**References:**
+- Skill: `${CLAUDE_PLUGIN_ROOT}skills/writing-plans/SKILL.md`
+- Template: Used by skill for consistent structure
+- Integration: Seamless workflow → `/brainstorm` → `/plan` → `/execute`
 
