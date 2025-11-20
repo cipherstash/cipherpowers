@@ -144,8 +144,21 @@ When writing reviews, call out specific examples that demonstrate:
 
 ### Code review file
 
-**Template**
-`plugin/templates/code-review-template.md`
+**Template:**
+`${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
+
+**Requirement:** You MUST use the template structure exactly as provided. Do NOT create custom section structures.
+
+**Template sections (mandatory):**
+- Status (BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED)
+- Test Results
+- Check Results
+- Next Steps
+- BLOCKING (Must Fix Before Merge)
+- NON-BLOCKING (May Be Deferred)
+- Checklist (comprehensive review checklist covering security, testing, architecture, error handling, code quality, and process)
+
+Additional context (git commands run, files changed, commit history) may be added at the end, but core template sections are mandatory.
 
 **Location:**
 - Current active work directory (projects may provide custom command in CLAUDE.md frontmatter)

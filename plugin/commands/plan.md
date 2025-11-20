@@ -10,11 +10,7 @@ Create detailed implementation plans with bite-sized tasks ready for execution.
    - YES → Continue to step 2
    - NO → This command was invoked incorrectly
 
-2. Has brainstorming been completed?
-   - YES → Continue to step 3
-   - NO → Run `/brainstorm` first, then return here
-
-3. **USE WRITING-PLANS SKILL:**
+2. **USE WRITING-PLANS SKILL:**
 
 ```
 Use Skill tool with:

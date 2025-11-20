@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Logging configuration
+LOG_FILE="${TMPDIR:-/tmp}/cipherpowers-hooks-$(date +%Y%m%d).log"
+LOG_ENABLED="${CIPHERPOWERS_HOOK_DEBUG:-true}"
+
+# Log helper - writes to stderr and log file
+log_debug() {
+  if [ "$LOG_ENABLED" = "true" ]; then
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local message="[$timestamp] $*"
+    echo "$message" >&2
+    echo "$message" >> "$LOG_FILE"
+  fi
+}
+
 # Check if gate exists in configuration
 gate_exists() {
   local gate_name="$1"
@@ -16,9 +30,12 @@ run_gate() {
   local gate_name="$1"
   local config="$2"
 
+  log_debug "run_gate: Starting gate '$gate_name'"
+
   # Check if gate is defined in gates.json
   if ! gate_exists "$gate_name" "$config"; then
     # Missing gate definition - STOP
+    log_debug "run_gate: Gate '$gate_name' not found in config, stopping"
     jq -n --arg gate "$gate_name" '{
       continue: false,
       message: ("Gate '\''\($gate)'\'''' referenced but not defined in gates.json")
@@ -31,6 +48,7 @@ run_gate() {
 
   if [ -z "$gate_cmd" ]; then
     # Missing command field - STOP
+    log_debug "run_gate: Gate '$gate_name' missing command field, stopping"
     jq -n --arg gate "$gate_name" '{
       continue: false,
       message: ("Gate '\''\($gate)'\'''' is missing required '\''command'\'' field")
@@ -43,16 +61,24 @@ run_gate() {
   local on_fail=$(jq -r ".gates[\"$gate_name\"].on_fail // \"BLOCK\"" "$config")
   local description=$(jq -r ".gates[\"$gate_name\"].description // \"\"" "$config")
 
+  log_debug "run_gate: Running command for gate '$gate_name': $gate_cmd"
+  log_debug "run_gate: on_pass=$on_pass, on_fail=$on_fail"
+
   # Run the gate
   local output
   local exit_code=0
   output=$(eval "$gate_cmd" 2>&1) || exit_code=$?
 
+  log_debug "run_gate: Gate '$gate_name' exited with code $exit_code"
+  log_debug "run_gate: Gate '$gate_name' output: $output"
+
   if [ $exit_code -eq 0 ]; then
     # Gate passed
+    log_debug "run_gate: Gate '$gate_name' passed, handling action '$on_pass'"
     handle_action "$on_pass" "$gate_name" "passed" "$output" "$config"
   else
     # Gate failed
+    log_debug "run_gate: Gate '$gate_name' failed, handling action '$on_fail'"
     handle_action "$on_fail" "$gate_name" "failed" "$output" "$config"
   fi
 }
@@ -66,11 +92,15 @@ handle_action() {
   local output="$4"
   local config="$5"
 
+  log_debug "handle_action: Processing action '$action' for gate '$gate_name' (status: $gate_status)"
+
   case "$action" in
     CONTINUE)
       # Continue to next gate in sequence
       # Uses additionalContext field per Claude Code hook spec
+      log_debug "handle_action: Action CONTINUE - proceeding to next gate"
       if [ "$gate_status" = "failed" ]; then
+        log_debug "handle_action: Injecting warning context for failed gate"
         jq -n --arg msg "⚠️ Gate '\''$gate_name'\'' failed but continuing:\n$output" '{
           additionalContext: $msg
         }'
@@ -81,6 +111,7 @@ handle_action() {
     BLOCK)
       # Block execution, prevent subsequent gates
       # Uses decision/reason fields per Claude Code hook spec
+      log_debug "handle_action: Action BLOCK - blocking agent execution"
       jq -n --arg reason "Gate '\''$gate_name'\'' $gate_status. Output:\n$output" '{
         decision: "block",
         reason: $reason
@@ -91,6 +122,7 @@ handle_action() {
     STOP)
       # Stop Claude entirely
       # Uses continue/message fields per Claude Code hook spec
+      log_debug "handle_action: Action STOP - stopping Claude entirely"
       jq -n --arg msg "Gate '\''$gate_name'\'' $gate_status. Stopping Claude.\n$output" '{
         continue: false,
         message: $msg
@@ -100,12 +132,15 @@ handle_action() {
 
     *)
       # Gate chaining - run the referenced gate
+      log_debug "handle_action: Attempting to chain to gate '$action'"
       if gate_exists "$action" "$config"; then
         # Chain to another gate
+        log_debug "handle_action: Chaining to gate '$action'"
         run_gate "$action" "$config"
         return $?
       else
         # Referenced gate doesn't exist - STOP
+        log_debug "handle_action: Chain target '$action' not found, stopping"
         jq -n --arg gate "$gate_name" --arg ref "$action" '{
           continue: false,
           message: ("Gate '\''\($gate)'\'''' references undefined gate '\''\($ref)'\''")

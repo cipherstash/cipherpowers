@@ -28,6 +28,44 @@ vim .claude/gates.json
 
 See **[SETUP.md](./SETUP.md)** for detailed configuration guide.
 
+## Debugging Hooks
+
+If hooks aren't working as expected or agents seem stuck, debug logging is enabled by default.
+
+**View logs:**
+
+```bash
+# Logs are written to: $TMPDIR/cipherpowers-hooks-YYYYMMDD.log
+# On macOS: /var/folders/.../T/cipherpowers-hooks-YYYYMMDD.log
+# On Linux: /tmp/cipherpowers-hooks-YYYYMMDD.log
+
+# Watch logs in real-time
+tail -f $TMPDIR/cipherpowers-hooks-$(date +%Y%m%d).log
+
+# Or on macOS specifically
+tail -f /var/folders/*/T/cipherpowers-hooks-$(date +%Y%m%d).log
+```
+
+**What gets logged:**
+- Hook event type (PostToolUse, SubagentStop, UserPromptSubmit)
+- Which gates.json config file is being used
+- Which gates are running
+- Gate command execution and exit codes
+- Action handling (CONTINUE, BLOCK, STOP, chaining)
+- Full flow from dispatcher → gate → action
+
+**Common issues revealed by logging:**
+- Gates not running: Check if tool/agent is in `enabled_tools`/`enabled_agents` list
+- Wrong config: Check which gates.json path is being loaded
+- Gate command failures: Check command output and exit codes
+- Blocking behavior: See which action is being taken (BLOCK vs CONTINUE vs STOP)
+
+**Disable logging (optional):**
+
+```bash
+export CIPHERPOWERS_HOOK_DEBUG=false
+```
+
 ## Overview
 
 Quality hooks integrate with Claude Code's event system to automatically run quality gates (test, check, build commands) at strategic points:

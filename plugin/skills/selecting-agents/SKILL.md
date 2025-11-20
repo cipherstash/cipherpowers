@@ -82,6 +82,8 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 
 **Key characteristic:** Enforces TDD, mandatory code review, project task usage
 
+## Review Agents
+
 ### code-reviewer
 **When to use:** Reviewing code changes before merging
 
@@ -90,9 +92,26 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 - After addressing initial feedback
 - When ready to merge to main branch
 
-**Skill used:** `requesting-code-review`
+**Skill used:** `conducting-code-review`
 
-**Key characteristic:** Structured review process with severity levels
+**Command:** `/code-review`
+
+**Key characteristic:** Structured review process with severity levels (BLOCKING/NON-BLOCKING)
+
+### plan-reviewer
+**When to use:** Evaluating implementation plans before execution
+
+**Scenarios:**
+- After writing a plan with `/plan`
+- Before executing a plan with `/execute`
+- When plan quality needs validation
+- When plan scope or approach is uncertain
+
+**Skill used:** `conducting-plan-review`
+
+**Command:** `/plan-review`
+
+**Key characteristic:** Evaluates plan against 35 quality criteria across 6 categories (Security, Testing, Architecture, Error Handling, Code Quality, Process)
 
 ## Common Confusions
 
@@ -122,6 +141,12 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 **Scenario 5: Simple bug fix in Rust**
 → **rust-engineer** - Standard development workflow with TDD
 
+**Scenario 6: Just finished writing implementation plan**
+→ **plan-reviewer** - Validate plan before execution
+
+**Scenario 7: About to execute plan, want quality check**
+→ **plan-reviewer** - Ensure plan is comprehensive and executable
+
 ## Remember
 
 - Most completed work needs **both** documentation agents (technical-writer for code sync, retrospective-writer for learning)
@@ -129,4 +154,5 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 - Use **retrospective-writer** when work completes
 - Use **ultrathink-debugger** for complex debugging (not simple bugs)
 - Use **rust-engineer** for all Rust development
-- Use **code-reviewer** before merging
+- Use **code-reviewer** before merging code
+- Use **plan-reviewer** before executing plans

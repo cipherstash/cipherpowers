@@ -66,18 +66,50 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 #### 4. Save structured review
 
-**Template**
+**Template location:**
 `${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
+**YOU MUST use this exact structure:**
 
-**File naming and template:**
-See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
-- Save into `.work` directory
-- File naming convention (`{YYYY-MM-DD}-review-{N}.md`)
-- Complete template structure with all sections
-- Examples of review file organization
+```markdown
+# Code Review - {Date}
 
-**Use template exactly as specified.**
+## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]
+
+## Test Results
+- Status: [PASS/FAIL]
+- Details: [test failures or "all passed"]
+
+## Check Results
+- Status: [PASS/FAIL]
+- Details: [warnings or "clean"]
+
+## Next Steps
+[Actions required]
+
+## BLOCKING (Must Fix Before Merge)
+[Issues or "None"]
+
+**[Issue title]:**
+- Description: [clear description]
+- Location: [file:line]
+- Action: [specific, actionable suggestion]
+
+## NON-BLOCKING (May Be Deferred)
+[Issues or "None"]
+
+**[Issue title]:**
+- Description: [clear description]
+- Location: [file:line]
+- Action: [specific & actionable suggestion]
+
+## Checklist
+[Check all applicable items across 6 categories: Security & Correctness, Testing, Architecture, Error Handling, Code Quality, Process]
+```
+
+**File naming:** See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for `.work` directory location and naming convention (`{YYYY-MM-DD}-review-{N}.md`).
+
+**Do NOT create custom section structures.** Use template exactly. Additional context (verification commands, files changed, commit history) may be added at the end, but core template sections are mandatory.
 
 
 ## What NOT to Skip
@@ -94,6 +126,8 @@ See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for:
 - "Code looks clean" → Check all severity levels anyway
 - "Simple change" → Thorough review prevents production bugs
 - "Senior developer" → Review objectively regardless of author
+- "Template is too simple, adding sections" → Template structure is mandatory. No custom sections.
+- "My format is more thorough" → Thoroughness goes IN the template sections, not around them.
 
 ## Related Skills
 
