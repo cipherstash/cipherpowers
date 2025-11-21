@@ -76,6 +76,15 @@ Quality hooks integrate with Claude Code's event system to automatically run qua
 
 **Configuration is project-specific** - each project has its own `gates.json` with commands tailored to that project's tooling.
 
+## Implementation
+
+The hooks system is implemented in TypeScript for type safety and testability. See [TYPESCRIPT.md](TYPESCRIPT.md) for architecture details.
+
+**Quick links:**
+- [TypeScript Architecture](TYPESCRIPT.md)
+- [Creating Built-in Gates](TYPESCRIPT.md#create-new-built-in-gate)
+- [Development Guide](TYPESCRIPT.md#development)
+
 ## Convention-Based Context Injection
 
 **Zero-config content injection** via file naming convention.
