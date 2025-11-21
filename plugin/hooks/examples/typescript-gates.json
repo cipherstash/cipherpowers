@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "PostToolUse": {
+      "enabled_tools": ["Edit", "Write", "NotebookEdit"],
+      "gates": ["format", "check"]
+    },
+    "SubagentStop": {
+      "enabled_agents": [
+        "cipherpowers:coder",
+        "cipherpowers:rust-engineer",
+        "cipherpowers:code-reviewer"
+      ],
+      "gates": ["plan-compliance"]
+    }
+  },
+  "gates": {
+    "format": {
+      "command": "mise run format",
+      "on_pass": "check",
+      "on_fail": "BLOCK"
+    },
+    "check": {
+      "command": "mise run check",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    },
+    "plan-compliance": {
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
+  }
+}
