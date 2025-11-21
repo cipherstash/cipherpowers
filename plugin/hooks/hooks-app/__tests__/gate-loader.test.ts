@@ -1,6 +1,6 @@
 // plugin/hooks/hooks-app/__tests__/gate-loader.test.ts
-import { executeShellCommand } from '../src/gate-loader';
-import * as path from 'path';
+import { executeShellCommand, executeGate } from '../src/gate-loader';
+import { GateConfig, HookInput } from '../src/types';
 import * as os from 'os';
 
 describe('Gate Loader - Shell Commands', () => {
@@ -30,5 +30,48 @@ describe('Gate Loader - Shell Commands', () => {
     const result = await executeShellCommand('pwd', tmpDir);
     // macOS may prepend /private to paths
     expect(result.output.trim()).toMatch(new RegExp(tmpDir.replace('/var/', '(/private)?/var/')));
+  });
+
+  test('timeout returns exit code 124 and timeout message', async () => {
+    const result = await executeShellCommand('sleep 1', process.cwd(), 100);
+    expect(result.exitCode).toBe(124);
+    expect(result.output).toContain('timed out');
+  });
+});
+
+describe('Gate Loader - executeGate', () => {
+  const mockInput: HookInput = {
+    hook_event_name: 'PostToolUse',
+    cwd: process.cwd()
+  };
+
+  test('shell command gate with exit 0 returns passed=true', async () => {
+    const gateConfig: GateConfig = {
+      command: 'echo "success"'
+    };
+
+    const result = await executeGate('test-gate', gateConfig, mockInput);
+
+    expect(result.passed).toBe(true);
+    expect(result.result.additionalContext).toContain('success');
+  });
+
+  test('shell command gate with exit 1 returns passed=false', async () => {
+    const gateConfig: GateConfig = {
+      command: 'exit 1'
+    };
+
+    const result = await executeGate('test-gate', gateConfig, mockInput);
+
+    expect(result.passed).toBe(false);
+  });
+
+  test('built-in gate throws error (not yet implemented)', async () => {
+    const gateConfig: GateConfig = {
+      // No command = built-in gate
+    };
+
+    await expect(executeGate('builtin-gate', gateConfig, mockInput))
+      .rejects.toThrow('Built-in gate builtin-gate not yet implemented');
   });
 });

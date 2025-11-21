@@ -1,5 +1,5 @@
 // plugin/hooks/hooks-app/src/dispatcher.ts
-import { HookInput, HookConfig, GatesConfig } from './types';
+import { HookInput, HookConfig } from './types';
 import { loadConfig } from './config';
 import { injectContext } from './context';
 import { executeGate } from './gate-loader';

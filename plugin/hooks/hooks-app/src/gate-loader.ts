@@ -34,16 +34,17 @@ export async function executeShellCommand(
       exitCode: 0,
       output: stdout + stderr
     };
-  } catch (error: any) {
-    if (error.killed && error.signal === 'SIGTERM') {
+  } catch (error: unknown) {
+    const err = error as { killed?: boolean; signal?: string; code?: number; stdout?: string; stderr?: string };
+    if (err.killed && err.signal === 'SIGTERM') {
       return {
         exitCode: 124, // Standard timeout exit code
         output: `Command timed out after ${timeoutMs}ms`
       };
     }
     return {
-      exitCode: error.code || 1,
-      output: (error.stdout || '') + (error.stderr || '')
+      exitCode: err.code || 1,
+      output: (err.stdout || '') + (err.stderr || '')
     };
   }
 }

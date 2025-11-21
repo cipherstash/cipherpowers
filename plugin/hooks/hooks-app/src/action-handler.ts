@@ -12,8 +12,8 @@ export interface ActionResult {
 export async function handleAction(
   action: string,
   gateResult: GateResult,
-  config: GatesConfig,
-  input: HookInput
+  _config: GatesConfig,
+  _input: HookInput
 ): Promise<ActionResult> {
   switch (action) {
     case 'CONTINUE':
@@ -38,6 +38,7 @@ export async function handleAction(
       // Gate chaining - action is another gate name
       return {
         continue: true,
+        context: gateResult.additionalContext,
         chainedGate: action
       };
   }
