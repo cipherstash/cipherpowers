@@ -130,11 +130,11 @@ if [ "$HOOK_EVENT" = "PostToolUse" ] || [ "$HOOK_EVENT" = "SubagentStop" ]; then
   log_debug "dispatcher: '$CONTEXT_VALUE' is enabled, proceeding"
 fi
 
+# Export INPUT for gates that need access to full hook context
+export HOOK_INPUT="$INPUT"
+
 # Special handling for UserPromptSubmit: Always run commands gate first
 if [ "$HOOK_EVENT" = "UserPromptSubmit" ]; then
-  # Export INPUT for commands.sh
-  export HOOK_INPUT="$INPUT"
-
   log_debug "dispatcher: Running built-in commands gate for UserPromptSubmit"
   # Run built-in commands gate (context injection, always runs first)
   "${CLAUDE_PLUGIN_ROOT}/hooks/gates/commands.sh" || true
@@ -150,13 +150,18 @@ if [ "$HOOK_EVENT" = "UserPromptSubmit" ]; then
   # Get additional gates to run (if any)
   GATES=$(jq -r ".hooks.${HOOK_EVENT}.gates[]" "$CONFIG" 2>/dev/null || echo "")
   log_debug "dispatcher: Additional gates for UserPromptSubmit: $GATES"
+elif [ "$HOOK_EVENT" = "SubagentStop" ]; then
+  log_debug "dispatcher: Running built-in plan-compliance gate for SubagentStop"
+  # Run built-in plan-compliance gate (STATUS checking, always runs first)
+  "${CLAUDE_PLUGIN_ROOT}/hooks/gates/plan-compliance.sh" || true
+
+  # Then get configured gates to run (if any)
+  GATES=$(jq -r ".hooks.${HOOK_EVENT}.gates[]" "$CONFIG" 2>/dev/null || echo "")
+  log_debug "dispatcher: Additional gates for SubagentStop: $GATES"
 else
-  # For PostToolUse and SubagentStop: Get gates to run
+  # For PostToolUse: Get gates to run
   GATES=$(jq -r ".hooks.${HOOK_EVENT}.gates[]" "$CONFIG")
   log_debug "dispatcher: Gates to run: $GATES"
-
-  # Export INPUT for gates that need access to full hook context
-  export HOOK_INPUT="$INPUT"
 fi
 
 # Run each gate in sequence

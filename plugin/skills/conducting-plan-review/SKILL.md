@@ -11,6 +11,53 @@ version: 1.0.0
 
 Systematic plan evaluation process ensuring plans are comprehensive, executable, and account for all quality criteria (security, testing, architecture, error handling, code quality, process) before implementation begins.
 
+## When to Use
+
+Use conducting-plan-review when:
+
+- **Before executing implementation plan:** Validate quality and completeness before agents start work
+- **After writing a plan:** Quality-check the plan you just created
+- **Before high-stakes work:** Ensure plan meets standards before committing resources
+- **When plan scope is uncertain:** Verify all requirements are covered
+- **Default before /execute:** Standard quality gate before plan execution
+
+**Choose verification mode:**
+- **Dual verification (default):** High-stakes plans, first-time execution, critical features
+- **Single agent:** Regular plans, time-sensitive work, following up on dual review
+
+**Don't use when:**
+- Plan is simple checklist (1-3 trivial steps)
+- Doing research/exploration (not implementation plan)
+- Plan already executed and complete
+
+## Single vs Dual Verification
+
+**Single agent review** (this skill):
+- One plan-reviewer agent applies 35 quality criteria
+- Faster, suitable for regular plan reviews
+- Use when: Incremental work, experienced author, lower stakes
+
+**Dual verification review** (comprehensive audit):
+- Two plan-reviewer agents independently apply criteria
+- Collation agent identifies common issues, exclusive issues, divergences
+- Higher quality, better for high-stakes decisions
+- Use when: Complex plans, critical features, uncertain quality
+
+**See:** `${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md` for comprehensive dual-verification approach.
+
+**When to use dual verification:**
+- Pre-execution review of large/complex plans
+- High-risk features (security, data integrity, performance)
+- Uncertain plan quality or completeness
+- First time planning a particular type of work
+- Plans that will be executed by multiple agents
+
+**When single agent review is sufficient:**
+- Regular incremental work
+- Experienced planner, established patterns
+- Follow-up reviews after addressing BLOCKING issues
+- Time-sensitive situations (balanced against risk)
+
 ## Quick Reference
 
 **Before starting:**

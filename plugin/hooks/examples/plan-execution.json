@@ -1,0 +1,25 @@
+{
+  "comment": "Example configuration for plan execution with quality gates",
+  "comment2": "plan-compliance.sh runs automatically on SubagentStop (built-in)",
+  "comment3": "This config adds check/test gates to run after plan-compliance",
+  "gates": {
+    "check": {
+      "description": "Run quality checks",
+      "command": "mise run check",
+      "on_pass": "test",
+      "on_fail": "BLOCK"
+    },
+    "test": {
+      "description": "Run tests",
+      "command": "mise run test",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
+  },
+  "hooks": {
+    "SubagentStop": {
+      "enabled_agents": ["general-purpose", "cipherpowers:rust-engineer", "cipherpowers:coder"],
+      "gates": ["check"]
+    }
+  }
+}
