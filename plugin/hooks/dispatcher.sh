@@ -52,12 +52,30 @@ case "$HOOK_EVENT" in
     ENABLED_LIST_KEY="enabled"
     log_debug "dispatcher: User message (truncated): ${CONTEXT_VALUE:0:100}..."
     ;;
+  SlashCommandStart|SlashCommandEnd)
+    COMMAND=$(echo "$INPUT" | jq -r '.command // ""')
+    COMMAND_NAME="${COMMAND#/}"  # Remove leading /
+    STAGE="${HOOK_EVENT#SlashCommand}"  # "Start" or "End"
+    STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
+    CONTEXT_FILE=$(discover_context_file "$CWD" "$COMMAND_NAME" "$STAGE_LOWER")
+    CONTEXT_KEY="command"
+    CONTEXT_VALUE="$COMMAND"
+    ENABLED_LIST_KEY="enabled_commands"
+    log_debug "dispatcher: Command: $COMMAND, Stage: $STAGE_LOWER"
+    [ -n "$CONTEXT_FILE" ] && log_debug "dispatcher: Context file: $CONTEXT_FILE"
+    ;;
   *)
     # Unknown hook event - exit cleanly
     log_debug "dispatcher: Unknown hook event '$HOOK_EVENT', exiting"
     exit 0
     ;;
 esac
+
+# Convention-based injection (if context file exists)
+if [ -n "${CONTEXT_FILE:-}" ] && [ -f "$CONTEXT_FILE" ]; then
+  log_debug "dispatcher: Auto-injecting context from $CONTEXT_FILE"
+  inject_context_file "$CONTEXT_FILE"
+fi
 
 # Load gates config - check project directory first, then plugin default
 if [ -f "${CWD}/.claude/gates.json" ]; then
