@@ -178,3 +178,24 @@ discover_context_file() {
   # Not found
   return 1
 }
+
+# Inject context file content into conversation
+# Args: file_path
+# Output: JSON with additionalContext field (to stdout)
+inject_context_file() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    log_debug "inject_context_file: File not found: $file"
+    return 1
+  fi
+
+  local content=$(cat "$file")
+
+  log_debug "inject_context_file: Injecting content from $file (${#content} chars)"
+
+  # Output as JSON additionalContext (per Claude Code hook spec)
+  jq -n --arg content "$content" '{
+    additionalContext: $content
+  }'
+}
