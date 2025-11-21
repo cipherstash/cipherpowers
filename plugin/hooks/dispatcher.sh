@@ -64,6 +64,17 @@ case "$HOOK_EVENT" in
     log_debug "dispatcher: Command: $COMMAND, Stage: $STAGE_LOWER"
     [ -n "$CONTEXT_FILE" ] && log_debug "dispatcher: Context file: $CONTEXT_FILE"
     ;;
+  SkillStart|SkillEnd)
+    SKILL=$(echo "$INPUT" | jq -r '.skill // ""')
+    STAGE="${HOOK_EVENT#Skill}"  # "Start" or "End"
+    STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
+    CONTEXT_FILE=$(discover_context_file "$CWD" "$SKILL" "$STAGE_LOWER")
+    CONTEXT_KEY="skill"
+    CONTEXT_VALUE="$SKILL"
+    ENABLED_LIST_KEY="enabled_skills"
+    log_debug "dispatcher: Skill: $SKILL, Stage: $STAGE_LOWER"
+    [ -n "$CONTEXT_FILE" ] && log_debug "dispatcher: Context file: $CONTEXT_FILE"
+    ;;
   *)
     # Unknown hook event - exit cleanly
     log_debug "dispatcher: Unknown hook event '$HOOK_EVENT', exiting"
