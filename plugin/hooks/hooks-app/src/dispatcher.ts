@@ -91,9 +91,7 @@ export async function dispatch(input: HookInput): Promise<DispatchResult> {
     const { passed, result } = await executeGate(gateName, gateConfig, input);
 
     // Determine action
-    const action = passed ?
-      (gateConfig.on_pass || 'CONTINUE') :
-      (gateConfig.on_fail || 'BLOCK');
+    const action = passed ? gateConfig.on_pass || 'CONTINUE' : gateConfig.on_fail || 'BLOCK';
 
     // Handle action
     const actionResult = await handleAction(action, result, config, input);

@@ -36,7 +36,13 @@ export async function executeShellCommand(
       output: stdout + stderr
     };
   } catch (error: unknown) {
-    const err = error as { killed?: boolean; signal?: string; code?: number; stdout?: string; stderr?: string };
+    const err = error as {
+      killed?: boolean;
+      signal?: string;
+      code?: number;
+      stdout?: string;
+      stderr?: string;
+    };
     if (err.killed && err.signal === 'SIGTERM') {
       return {
         exitCode: 124, // Standard timeout exit code
@@ -50,10 +56,7 @@ export async function executeShellCommand(
   }
 }
 
-export async function executeBuiltinGate(
-  gateName: string,
-  input: HookInput
-): Promise<GateResult> {
+export async function executeBuiltinGate(gateName: string, input: HookInput): Promise<GateResult> {
   const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
   const gatePath = path.join(pluginRoot, 'hooks', 'gates', gateName);
 

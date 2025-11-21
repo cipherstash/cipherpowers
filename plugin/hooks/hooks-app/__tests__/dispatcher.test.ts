@@ -133,10 +133,7 @@ describe('Dispatcher - Gate Chaining', () => {
       }
     };
 
-    await fs.writeFile(
-      path.join(testDir, 'gates.json'),
-      JSON.stringify(gatesConfig, null, 2)
-    );
+    await fs.writeFile(path.join(testDir, 'gates.json'), JSON.stringify(gatesConfig, null, 2));
 
     const input: HookInput = {
       hook_event_name: 'PostToolUse',
@@ -172,10 +169,7 @@ describe('Dispatcher - Gate Chaining', () => {
       }
     };
 
-    await fs.writeFile(
-      path.join(testDir, 'gates.json'),
-      JSON.stringify(gatesConfig, null, 2)
-    );
+    await fs.writeFile(path.join(testDir, 'gates.json'), JSON.stringify(gatesConfig, null, 2));
 
     const input: HookInput = {
       hook_event_name: 'PostToolUse',

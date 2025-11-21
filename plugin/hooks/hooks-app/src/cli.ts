@@ -10,7 +10,7 @@ interface OutputMessage {
   message?: string;
 }
 
-async function main() {
+async function main(): Promise<void> {
   try {
     // Read stdin
     const chunks: Buffer[] = [];
@@ -24,10 +24,12 @@ async function main() {
     try {
       input = JSON.parse(inputStr);
     } catch (error) {
-      console.error(JSON.stringify({
-        continue: false,
-        message: 'Invalid JSON input'
-      }));
+      console.error(
+        JSON.stringify({
+          continue: false,
+          message: 'Invalid JSON input'
+        })
+      );
       process.exit(1);
     }
 
@@ -61,12 +63,13 @@ async function main() {
     if (Object.keys(output).length > 0) {
       console.log(JSON.stringify(output));
     }
-
   } catch (error) {
-    console.error(JSON.stringify({
-      continue: false,
-      message: `Unexpected error: ${error}`
-    }));
+    console.error(
+      JSON.stringify({
+        continue: false,
+        message: `Unexpected error: ${error}`
+      })
+    );
     process.exit(1);
   }
 }

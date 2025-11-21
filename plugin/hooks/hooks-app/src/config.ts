@@ -56,10 +56,7 @@ export function validateConfig(config: GatesConfig): void {
 export async function loadConfig(cwd: string): Promise<GatesConfig | null> {
   const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
 
-  const paths = [
-    path.join(cwd, '.claude', 'gates.json'),
-    path.join(cwd, 'gates.json')
-  ];
+  const paths = [path.join(cwd, '.claude', 'gates.json'), path.join(cwd, 'gates.json')];
 
   // Only add plugin root path if CLAUDE_PLUGIN_ROOT is set
   if (pluginRoot) {

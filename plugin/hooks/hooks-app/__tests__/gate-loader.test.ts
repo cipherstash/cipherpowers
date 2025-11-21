@@ -66,12 +66,13 @@ describe('Gate Loader - executeGate', () => {
     expect(result.passed).toBe(false);
   });
 
-  test('built-in gate throws error (not yet implemented)', async () => {
+  test('built-in gate throws error when gate not found', async () => {
     const gateConfig: GateConfig = {
       // No command = built-in gate
     };
 
-    await expect(executeGate('builtin-gate', gateConfig, mockInput))
-      .rejects.toThrow('Built-in gate builtin-gate not yet implemented');
+    await expect(executeGate('nonexistent-gate', gateConfig, mockInput)).rejects.toThrow(
+      'Failed to load built-in gate nonexistent-gate'
+    );
   });
 });
