@@ -1,4 +1,7 @@
 {
+  "description": "Permissive mode - warn only, never block. Supports convention-based context injection.",
+  "comment": "Context files in .claude/context/ auto-inject without configuration. See CONVENTIONS.md",
+
   "gates": {
     "check": {
       "description": "Quality checks (warn only)",

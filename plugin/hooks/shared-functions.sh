@@ -175,8 +175,8 @@ discover_context_file() {
     fi
   done
 
-  # Not found
-  return 1
+  # Not found - return success (empty string) so set -e doesn't abort
+  return 0
 }
 
 # Inject context file content into conversation
