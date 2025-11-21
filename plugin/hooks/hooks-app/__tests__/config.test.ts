@@ -101,6 +101,8 @@ describe('Config Loading', () => {
 
     await fs.writeFile(path.join(testDir, 'gates.json'), JSON.stringify(configObj));
 
-    await expect(loadConfig(testDir)).rejects.toThrow('is not CONTINUE/BLOCK/STOP or valid gate name');
+    await expect(loadConfig(testDir)).rejects.toThrow(
+      'is not CONTINUE/BLOCK/STOP or valid gate name'
+    );
   });
 });

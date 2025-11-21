@@ -24,7 +24,9 @@ export function validateConfig(config: GatesConfig): void {
   // Invariant: Hook event names must be known types
   for (const hookName of Object.keys(config.hooks)) {
     if (!KNOWN_HOOK_EVENTS.includes(hookName)) {
-      throw new Error(`Unknown hook event: ${hookName}. Must be one of: ${KNOWN_HOOK_EVENTS.join(', ')}`);
+      throw new Error(
+        `Unknown hook event: ${hookName}. Must be one of: ${KNOWN_HOOK_EVENTS.join(', ')}`
+      );
     }
   }
 
@@ -43,7 +45,9 @@ export function validateConfig(config: GatesConfig): void {
   for (const [gateName, gateConfig] of Object.entries(config.gates)) {
     for (const action of [gateConfig.on_pass, gateConfig.on_fail]) {
       if (action && !KNOWN_ACTIONS.includes(action) && !config.gates[action]) {
-        throw new Error(`Gate '${gateName}' action '${action}' is not CONTINUE/BLOCK/STOP or valid gate name`);
+        throw new Error(
+          `Gate '${gateName}' action '${action}' is not CONTINUE/BLOCK/STOP or valid gate name`
+        );
       }
     }
   }

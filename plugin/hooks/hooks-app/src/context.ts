@@ -30,10 +30,7 @@ export async function discoverContextFile(
   return null;
 }
 
-export async function injectContext(
-  hookEvent: string,
-  input: HookInput
-): Promise<string | null> {
+export async function injectContext(hookEvent: string, input: HookInput): Promise<string | null> {
   let name: string | undefined;
   let stage: string | undefined;
 
