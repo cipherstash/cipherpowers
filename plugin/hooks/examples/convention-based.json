@@ -13,7 +13,7 @@
 
   "hooks": {
     "SlashCommandEnd": {
-      "comment": "Convention file .claude/context/code-review-start.md auto-injects if exists",
+      "comment": "Convention file .claude/context/code-review-end.md auto-injects if exists",
       "enabled_commands": ["/code-review"],
       "gates": ["test"]
     },

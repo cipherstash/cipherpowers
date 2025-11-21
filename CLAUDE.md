@@ -280,6 +280,14 @@ Quality hooks use project-level `gates.json` configuration files with priority:
 - **STOP**: Stop Claude entirely
 - **{gate_name}**: Chain to another gate (subroutine call)
 
+**Convention-Based Context Injection:**
+Zero-config content injection via file naming patterns. Place markdown files in `.claude/context/` following the pattern `{command-or-skill}-{start|end}.md` and they auto-inject when hooks fire. See `plugin/hooks/examples/context/` for ready-to-use examples:
+- `code-review-start.md` - Security/performance requirements
+- `plan-start.md` - Planning templates
+- `test-driven-development-start.md` - TDD standards
+
+Full documentation: `plugin/hooks/CONVENTIONS.md`
+
 **Setup:**
 ```bash
 # Copy example configuration

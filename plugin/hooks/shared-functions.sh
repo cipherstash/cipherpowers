@@ -154,6 +154,8 @@ handle_action() {
 # Discover context file using convention-based naming
 # Args: cwd, name (command/skill without prefix), stage (start/end)
 # Returns: path to context file if exists, empty if not found
+# Usage: result=$(discover_context_file "$cwd" "$name" "$stage")
+#        [ -n "$result" ] && echo "Found: $result"
 discover_context_file() {
   local cwd="$1"
   local name="$2"
@@ -188,6 +190,15 @@ inject_context_file() {
   if [ ! -f "$file" ]; then
     log_debug "inject_context_file: File not found: $file"
     return 1
+  fi
+
+  # Check file size (100KB = 102400 bytes, 1MB = 1048576 bytes)
+  local file_size=$(wc -c < "$file" | tr -d ' ')
+  if [ "$file_size" -gt 1048576 ]; then
+    log_debug "inject_context_file: File too large ($file_size bytes, max 1MB): $file"
+    return 1
+  elif [ "$file_size" -gt 102400 ]; then
+    log_debug "inject_context_file: WARNING: Large file ($file_size bytes, >100KB): $file"
   fi
 
   local content=$(cat "$file")

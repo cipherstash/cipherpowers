@@ -255,7 +255,7 @@ Zero scripting needed.
 ## Best Practices
 
 1. **File Organization:** Start flat, grow hierarchically as needed
-2. **Naming:** Use exact command/skill names (case-sensitive stage names)
+2. **Naming:** Use exact command/skill names (lowercase-only stage names)
 3. **Content:** Keep focused - one concern per file
 4. **Discovery:** Let multiple paths support project evolution
 5. **Control:** Rename/move files rather than editing gates.json

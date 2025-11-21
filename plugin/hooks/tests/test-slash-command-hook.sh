@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
+# Setup test directory and ensure cleanup
+TEST_DIR="/tmp/test-slash"
+trap "rm -rf $TEST_DIR" EXIT
+
 # Create test context file
-mkdir -p /tmp/test-slash/.claude/context
-echo "Code review requirements" > /tmp/test-slash/.claude/context/code-review-start.md
+mkdir -p $TEST_DIR/.claude/context
+echo "Code review requirements" > $TEST_DIR/.claude/context/code-review-start.md
 
 # Mock hook input
-INPUT=$(jq -n '{
+INPUT=$(jq -n --arg test_dir "$TEST_DIR" '{
   hook_event_name: "SlashCommandStart",
   command: "/code-review",
   user_message: "review this code",
-  cwd: "/tmp/test-slash"
+  cwd: $test_dir
 }')
 
 # Run dispatcher
@@ -28,5 +32,3 @@ else
   echo "FAIL: No additionalContext in output"
   exit 1
 fi
-
-rm -rf /tmp/test-slash

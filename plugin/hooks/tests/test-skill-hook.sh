@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
+# Setup test directory and ensure cleanup
+TEST_DIR="/tmp/test-skill"
+trap "rm -rf $TEST_DIR" EXIT
+
 # Create test context file
-mkdir -p /tmp/test-skill/.claude/context
-echo "TDD requirements" > /tmp/test-skill/.claude/context/test-driven-development-start.md
+# Note: Using minimal fixture content for testing; see plugin/hooks/examples/context/test-driven-development-start.md for production example
+mkdir -p $TEST_DIR/.claude/context
+echo "TDD requirements" > $TEST_DIR/.claude/context/test-driven-development-start.md
 
 # Mock hook input
-INPUT=$(jq -n '{
+INPUT=$(jq -n --arg test_dir "$TEST_DIR" '{
   hook_event_name: "SkillStart",
   skill: "test-driven-development",
   user_message: "implement feature with TDD",
-  cwd: "/tmp/test-skill"
+  cwd: $test_dir
 }')
 
 # Run dispatcher
@@ -28,5 +33,3 @@ else
   echo "FAIL: No additionalContext in output"
   exit 1
 fi
-
-rm -rf /tmp/test-skill
