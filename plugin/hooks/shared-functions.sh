@@ -150,3 +150,31 @@ handle_action() {
       ;;
   esac
 }
+
+# Discover context file using convention-based naming
+# Args: cwd, name (command/skill without prefix), stage (start/end)
+# Returns: path to context file if exists, empty if not found
+discover_context_file() {
+  local cwd="$1"
+  local name="$2"
+  local stage="$3"
+
+  # Try discovery paths in priority order
+  local paths=(
+    "${cwd}/.claude/context/${name}-${stage}.md"                    # Flat
+    "${cwd}/.claude/context/slash-command/${name}-${stage}.md"      # Organized
+    "${cwd}/.claude/context/slash-command/${name}/${stage}.md"      # Hierarchical
+    "${cwd}/.claude/context/skill/${name}-${stage}.md"              # Skill organized
+    "${cwd}/.claude/context/skill/${name}/${stage}.md"              # Skill hierarchical
+  )
+
+  for path in "${paths[@]}"; do
+    if [ -f "$path" ]; then
+      echo "$path"
+      return 0
+    fi
+  done
+
+  # Not found
+  return 1
+}
