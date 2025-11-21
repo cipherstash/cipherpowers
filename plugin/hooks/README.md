@@ -76,6 +76,108 @@ Quality hooks integrate with Claude Code's event system to automatically run qua
 
 **Configuration is project-specific** - each project has its own `gates.json` with commands tailored to that project's tooling.
 
+## Convention-Based Context Injection
+
+**Zero-config content injection** via file naming convention.
+
+### How It Works
+
+1. Place markdown files in `.claude/context/` following naming pattern
+2. Files auto-inject when corresponding hook fires
+3. No `gates.json` configuration needed
+4. Control via file presence (rename/move to disable)
+
+### Naming Convention
+
+```
+Pattern: {command-or-skill-name}-{stage}.md
+
+Examples:
+  /code-review starts  → .claude/context/code-review-start.md
+  /code-review ends    → .claude/context/code-review-end.md
+  /plan starts         → .claude/context/plan-start.md
+  TDD skill starts     → .claude/context/test-driven-development-start.md
+```
+
+### Directory Structures
+
+**Flat (small projects):**
+```
+.claude/
+├── gates.json
+└── context/
+    ├── code-review-start.md
+    ├── code-review-end.md
+    └── plan-start.md
+```
+
+**Organized (larger projects):**
+```
+.claude/
+└── context/
+    ├── slash-command/
+    │   ├── code-review-start.md
+    │   └── plan-start.md
+    └── skill/
+        └── test-driven-development-start.md
+```
+
+**Hierarchical (large projects):**
+```
+.claude/
+└── context/
+    └── slash-command/
+        ├── code-review/
+        │   ├── start.md
+        │   └── end.md
+        └── plan/
+            └── start.md
+```
+
+Dispatcher searches all structures automatically.
+
+### Execution Order
+
+1. **Convention-based injection** (if file exists)
+2. **Explicit gates** (from gates.json)
+3. Continue or block based on results
+
+### Example: Code Review Requirements
+
+```bash
+# Create context file
+cat > .claude/context/code-review-start.md << 'EOF'
+## Security Requirements
+
+All reviews must verify:
+- Authentication on all endpoints
+- Input validation using allowlist
+- No secrets in logs
+EOF
+```
+
+Now when `/code-review` runs, requirements auto-inject. No configuration needed!
+
+### Disabling Auto-Injection
+
+Simply rename or move the file:
+```bash
+# Disable by renaming
+mv .claude/context/code-review-start.md \
+   .claude/context/code-review-start.md.disabled
+
+# Or move out of discovery paths
+mv .claude/context/code-review-start.md \
+   .claude/disabled/code-review-start.md
+```
+
+### Examples
+
+See `plugin/hooks/examples/context/` for:
+- `code-review-start.md` - Security/performance requirements
+- `plan-start.md` - Planning template
+- `test-driven-development-start.md` - TDD standards
+
 ## Components
 
 ### 1. Hook Registration (`hooks.json`)
@@ -110,6 +212,14 @@ The dispatcher routes hook events to configured gates based on `gates.json`.
 1. `.claude/gates.json` (recommended - project-specific)
 2. `gates.json` (project root)
 3. `${CLAUDE_PLUGIN_ROOT}/hooks/gates.json` (plugin default fallback)
+
+**Context file discovery** - hooks search for context files in this order:
+
+1. `.claude/context/{name}-{stage}.md` (flat)
+2. `.claude/context/slash-command/{name}-{stage}.md` (organized)
+3. `.claude/context/slash-command/{name}/{stage}.md` (hierarchical)
+4. `.claude/context/skill/{name}-{stage}.md` (skill organized)
+5. `.claude/context/skill/{name}/{stage}.md` (skill hierarchical)
 
 Self-contained configuration defining gates, commands, and actions:
 
