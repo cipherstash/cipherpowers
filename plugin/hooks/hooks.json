@@ -1,48 +1,53 @@
 {
-    "hooks": {
-        "SessionStart": [
-            {
-                "matcher": "startup|resume|clear|compact",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
-                    }
-                ]
-            }
-        ],
-        "PostToolUse": [
-            {
-                "matcher": ".*",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"
-                    }
-                ]
-            }
-        ],
-        "SubagentStop": [
-            {
-                "matcher": ".*",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"
-                    }
-                ]
-            }
-        ],
-        "UserPromptSubmit": [
-            {
-                "matcher": ".*",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"
-                    }
-                ]
-            }
-        ]
-    }
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "SubagentStop": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "UserPromptSubmit": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "SlashCommandStart": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "SlashCommandEnd": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "SkillStart": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }],
+    "SkillEnd": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
+      }]
+    }]
+  }
 }
