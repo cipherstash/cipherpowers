@@ -1,6 +1,7 @@
 // plugin/hooks/hooks-app/src/gate-loader.ts
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import * as path from 'path';
 import { HookInput, GateResult, GateConfig } from './types';
 
 const execAsync = promisify(exec);
@@ -49,6 +50,21 @@ export async function executeShellCommand(
   }
 }
 
+export async function executeBuiltinGate(
+  gateName: string,
+  input: HookInput
+): Promise<GateResult> {
+  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
+  const gatePath = path.join(pluginRoot, 'hooks', 'gates', gateName);
+
+  try {
+    const module = await import(gatePath);
+    return await module.execute(input);
+  } catch (error) {
+    throw new Error(`Failed to load built-in gate ${gateName}: ${error}`);
+  }
+}
+
 export async function executeGate(
   gateName: string,
   gateConfig: GateConfig,
@@ -66,7 +82,13 @@ export async function executeGate(
       }
     };
   } else {
-    // Built-in TypeScript gate (to be implemented later)
-    throw new Error(`Built-in gate ${gateName} not yet implemented`);
+    // Built-in TypeScript gate
+    const result = await executeBuiltinGate(gateName, input);
+    const passed = !result.decision && result.continue !== false;
+
+    return {
+      passed,
+      result
+    };
   }
 }
