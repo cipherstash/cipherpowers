@@ -257,11 +257,13 @@ Self-contained configuration defining gates, commands, and actions:
 Gates can be either shell commands or custom scripts in `plugin/hooks/gates/`:
 
 - **gates/commands.sh**: Built-in gate that **always runs first** on UserPromptSubmit events to inject project commands from CLAUDE.md frontmatter
+- **gates/plan-compliance.sh**: Built-in gate that **always runs first** on SubagentStop events to check agent STATUS and handle BLOCKED reports
 
-**Special behavior for UserPromptSubmit:**
-- `commands.sh` runs automatically before any configured gates
-- Projects don't need to configure it in `gates.json`
-- Additional gates can optionally be configured to run after commands injection
+**Special behavior for built-in gates:**
+- `commands.sh` runs automatically on UserPromptSubmit before any configured gates
+- `plan-compliance.sh` runs automatically on SubagentStop before any configured gates
+- Projects don't need to configure built-in gates in `gates.json`
+- Additional gates can optionally be configured to run after built-in gates
 
 Custom gate scripts receive hook context via `HOOK_INPUT` environment variable and output JSON.
 
@@ -322,7 +324,7 @@ jq -n --arg content "$result" '{
 }
 ```
 
-**Note:** `commands.sh` still runs first automatically, then `my-custom-gate` runs.
+**Note:** Built-in gates (`commands.sh` for UserPromptSubmit, `plan-compliance.sh` for SubagentStop) still run first automatically, then custom gates run.
 
 ## Gate Chaining
 

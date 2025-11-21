@@ -26,15 +26,49 @@ Load plan, review critically, execute tasks in batches, report for review betwee
 
 For each task:
 1. Mark as in_progress
-2. **Select appropriate agent:**
-   - Rust code → `cipherpowers:rust-engineer`
-   - Complex debugging → `cipherpowers:ultrathink-debugger`
-   - Documentation → `cipherpowers:technical-writer`
+2. **Select appropriate agent using semantic understanding (NOT keyword matching):**
+
+   **Analyze task requirements:**
+   - What is the task type? (implementation, debugging, review, docs)
+   - What is the complexity? (simple fix vs multi-component investigation)
+   - What technology? (Rust vs other languages)
+
+   **Agent selection:**
+   - Rust implementation → `cipherpowers:rust-engineer`
+   - Complex, multi-layered debugging → `cipherpowers:ultrathink-debugger`
+   - Documentation updates → `cipherpowers:technical-writer`
    - General implementation → `general-purpose`
-3. Dispatch agent with task instructions from plan
+
+   **IMPORTANT:** Analyze the task semantically. Don't just match keywords.
+   - ❌ "don't use ultrathink" → ultrathink-debugger (keyword match)
+   - ✅ "don't use ultrathink" → general-purpose (semantic understanding)
+
+   See selecting-agents skill for detailed selection criteria.
+
+3. **Dispatch agent with embedded following-plans skill:**
+
+   **Include in agent prompt:**
+   ```
+   IMPORTANT: You MUST follow the plan exactly as specified.
+
+   Read and follow: @${CLAUDE_PLUGIN_ROOT}skills/following-plans/SKILL.md
+
+   This skill defines when you can make changes vs when you must report BLOCKED.
+
+   REQUIRED: Your completion report MUST include STATUS:
+   - STATUS: OK (task completed as planned)
+   - STATUS: BLOCKED (plan approach won't work, need approval for deviation)
+
+   The plan approach was chosen for specific reasons during design.
+   Do NOT rationalize "simpler" approaches without approval.
+   ```
+
 4. Follow each step exactly (plan has bite-sized steps)
 5. Run verifications as specified
-6. Mark as completed
+6. **Check agent completion status:**
+   - STATUS: OK → Mark as completed, continue
+   - STATUS: BLOCKED → STOP, handle escalation (see Handling BLOCKED Status)
+   - No STATUS → Agent violated protocol, escalate
 
 ### Step 3: Review Batch (REQUIRED)
 
@@ -84,6 +118,42 @@ After all tasks complete and verified:
 
 **Don't force through blockers** - stop and ask.
 
+## Handling BLOCKED Status
+
+When an agent reports STATUS: BLOCKED:
+
+1. **Read the BLOCKED reason carefully**
+   - What does agent say won't work?
+   - What deviation does agent want to make?
+
+2. **Review plan and design context**
+   - Why was this approach chosen?
+   - Was the agent's "simpler" approach already considered and rejected?
+
+3. **Ask user what to do** via AskUserQuestion:
+   ```
+   Agent reported BLOCKED on: {task}
+
+   Reason: {agent's reason}
+
+   Plan specified: {planned approach}
+   Agent wants: {agent's proposed deviation}
+
+   Options:
+   1. Trust agent - approve deviation from plan
+   2. Revise plan - update task with different approach
+   3. Enforce plan - agent must follow plan as written
+   4. Investigate - need more context before deciding
+   ```
+
+4. **Execute user decision:**
+   - Approve → Update plan, re-dispatch agent with approved approach
+   - Revise → Update plan file, re-dispatch agent
+   - Enforce → Re-dispatch agent with stronger "follow plan" guidance
+   - Investigate → Pause execution, gather more information
+
+**Never approve deviations without user input.**
+
 ## Related Skills
 
 **Agent selection guidance:**
@@ -95,11 +165,16 @@ After all tasks complete and verified:
 **Finishing work:**
 - Finishing a Development Branch: `${CLAUDE_PLUGIN_ROOT}skills/finishing-a-development-branch/SKILL.md`
 
+**Plan compliance:**
+- Following Plans: `${CLAUDE_PLUGIN_ROOT}skills/following-plans/SKILL.md`
+
 ## Remember
 - Review plan critically first
-- Select the right agent for each task type
+- Embed following-plans skill in agent prompts
+- Select the right agent using semantic understanding (not keyword matching)
+- Check for STATUS in agent completions
+- Handle BLOCKED status by asking user (never auto-approve deviations)
 - Code review after every batch (mandatory)
-- Follow plan steps exactly
 - Don't skip verifications
 - Reference skills when plan says to
 - Between batches: just report and wait

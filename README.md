@@ -116,6 +116,7 @@ For best results when implementing new features or tackling complex tasks, follo
 **Planning Workflow:**
 - `/brainstorm` - Refine ideas using Socratic method
 - `/plan` - Create detailed implementation plans
+- `/plan-review` - Evaluate implementation plans before execution
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
 
 **Code Quality:**
@@ -171,10 +172,11 @@ For best results when implementing new features or tackling complex tasks, follo
 **Quality Hooks:** See `plugin/hooks/` directory for:
 - `README.md` - Overview and examples
 - `SETUP.md` - Project-level configuration guide
+- `CONVENTIONS.md` - Convention-based context injection
 - `INTEGRATION_TESTS.md` - Testing procedures
 - `examples/` - Strict, permissive, and pipeline configurations
 
-**Deep Dive:** See `CLAUDE.md` for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
+**Deep Dive:** See `CLAUDE.md` (auto-loaded by Claude Code and serves as reference documentation) for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
 - Understand the three-layer architecture (skills, automation, documentation)
 - Create custom agents, commands, or practices
 - Learn about quality hooks and algorithmic workflow enforcement
@@ -182,4 +184,4 @@ For best results when implementing new features or tackling complex tasks, follo
 
 ## License
 
-[Add your license here]
+See [LICENSE.md](LICENSE.md)

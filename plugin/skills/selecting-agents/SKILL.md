@@ -15,6 +15,44 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 
 **For automatic agent selection:** When executing implementation plans, use the `/execute` command which applies this skill's logic automatically with hybrid keyword/LLM analysis. Manual selection using this skill is for ad-hoc agent dispatch outside of plan execution.
 
+## Agent Selection Logic
+
+When selecting agents (manually or automatically), you must analyze the **task requirements and context**, not just match keywords naively.
+
+**DO NOT use naive keyword matching:**
+- ❌ Task contains "ultrathink" → select ultrathink-debugger
+- ❌ Task contains "rust" → select rust-engineer
+- ❌ Task mentions agent name → select that agent
+
+**DO use semantic understanding:**
+- ✅ Analyze what the task is asking for (debugging? implementation? review?)
+- ✅ Consider task complexity and characteristics
+- ✅ Match agent capabilities to task requirements
+- ✅ Ignore mentions of agent names that are not prescriptive
+
+**Examples of INCORRECT selection:**
+- Task: "Fix simple bug (don't use ultrathink-debugger, it's overkill)" → ❌ Selecting ultrathink-debugger because "ultrathink" appears
+- Task: "Implement feature X in Python (not Rust)" → ❌ Selecting rust-engineer because "rust" appears
+- Task: "Add tests like the code-reviewer suggested" → ❌ Selecting code-reviewer because it's mentioned
+
+**Examples of CORRECT selection:**
+- Task: "Fix simple bug in auth.py" → ✅ general-purpose (simple bug, not complex)
+- Task: "Investigate random CI failures with timing issues" → ✅ ultrathink-debugger (complex, timing, environment-specific)
+- Task: "Add new endpoint to user service (Rust)" → ✅ rust-engineer (Rust implementation work)
+- Task: "Don't use ultrathink for this simple validation fix" → ✅ general-purpose (task explicitly says it's simple)
+
+**Selection criteria:**
+1. **What is the task type?** (implementation, debugging, review, documentation)
+2. **What is the complexity?** (simple fix vs multi-component investigation)
+3. **What technology?** (Rust code vs other languages)
+4. **What is explicitly requested?** (user prescribing specific agent vs mentioning in passing)
+
+**Red flags that indicate you're selecting incorrectly:**
+- Selected agent based on keyword appearance alone
+- Ignored explicit guidance in task description (e.g., "don't use X")
+- Selected debugging agent for simple implementation task
+- Selected specialized agent when general-purpose is more appropriate
+
 ## Documentation Agents
 
 ### technical-writer

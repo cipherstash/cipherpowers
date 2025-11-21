@@ -1,8 +1,6 @@
 ---
-commands:
-  test: "mise run test"
-  check: "mise run check"
-  build: "mise run build"
+# CipherPowers uses mise for task orchestration
+# See mise.toml for available tasks
 ---
 
 # CLAUDE.md
@@ -21,14 +19,12 @@ CipherPowers itself uses mise for task orchestration. These commands are used th
 
 ### Core Commands
 
-- **Tests**: `mise run test` - Run the project's test suite
-- **Checks**: `mise run check` - Run quality checks (linting, formatting, type checking)
-- **Build**: `mise run build` - Build/package the plugin
 - **Run**: N/A - This is a plugin, not a runnable application
+
+**Note:** CipherPowers uses mise for task orchestration, but the specific tasks are project-specific. See `mise.toml` for available tasks (e.g., check-has-changes, check-tests-exist, check-docs-updated, check-atomic-commit, build-workflow, setup).
 
 ### Additional Commands
 
-- **review:active**: `mise run review:active` - Find current active work directory
 - **check-has-changes**: `mise run check-has-changes` - Verify there are uncommitted changes
 
 **Note:** While CipherPowers itself uses mise, the plugin is tool-agnostic and works with any build/test tooling (npm, cargo, make, etc.). See `plugin/docs/configuring-project-commands.md` for details on the tool-agnostic approach.
@@ -59,7 +55,7 @@ Reusable process knowledge documented as testable, discoverable guides for techn
 
 **Meta:**
 - **Algorithmic enforcement** (`skills/algorithmic-command-enforcement/`) - Why algorithms > imperatives
-- **Using skills** (`skills/using-skills/`) - CipherPowers skill discovery
+- **Using skills** (`skills/using-cipherpowers/`) - CipherPowers skill discovery
 
 **Testing:**
 - **TDD enforcement** (`skills/tdd-enforcement-algorithm/`) - Prevent code before tests
@@ -74,7 +70,7 @@ Reusable process knowledge documented as testable, discoverable guides for techn
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
 **Commands:** Slash commands users type
-- CipherPowers commands: `/brainstorm`, `/plan`, `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
+- CipherPowers commands: `/brainstorm`, `/plan`, `/plan-review`, `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
 - Thin dispatchers providing context
 - Reference practices for project-specific configuration
 - Reference skills for process guidance
@@ -82,7 +78,7 @@ Commands and agents that dispatch to skills or provide project-specific workflow
 - Some commands (like `/execute`) orchestrate main Claude context with agent dispatch
 
 **Agents:** Specialized subagent prompts with enforced workflows
-- Handle specific roles (work-planner, code-reviewer, rust-engineer)
+- Handle specific roles (code-reviewer, rust-engineer, ultrathink-debugger, technical-writer, retrospective-writer, and others)
 - Contain non-negotiable workflows using persuasion principles
 - Reference practices for project-specific commands and conventions
 - Reference skills for methodology
@@ -101,12 +97,12 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - `plugin/templates/skill-template.md` - Practice structure with standards + config pattern
 - `plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
 
-### 3. Documentation Layer (`docs/`)
+### 3. Documentation Layer (`plugin/standards/`, `plugin/examples/`)
 
 Standards, guidelines, and reference materials.
 
-**Practices:** Coding standards, conventions, guidelines
-**Examples:** Real-world examples and templates
+**Practices:** Coding standards, conventions, guidelines (in `plugin/standards/`)
+**Examples:** Real-world examples and templates (in `plugin/examples/`)
 **Purpose:** Support skills and provide team reference
 
 ## Organizational Benefits
@@ -182,7 +178,7 @@ All five components work together without duplication. Change documentation stan
 - `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
-- Specialized agents (rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
+- Specialized agents (code-committer, coder, gatekeeper, plan-reviewer, rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
 
 The /execute command demonstrates:
 - Algorithmic format for workflow enforcement (100% compliance vs 0-33% imperative)
@@ -222,22 +218,23 @@ CipherPowers uses a clear separation between project documentation and plugin co
 - **`plugin/commands/`** - Slash commands
 - **`plugin/skills/`** - Organization-specific skills
 - **`plugin/hooks/`** - Quality enforcement hooks (PostToolUse, SubagentStop)
-- **`plugin/examples/`** - Example configurations and templates
+- **`plugin/hooks/examples/`** - Example hook configurations (gate configs, context files)
+- **`plugin/examples/`** - Example documentation (currently contains README.md)
 
 **Key distinction:**
-- `./docs/plans/` = Plans for building cipherpowers
-- `./plugin/standards/` = Standards for users of cipherpowers
+- `./docs/` = Documentation about building cipherpowers itself (not shipped with plugin)
+- `./plugin/standards/` = Standards for users of cipherpowers (shipped with plugin)
 
 **Referencing paths**
 In Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. Due to marketplace.json configuration (`"source": "./plugin/"`), this variable points directly to the plugin/ directory, so paths should NOT include the /plugin/ prefix.
 
 You MUST ALWAYS use the following structure to reference paths:
 
-    ${CLAUDE_PLUGIN_ROOT}path/to/file
+    ${CLAUDE_PLUGIN_ROOT}/path/to/file
 
 Example:
 
-    ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
+    ${CLAUDE_PLUGIN_ROOT}/standards/code-review.md
 
 
 ## Skills and Practices Discovery
@@ -292,7 +289,7 @@ Full documentation: `plugin/hooks/CONVENTIONS.md`
 ```bash
 # Copy example configuration
 mkdir -p .claude
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
+cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
 
 # Customize for project's build tooling
 vim .claude/gates.json
@@ -351,8 +348,9 @@ When developing CipherPowers plugin components:
 - `plugin/principles/`, `plugin/standards/` - Standards and project configuration
 - `plugin/skills/` - Organization-specific skills
 - `plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
+- `plugin/hooks/examples/` - Example hook configurations (gate configs, context files)
 - `plugin/templates/` - Templates for agents, practices, and skills
-- `plugin/examples/` - Example configurations and templates
+- `plugin/examples/` - Example documentation
 
 **Key Principles:**
 - Commands are thin dispatchers that reference agents or skills
