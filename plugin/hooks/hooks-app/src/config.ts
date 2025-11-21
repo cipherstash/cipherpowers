@@ -58,9 +58,13 @@ export async function loadConfig(cwd: string): Promise<GatesConfig | null> {
 
   const paths = [
     path.join(cwd, '.claude', 'gates.json'),
-    path.join(cwd, 'gates.json'),
-    path.join(pluginRoot, 'hooks', 'gates.json')
+    path.join(cwd, 'gates.json')
   ];
+
+  // Only add plugin root path if CLAUDE_PLUGIN_ROOT is set
+  if (pluginRoot) {
+    paths.push(path.join(pluginRoot, 'hooks', 'gates.json'));
+  }
 
   for (const configPath of paths) {
     if (await fileExists(configPath)) {
