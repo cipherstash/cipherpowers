@@ -210,7 +210,17 @@ Read these to understand quality standards:
 **Reasoning:** [Brief explanation]
 ```
 
-**File naming:** Save to `.work/{YYYY-MM-DD}-plan-evaluation-{N}.md`
+**File naming:**
+
+Save to `.work/{YYYY-MM-DD}-plan-evaluation-{HHmmss}.md`
+
+Example: `.work/2025-11-22-plan-evaluation-143052.md`
+
+**Time-based naming ensures:**
+- No conflicts when multiple agents run in parallel (dual verification)
+- Each evaluation gets unique filename automatically
+- Collation agents can find all reviews with glob pattern
+- No coordination needed between agents
 
 **Do NOT create custom section structures.** Use template exactly. Additional context (plan excerpts, specific examples) may be added at the end, but core template sections are mandatory.
 

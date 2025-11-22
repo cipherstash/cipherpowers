@@ -71,9 +71,15 @@ Use dual-verification-review when:
 ```
 You are [agent type] conducting an independent verification review.
 
+**Context:** You are one of two agents performing parallel independent reviews. Another agent is reviewing the same content independently. A collation agent will later compare both reviews.
+
 **Your task:** Systematically verify [subject] against [ground truth].
 
-**Critical instruction:** Current content CANNOT be assumed correct. Verify every claim.
+**Critical instructions:**
+- Current content CANNOT be assumed correct. Verify every claim.
+- You MUST save your review with timestamp: `.work/{YYYY-MM-DD}-[review-type]-{HHmmss}.md`
+- Time-based naming prevents conflicts when agents run in parallel.
+- Work completely independently - the collation agent will find and compare all reviews.
 
 **Process:**
 

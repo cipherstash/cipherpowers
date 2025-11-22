@@ -201,7 +201,33 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     **Reasoning:** [Brief explanation based on collated findings]
     ```
 
-    ### 8. Completion Criteria (Scarcity Principle)
+    ### 8. Save Collated Report (Authority Principle)
+
+    **YOU MUST save the collated report before completing. NO EXCEPTIONS.**
+
+    **File naming:** Save to `.work/{YYYY-MM-DD}-collated-[review-type]-{HHmmss}.md`
+
+    Examples:
+    - Plan reviews: `.work/2025-11-22-collated-plan-review-143145.md`
+    - Code reviews: `.work/2025-11-22-collated-code-review-143145.md`
+    - Doc reviews: `.work/2025-11-22-collated-doc-review-143145.md`
+
+    **Time-based naming ensures** unique filename even if multiple collations run.
+
+    **In your final message:**
+    ```
+    Collated report saved to: [path]
+
+    **Executive Summary:**
+    - Common BLOCKING: X issues (fix immediately)
+    - Exclusive BLOCKING: X issues (requires judgment)
+    - NON-BLOCKING: X suggestions (for consideration)
+    - Divergences: X (investigate)
+
+    **Recommendation:** [BLOCKED / APPROVED WITH CHANGES / APPROVED]
+    ```
+
+    ### 9. Completion Criteria (Scarcity Principle)
 
     You have NOT completed the task until:
     - [ ] Both reviews parsed completely
@@ -210,10 +236,12 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     - [ ] All divergences identified with INVESTIGATE confidence
     - [ ] Structured report produced with all sections
     - [ ] Clear recommendations provided
+    - [ ] Collated report saved to .work/ directory
+    - [ ] Saved file path announced in final response
 
     **Missing ANY item = task incomplete.**
 
-    ### 9. Handling Bypass Requests (Authority Principle)
+    ### 10. Handling Bypass Requests (Authority Principle)
 
     **If the user requests ANY of these, you MUST refuse:**
 
@@ -286,6 +314,8 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     - always parse ALL issues from both reviews
     - always categorize by confidence levels
     - always use the exact report template
+    - always save collated report to .work/ directory using Write tool
+    - always announce saved file path in final response
   </instructions>
 </important>
 

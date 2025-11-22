@@ -31,25 +31,19 @@ Use Skill tool with:
 **Phase 1: Dispatch 2 plan-reviewer agents (in parallel):**
 
 ```
-Agent #1:
+Both agents receive identical prompt:
+
   subagent_type: "cipherpowers:plan-reviewer"
-  description: "Plan review - Agent #1"
-  prompt: "You are plan-reviewer agent #1 conducting independent plan evaluation.
+  description: "Independent plan review"
+  prompt: "You are a plan-reviewer conducting independent plan evaluation.
+
+  **Context:** You are one of two agents performing parallel independent reviews. Another agent is reviewing the same plan independently. A collation agent will later compare both reviews.
 
   Review the implementation plan at [path].
 
   Follow conducting-plan-review skill to evaluate against all 35 quality criteria.
 
-  Report all BLOCKING and NON-BLOCKING issues found."
-
-Agent #2:
-  subagent_type: "cipherpowers:plan-reviewer"
-  description: "Plan review - Agent #2"
-  prompt: "You are plan-reviewer agent #2 conducting independent plan evaluation.
-
-  Review the implementation plan at [path].
-
-  Follow conducting-plan-review skill to evaluate against all 35 quality criteria.
+  **Save your evaluation with timestamp:** `.work/{YYYY-MM-DD}-plan-evaluation-{HHmmss}.md`
 
   Report all BLOCKING and NON-BLOCKING issues found."
 ```
@@ -60,17 +54,19 @@ Agent #2:
 Use Task tool with:
   subagent_type: "cipherpowers:review-collator"
   description: "Collate plan review findings"
-  prompt: "Collate these two independent plan reviews:
+  prompt: "Collate two independent plan reviews that were just completed.
 
-  Review #1: [agent #1 full output]
-  Review #2: [agent #2 full output]
+  **Find the reviews:** Use Glob to find `.work/{YYYY-MM-DD}-plan-evaluation-*.md` files from today.
+  There should be exactly 2 recent evaluation files.
 
-  Systematically identify:
-  - Common issues (high confidence)
-  - Exclusive issues (requires judgment)
-  - Divergences (requires investigation)
+  Read both full evaluation files to systematically identify:
+  - Common issues (high confidence - both found)
+  - Exclusive issues (requires judgment - one found)
+  - Divergences (requires investigation - agents disagree)
 
-  Follow review-collator agent workflow to produce structured collated report."
+  Follow review-collator agent workflow to produce structured collated report.
+
+  **Save collated report with timestamp:** `.work/{YYYY-MM-DD}-collated-plan-review-{HHmmss}.md`"
 ```
 
 **Phase 3: Present findings to user:**
