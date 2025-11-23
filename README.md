@@ -14,35 +14,86 @@ Before installing CipherPowers, you need:
 
 ## Installation
 
-1. **Clone CipherPowers repository:**
-   ```bash
-   git clone https://github.com/cipherstash/cipherpowers.git ~/.config/claude/plugins/cipherpowers
-   ```
+CipherPowers uses Claude Code's marketplace system for plugin installation.
 
-2. **Verify CipherPowers installation:**
-   ```bash
-   # Start Claude Code in any project
-   # Type /brainstorm or /code-review to verify CipherPowers commands are available
-   ```
+### Option 1: Install from GitHub (Recommended for Users)
+
+```bash
+# In Claude Code, add the CipherPowers marketplace
+/plugin marketplace add cipherstash/cipherpowers
+
+# Install the plugin
+/plugin install cipherpowers@cipherpowers
+```
+
+### Option 2: Local Development Installation
+
+For plugin development or testing local changes:
+
+```bash
+# Clone repository to any location
+git clone https://github.com/cipherstash/cipherpowers.git ~/cipherpowers
+
+# In Claude Code, add as local marketplace
+/plugin marketplace add ~/cipherpowers
+
+# Install the plugin
+/plugin install cipherpowers@cipherpowers
+```
+
+### Verify Installation
+
+Commands should appear immediately after installation. Test with:
+```
+/brainstorm
+/code-review
+```
+
+If commands don't appear, restart your Claude Code session.
 
 ## Setup
 
-After cloning the CipherPowers repository, no additional setup is required - the plugin is ready to use immediately.
-
-**Optional: Quality Hooks Configuration**
+### Optional: Quality Hooks Configuration
 
 Configure project-specific quality gates for automated test/check enforcement:
+
+**Step 1: Copy example configuration**
+
+The plugin provides example configurations you can copy:
 
 ```bash
 # Copy example configuration (recommended)
 mkdir -p .claude
-cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
 
 # Customize for your project's commands
 vim .claude/gates.json
 ```
 
-See `plugin/hooks/SETUP.md` for detailed configuration guide.
+**Note:** `${CLAUDE_PLUGIN_ROOT}` is automatically set by Claude Code when the plugin loads.
+
+**Alternatively, create configuration manually:**
+
+```bash
+mkdir -p .claude
+cat > .claude/gates.json << 'EOF'
+{
+  "gates": {
+    "quality-check": {
+      "commands": ["npm test", "npm run lint"],
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
+  },
+  "hooks": {
+    "PostToolUse": ["quality-check"],
+    "SubagentStop": ["quality-check"]
+  }
+}
+EOF
+```
+
+See `plugin/hooks/SETUP.md` in the installed plugin for detailed configuration guide.
 
 ## Getting Started
 
@@ -88,7 +139,9 @@ For best results when implementing new features or tackling complex tasks, follo
 - Creates structured implementation plan with bite-sized tasks
 - Each task sized for 3-task execution batches
 - Includes step-by-step instructions and expected outcomes
-- Saves plan to `docs/plans/` or `plans/` directory
+- Saves implementation plan to `.work/` directory
+
+**Note:** Design documents from `/brainstorm` are saved to `docs/plans/`
 
 **Skip if:** The task is trivial (single file, < 10 lines of code).
 
@@ -138,15 +191,16 @@ For best results when implementing new features or tackling complex tasks, follo
 
 ## Key Features
 
-**Quality Hooks (Nov 2025)**
+**Quality Hooks (November 2025)**
 - Automated quality enforcement via Claude Code's hook system
 - Runs project test/check commands automatically when agents modify code
 - Project-level configuration with `gates.json` (supports any build tooling)
 - Configurable actions: BLOCK (enforce), CONTINUE (warn), STOP, or chain to other gates
 - Two hook points: PostToolUse (after code edits), SubagentStop (when agents complete)
-- See `plugin/hooks/` for setup and examples (strict, permissive, pipeline modes)
+- Multiple example configurations: strict, permissive, pipeline, convention-based, TypeScript-specific, plan execution
+- Ready-to-use context injection examples for code review, planning, and TDD
 
-**Algorithmic Workflow Enforcement (Oct 2025)**
+**Algorithmic Workflow Enforcement (October 2025)**
 - Converted TDD, code review trigger, and git commit workflows to algorithmic format
 - Each includes: decision algorithm, recovery algorithm, invalid conditions, self-test
 - Pressure test scenarios validate resistance to common rationalizations
@@ -155,15 +209,49 @@ For best results when implementing new features or tackling complex tasks, follo
 
 ## Troubleshooting
 
-**Commands not appearing in Claude Code:**
-- Verify CipherPowers is cloned to `~/.config/claude/plugins/cipherpowers`
-- Restart Claude Code session
-- Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
+### Commands not appearing in Claude Code
 
-**Skills not available:**
+1. **Verify plugin installation:**
+   ```
+   /plugin list
+   ```
+   CipherPowers should appear in the installed plugins list.
+
+2. **Reinstall if necessary:**
+   ```
+   /plugin uninstall cipherpowers
+   /plugin install cipherpowers@cipherpowers
+   ```
+
+3. **Restart Claude Code session** if commands still don't appear.
+
+### Plugin installed but commands fail to load files
+
+This usually means you installed using the old direct-clone method instead of the marketplace system.
+
+**Solution:** Uninstall and reinstall using marketplace method:
+```bash
+# Remove old installation if you used direct clone
+rm -rf ~/.config/claude/plugins/cipherpowers  # or ~/.claude/plugins/cipherpowers
+
+# In Claude Code, install via marketplace
+/plugin marketplace add cipherstash/cipherpowers
+/plugin install cipherpowers@cipherpowers
+```
+
+### Skills not available
+
 - Skills are auto-discovered - no manual discovery needed
-- Check `${CLAUDE_PLUGIN_ROOT}` environment variable is set
-- Verify CipherPowers plugin is installed correctly
+- Verify plugin is installed: `/plugin list`
+- Check that `${CLAUDE_PLUGIN_ROOT}` is set correctly (ask Claude Code to show the value)
+
+### Different Claude config directory location
+
+Claude Code may use different config directories:
+- `~/.claude/` (some installations)
+- `~/.config/claude/` (other installations)
+
+The marketplace-based installation handles this automatically. If you're having issues, ensure you're using the marketplace installation method (not direct cloning).
 
 ## Documentation
 
@@ -174,7 +262,8 @@ For best results when implementing new features or tackling complex tasks, follo
 - `SETUP.md` - Project-level configuration guide
 - `CONVENTIONS.md` - Convention-based context injection
 - `INTEGRATION_TESTS.md` - Testing procedures
-- `examples/` - Strict, permissive, and pipeline configurations
+- `examples/` - Six gate configurations: strict.json, permissive.json, pipeline.json, convention-based.json, typescript-gates.json, plan-execution.json
+- `examples/context/` - Ready-to-use context injection files for code review, planning, and TDD
 
 **Deep Dive:** See `CLAUDE.md` (auto-loaded by Claude Code and serves as reference documentation) for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
 - Understand the three-layer architecture (skills, automation, documentation)

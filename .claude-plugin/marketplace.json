@@ -1,11 +1,11 @@
 {
-  "name": "cipherpowers-dev",
+  "name": "cipherpowers",
   "owner": {
     "name": "CipherStash Organization",
     "email": "dev@cipherstash.com"
   },
   "metadata": {
-    "description": "Local development marketplace for CipherPowers plugin",
+    "description": "CipherPowers plugin marketplace",
     "version": "0.1.0"
   },
   "plugins": [
