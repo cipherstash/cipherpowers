@@ -77,44 +77,38 @@ You are [agent type] conducting an independent verification review.
 
 **Critical instructions:**
 - Current content CANNOT be assumed correct. Verify every claim.
+- You MUST follow the review report template structure
+- Template location: ${CLAUDE_PLUGIN_ROOT}templates/review-report-template.md
 - You MUST save your review with timestamp: `.work/{YYYY-MM-DD}-[review-type]-{HHmmss}.md`
 - Time-based naming prevents conflicts when agents run in parallel.
 - Work completely independently - the collation agent will find and compare all reviews.
 
 **Process:**
 
-1. Read [subject] completely
-2. For each [section/component/claim]:
+1. Read the review report template to understand the expected structure
+2. Read [subject] completely
+3. For each [section/component/claim]:
    - Identify what is claimed
    - Verify against [ground truth]
    - Check for [specific criteria]
 
-3. Identify issues:
-   - **[Issue type 1]:** [description]
-   - **[Issue type 2]:** [description]
-   - **[Issue type 3]:** [description]
-
-4. For each issue, provide:
-   - Location ([file/section/line])
-   - Current content (what [subject] says)
-   - Actual [ground truth] (what is true)
+4. Categorize issues by:
+   - Category ([issue type 1], [issue type 2], etc.)
+   - Location (file/section/line)
    - Severity ([severity levels])
 
-**Output format:**
+5. For each issue, provide:
+   - Current content (what [subject] says)
+   - Actual [ground truth] (what is true)
+   - Impact (why this matters)
+   - Action (specific recommendation)
 
-# [Agent Type] Review Report
+6. Save using template structure with all required sections
 
-## [Section Name] Issues
-
-### [Specific Location]
-- **Issue:** [description]
-- **Current content:** [what is claimed]
-- **Actual [ground truth]:** [what is true]
-- **Severity:** [critical/high/medium/low]
-
-## Summary
-- Total issues found: X
-- [Severity breakdown]
+**The template provides:**
+- Complete structure for metadata, issues, summary, assessment
+- Examples of well-written reviews
+- Guidance on severity levels and categorization
 ```
 
 **Example: Documentation Review**
@@ -124,13 +118,13 @@ You are [agent type] conducting an independent verification review.
 - Criteria: file paths exist, commands work, examples accurate
 
 **Example: Plan Review**
-- Agent type: plan-reviewer
+- Agent type: plan-review-agent
 - Subject: implementation plan
 - Ground truth: 35 quality criteria (security, testing, architecture, etc.)
 - Criteria: blocking issues, non-blocking improvements
 
 **Example: Code Review**
-- Agent type: code-reviewer
+- Agent type: code-review-agent
 - Subject: implementation code
 - Ground truth: coding standards, plan requirements
 - Criteria: meets requirements, follows standards, has tests
@@ -143,75 +137,57 @@ You are [agent type] conducting an independent verification review.
 ```
 You are collating two independent [review type] reviews.
 
+**Critical instructions:**
+- You MUST follow the collation report template structure
+- Template location: ${CLAUDE_PLUGIN_ROOT}templates/collation-report-template.md
+- Read the template BEFORE starting collation
+- Save to: `.work/{YYYY-MM-DD}-collated-[review-type]-{HHmmss}.md`
+
 **Inputs:**
-- Review #1: [full review from agent 1]
-- Review #2: [full review from agent 2]
+- Review #1: [path to first review file]
+- Review #2: [path to second review file]
 
 **Your task:**
 
-1. **Identify common issues** (both found):
-   - High confidence these are real issues
-   - List with: issue description, location, severity, both agents' findings
+1. **Read the collation template** to understand the required structure
 
-2. **Identify exclusive issues** (only one found):
-   - Agent #1 only: [list issues]
-   - Agent #2 only: [list issues]
-   - Note: These may be edge cases or require judgment
+2. **Parse both reviews completely:**
+   - Extract all issues from Review #1
+   - Extract all issues from Review #2
+   - Create internal comparison matrix
 
-3. **Identify divergences** (agents disagree or contradict):
-   - List issue where agents have different conclusions
-   - Show both perspectives
-   - Note: These require investigation
+3. **Identify common issues** (both found):
+   - Same issue found by both reviewers
+   - Confidence: VERY HIGH
 
-4. **Assess overall confidence:**
-   - Issues found by both = very high confidence
-   - Issues found by one = moderate confidence (depends on reasoning)
-   - Contradictions = requires user decision
+4. **Identify exclusive issues** (only one found):
+   - Issues found only by Agent #1
+   - Issues found only by Agent #2
+   - Confidence: MODERATE (may be edge cases)
 
-**Output format:**
+5. **Identify divergences** (agents disagree):
+   - Same location, different conclusions
+   - Contradictory findings
 
-# Collated Review Report
+6. **IF divergences exist → Verify with plan-review agent:**
+   - Dispatch cipherpowers:plan-review-agent for each divergence
+   - Provide both perspectives and specific divergence point
+   - Incorporate verification analysis into report
 
-## Common Issues (High Confidence)
-Both reviewers independently found these issues.
+7. **Follow template structure for output:**
+   - Metadata section (complete all fields)
+   - Executive summary (totals and breakdown)
+   - Common issues (VERY HIGH confidence)
+   - Exclusive issues (MODERATE confidence)
+   - Divergences (with verification analysis)
+   - Recommendations (categorized by action type)
+   - Overall assessment
 
-### [Severity Level]
-- **[Issue]** ([Location])
-  - Agent #1 finding: [description]
-  - Agent #2 finding: [description]
-  - Confidence: VERY HIGH
-
-## Exclusive Issues (Requires Judgment)
-Only one reviewer found these issues.
-
-### Found by Agent #1 Only
-- **[Issue]** ([Location])
-  - Finding: [description]
-  - Severity: [level]
-  - Confidence: MODERATE
-
-### Found by Agent #2 Only
-- **[Issue]** ([Location])
-  - Finding: [description]
-  - Severity: [level]
-  - Confidence: MODERATE
-
-## Divergences (Requires Investigation)
-Reviewers disagree or have contradictory findings.
-
-- **[Issue]** ([Location])
-  - Agent #1 says: [perspective]
-  - Agent #2 says: [different perspective]
-  - Confidence: INVESTIGATE
-
-## Summary
-- Total unique issues: X
-- Common (high confidence): X
-- Exclusive (judgment): X
-- Divergences (investigate): X
-
-## Recommendation
-[Overall assessment and suggested actions]
+**The template provides:**
+- Complete structure with all required sections
+- Examples of well-written collation reports
+- Guidance on confidence levels and categorization
+- Usage notes for proper assessment
 ```
 
 ### Phase 3: Present Findings to User
@@ -252,9 +228,9 @@ Make the pattern flexible by specifying:
 
 **Agent type:** Which specialized agent to use
 - technical-writer (documentation)
-- plan-reviewer (plans)
-- code-reviewer (code)
-- rust-engineer (Rust-specific)
+- plan-review-agent (plans)
+- code-review-agent (code)
+- rust-agent (Rust-specific)
 - ultrathink-debugger (complex issues)
 
 **Granularity:** How to break down review
@@ -289,7 +265,7 @@ User: Review this implementation plan before execution
 You: I'm using the dual-verification-review skill for comprehensive review.
 
 Phase 1: Dual Independent Review
-  → Dispatch 2 plan-reviewer agents in parallel
+  → Dispatch 2 plan-review-agent agents in parallel
   → Each applies 35 quality criteria independently
   → Agent #1 finds: 3 BLOCKING issues, 7 NON-BLOCKING
   → Agent #2 finds: 4 BLOCKING issues, 5 NON-BLOCKING
@@ -356,8 +332,8 @@ Phase 3: Present to User
 - Quality assurance for critical content
 
 **Other review skills:**
-- conducting-plan-review: Single plan-reviewer (faster, less thorough)
-- conducting-code-review: Single code-reviewer (regular reviews)
+- conducting-plan-review: Single plan-review-agent (faster, less thorough)
+- conducting-code-review: Single code-review-agent (regular reviews)
 - maintaining-docs-after-changes: Single technical-writer (incremental updates)
 
 **Use dual-verification-review when stakes are high, use single-agent skills for regular work.**
