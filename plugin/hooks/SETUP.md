@@ -10,7 +10,7 @@ The hooks search for `gates.json` in this order:
 
 1. **`.claude/gates.json`** - Project-specific configuration (recommended)
 2. **`gates.json`** - Project root configuration
-3. **`${CLAUDE_PLUGIN_ROOT}/hooks/gates.json`** - Plugin default (fallback)
+3. **`${CLAUDE_PLUGIN_ROOT}hooks/gates.json`** - Plugin default (fallback)
 
 ## Quick Setup
 
@@ -21,7 +21,7 @@ The hooks search for `gates.json` in this order:
 mkdir -p .claude
 
 # Copy example configuration
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/strict.json .claude/gates.json
 
 # Customize for your project
 vim .claude/gates.json
@@ -31,7 +31,7 @@ vim .claude/gates.json
 
 ```bash
 # Copy example configuration
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/strict.json gates.json
 
 # Customize for your project
 vim gates.json
@@ -133,21 +133,21 @@ The plugin provides three example configurations:
 
 ### Strict Mode (Block on Failures)
 ```bash
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/strict.json .claude/gates.json
 ```
 
 Best for: Production code, established projects
 
 ### Permissive Mode (Warn Only)
 ```bash
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/permissive.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/permissive.json .claude/gates.json
 ```
 
 Best for: Prototyping, learning, experimental work
 
 ### Pipeline Mode (Chained Gates)
 ```bash
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/pipeline.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/pipeline.json .claude/gates.json
 ```
 
 Best for: Complex workflows, auto-formatting before checks
@@ -200,7 +200,7 @@ Remove from enabled lists:
 
 ```bash
 # Test gate execution manually
-source ${CLAUDE_PLUGIN_ROOT}/hooks/shared-functions.sh
+source ${CLAUDE_PLUGIN_ROOT}hooks/shared-functions.sh
 run_gate "check" ".claude/gates.json"
 
 # Verify JSON is valid
@@ -208,7 +208,7 @@ jq . .claude/gates.json
 
 # Test with mock hook input
 export CLAUDE_PLUGIN_ROOT=/path/to/plugin
-echo '{"tool_name": "Edit", "cwd": "'$(pwd)'"}' | ${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.sh
+echo '{"tool_name": "Edit", "cwd": "'$(pwd)'"}' | ${CLAUDE_PLUGIN_ROOT}hooks/post-tool-use.sh
 ```
 
 ## Version Control
@@ -292,7 +292,7 @@ If you were using the plugin's default `gates.json`, migrate to project-level:
 
 ```bash
 # Copy current config
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/gates.json .claude/gates.json
 
 # Customize for this project
 vim .claude/gates.json

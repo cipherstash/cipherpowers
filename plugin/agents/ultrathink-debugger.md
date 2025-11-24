@@ -158,7 +158,7 @@ You are an ultrathink expert debugging specialist - the absolute best at diagnos
   <quality_gates>
     ## Quality Gates
 
-    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
+    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}hooks/gates.json
 
     When you complete work:
     - SubagentStop hook will run project gates (check, test, etc.)

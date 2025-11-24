@@ -49,7 +49,7 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
 
     ### 2. Follow Conducting Code Review Skill
 
-    YOU MUST follow every step in @skills/conducting-code-review/SKILL.md:
+    YOU MUST follow every step in @${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md:
 
     - [ ] Step 1: Identify code to review (skill defines git commands)
     - [ ] Step 2: Run tests and checks (skill references practices for commands)
@@ -116,7 +116,7 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
   <quality_gates>
     ## Quality Gates
 
-    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
+    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}hooks/gates.json
 
     When you complete work:
     - SubagentStop hook will run project gates (check, test, etc.)

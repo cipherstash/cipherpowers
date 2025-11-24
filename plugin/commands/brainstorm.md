@@ -8,7 +8,7 @@ Interactive design refinement using Socratic method to transform ideas into deta
 1. ** Use and follow the brainstorming skill exactly as written **
 
 2. **The brainstorming skill provides the methodology:**
-   - Read: `@${CLAUDE_PLUGIN_ROOT}plugin/skills/brainstorming/SKILL.md`
+   - Read: `@${CLAUDE_PLUGIN_ROOT}skills/brainstorming/SKILL.md`
    - When to use: Before implementing any feature or project idea
    - Process: Guided questions to clarify requirements, constraints, and design decisions
 

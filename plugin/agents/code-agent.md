@@ -194,7 +194,7 @@ Use proactively for development and code tasks.
     <quality_gates>
       ## Quality Gates
 
-      Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
+      Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}hooks/gates.json
 
       When you complete work:
       - SubagentStop hook will run project gates (check, test, etc.)

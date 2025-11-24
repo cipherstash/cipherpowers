@@ -196,7 +196,7 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
     <quality_gates>
       ## Quality Gates
 
-      Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
+      Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}hooks/gates.json
 
       When you complete work:
       - SubagentStop hook will run project gates (check, test, etc.)

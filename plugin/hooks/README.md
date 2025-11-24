@@ -9,10 +9,7 @@ Automated quality enforcement via Claude Code's hook system. Runs project test a
 ```bash
 # Recommended: .claude/gates.json
 mkdir -p .claude
-cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
-
-# Customize commands for your project
-vim .claude/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}hooks/examples/strict.json .claude/gates.json
 ```
 
 **2. Update commands to match your tooling:**
@@ -198,15 +195,15 @@ Registers hook scripts with Claude Code. All hooks use the universal dispatcher:
   "hooks": {
     "PostToolUse": [{
       "matcher": ".*",
-      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}hooks/dispatcher.sh"}]
     }],
     "SubagentStop": [{
       "matcher": ".*",
-      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}hooks/dispatcher.sh"}]
     }],
     "UserPromptSubmit": [{
       "matcher": ".*",
-      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher.sh"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}hooks/dispatcher.sh"}]
     }]
   }
 }
@@ -220,7 +217,7 @@ The dispatcher routes hook events to configured gates based on `gates.json`.
 
 1. `.claude/gates.json` (recommended - project-specific)
 2. `gates.json` (project root)
-3. `${CLAUDE_PLUGIN_ROOT}/hooks/gates.json` (plugin default fallback)
+3. `${CLAUDE_PLUGIN_ROOT}hooks/gates.json` (plugin default fallback)
 
 **Context file discovery** - hooks search for context files in this order:
 
@@ -319,7 +316,7 @@ jq -n --arg content "$result" '{
   "gates": {
     "my-custom-gate": {
       "description": "My custom gate",
-      "command": "${CLAUDE_PLUGIN_ROOT}/hooks/gates/my-custom-gate.sh",
+      "command": "${CLAUDE_PLUGIN_ROOT}hooks/gates/my-custom-gate.sh",
       "on_pass": "CONTINUE",
       "on_fail": "CONTINUE"
     }

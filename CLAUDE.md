@@ -92,10 +92,10 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - **Social Proof Principle**: Failure modes and rationalization defenses
 
 **Templates:**
-- `plugin/templates/agent-template.md` - Agent structure with persuasion principles
-- `plugin/templates/practice-template.md` - Practice structure with standards + config pattern
-- `plugin/templates/skill-template.md` - Practice structure with standards + config pattern
-- `plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
+- `./plugin/templates/agent-template.md` - Agent structure with persuasion principles
+- `./plugin/templates/practice-template.md` - Practice structure with standards + config pattern
+- `./plugin/templates/skill-template.md` - Practice structure with standards + config pattern
+- `./plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
 
 ### 3. Documentation Layer (`plugin/standards/`, `plugin/examples/`)
 
@@ -160,7 +160,7 @@ All components work together without duplication:
 
 Skills enable discovery:
 - Claude Code's native Skill tool discovers all skills automatically
-- Agents reference skills directly: `${CLAUDE_PLUGIN_ROOT}/skills/commit-workflow/SKILL.md`
+- Agents reference skills directly: `@${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md`
 - No need to hardcode commit knowledge into every agent
 - Update workflow in skill → all agents benefit
 
@@ -178,14 +178,27 @@ All five components work together without duplication. Change documentation stan
 - `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
-- Specialized agents (code-committer, coder, gatekeeper, plan-reviewer, rust-engineer, ultrathink-debugger, code-reviewer, technical-writer, retrospective-writer)
+- Specialized agents (commit-agent, code-agent, gatekeeper, plan-review-agent, rust-agent, ultrathink-debugger, code-review-agent, technical-writer, retrospective-writer)
 
 The /execute command demonstrates:
 - Algorithmic format for workflow enforcement (100% compliance vs 0-33% imperative)
 - Hybrid agent selection (keyword matching + LLM analysis + user confirmation)
 - Integration of multiple agents in coordinated workflow
 - Automatic code review checkpoints after each batch
+- Optional execute completion review via `/review execute-completion` (on-demand, not automatic)
 - Retrospective prompting when work completes
+
+**Example: Review Architecture with Shared Collation**
+- `plugin/commands/review.md` = Generic dual-verification review dispatcher (works for all review types)
+- `plugin/skills/dual-verification-review/SKILL.md` = Core dual-verification pattern (Phase 1: dispatch 2 agents, Phase 2: collate, Phase 3: present)
+- `plugin/agents/review-collation-agent.md` = Generic collation agent (compares findings from any review type)
+- Specialized review agents: `execute-review-agent` (plan adherence), `plan-review-agent` (plan quality), `code-review-agent` (code quality)
+
+The review architecture demonstrates:
+- DRY principle: One collation agent serves all review types (plan, code, execute)
+- Confidence levels: Common issues (VERY HIGH), Exclusive issues (MODERATE), Divergences (INVESTIGATE)
+- Clear separation: Execute review checks plan adherence, code review checks quality/standards
+- On-demand verification: Execute completion review is optional (user-requested, not automatic)
 
 ## Environment Variables
 
@@ -225,16 +238,35 @@ CipherPowers uses a clear separation between project documentation and plugin co
 - `./docs/` = Documentation about building cipherpowers itself (not shipped with plugin)
 - `./plugin/standards/` = Standards for users of cipherpowers (shipped with plugin)
 
-**Referencing paths**
-In Claude Code, the ${CLAUDE_PLUGIN_ROOT} environment variable is crucial for referencing paths in plugin commands. Due to marketplace.json configuration (`"source": "./plugin/"`), this variable points directly to the plugin/ directory, so paths should NOT include the /plugin/ prefix.
+**Referencing paths in agent markdown files**
 
-You MUST ALWAYS use the following structure to reference paths:
+**Convention for agent files:**
 
-    ${CLAUDE_PLUGIN_ROOT}/path/to/file
+Use `${CLAUDE_PLUGIN_ROOT}` with the @ syntax for file references:
 
-Example:
+```markdown
+@${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md
+@${CLAUDE_PLUGIN_ROOT}standards/code-review.md
+@${CLAUDE_PLUGIN_ROOT}principles/development.md
+```
 
-    ${CLAUDE_PLUGIN_ROOT}/standards/code-review.md
+**DO NOT use relative paths without the variable:**
+```markdown
+@skills/...  ❌ Does not work in subagent contexts (confirmed via testing)
+```
+
+**For JSON configurations (hooks, etc.):**
+
+Use the full variable syntax:
+```json
+"${CLAUDE_PLUGIN_ROOT}/hooks/gates.json"
+```
+
+**Rationale:**
+- `${CLAUDE_PLUGIN_ROOT}` expands correctly when agents are invoked
+- marketplace.json `"source": "./plugin/"` means the variable points to plugin root
+- Testing confirmed @ syntax without variable does NOT work in subagents
+- Consistent with existing working agents
 
 
 ## Skills and Practices Discovery
@@ -269,7 +301,7 @@ CipherPowers provides automated quality enforcement through Claude Code's hook s
 Quality hooks use project-level `gates.json` configuration files with priority:
 1. `.claude/gates.json` (recommended - project-specific)
 2. `gates.json` (project root)
-3. `${CLAUDE_PLUGIN_ROOT}/hooks/gates.json` (plugin default fallback)
+3. `${CLAUDE_PLUGIN_ROOT}hooks/gates.json` (plugin default fallback)
 
 **Gate Actions:**
 - **CONTINUE**: Proceed (default on pass)
@@ -325,14 +357,14 @@ When creating or editing skills in `plugin/skills/`:
 ## Creating Agents and Practices
 
 **When creating agents:**
-1. Use `${CLAUDE_PLUGIN_ROOT}templates/agent-template.md` as starting point
+1. Use `@${CLAUDE_PLUGIN_ROOT}templates/agent-template.md` as starting point
 2. Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
-3. Reference practices for project-specific configuration (don't hardcode commands)
-4. Reference skills for methodology
+3. Reference practices using `@${CLAUDE_PLUGIN_ROOT}standards/...` or `@${CLAUDE_PLUGIN_ROOT}principles/...` syntax
+4. Reference skills using `@${CLAUDE_PLUGIN_ROOT}skills/...` syntax
 5. Make workflows non-negotiable with explicit rationalization defenses
 
 **When creating practices:**
-1. Use `${CLAUDE_PLUGIN_ROOT}templates/practice-template.md` as starting point
+1. Use `@${CLAUDE_PLUGIN_ROOT}templates/practice-template.md` as starting point
 2. Separate universal standards from project-specific configuration
 3. Standards section: What quality looks like (universal principles)
 4. Project Configuration section: Commands, file conventions, tool settings
@@ -343,24 +375,24 @@ When creating or editing skills in `plugin/skills/`:
 When developing CipherPowers plugin components:
 
 **Directory Structure:**
-- `plugin/commands/` - Slash commands (thin dispatchers)
-- `plugin/agents/` - Specialized subagent prompts with enforced workflows
-- `plugin/principles/`, `plugin/standards/` - Standards and project configuration
-- `plugin/skills/` - Organization-specific skills
-- `plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
-- `plugin/hooks/examples/` - Example hook configurations (gate configs, context files)
-- `plugin/templates/` - Templates for agents, practices, and skills
-- `plugin/examples/` - Example documentation
+- `./plugin/commands/` - Slash commands (thin dispatchers)
+- `./plugin/agents/` - Specialized subagent prompts with enforced workflows
+- `./plugin/principles/`, `plugin/standards/` - Standards and project configuration
+- `./plugin/skills/` - Organization-specific skills
+- `./plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
+- `./plugin/hooks/examples/` - Example hook configurations (gate configs, context files)
+- `./plugin/templates/` - Templates for agents, practices, and skills
+- `./plugin/examples/` - Example documentation
 
 **Key Principles:**
 - Commands are thin dispatchers that reference agents or skills
 - Agents enforce workflows using persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 - Practices separate universal standards from project-specific configuration
 - Skills follow TDD approach with test scenarios
-- Use templates (`${CLAUDE_PLUGIN_ROOT}templates/`) as starting points
+- Use templates (`@${CLAUDE_PLUGIN_ROOT}templates/`) as starting points
 
 **Development Workflow:**
-1. Start with templates from `${CLAUDE_PLUGIN_ROOT}templates/`
+1. Start with templates from `@${CLAUDE_PLUGIN_ROOT}templates/` directory
 2. For skills: Follow TDD approach with test scenarios before implementation
 3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 4. For practices: Separate universal standards from project-specific configuration

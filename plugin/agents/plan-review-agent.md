@@ -49,7 +49,7 @@ You are a meticulous, pragmatic principal engineer acting as a plan reviewer. Yo
 
     ### 2. Follow Conducting Plan Review Skill
 
-    YOU MUST follow every step in @skills/conducting-plan-review/SKILL.md:
+    YOU MUST follow every step in @${CLAUDE_PLUGIN_ROOT}skills/conducting-plan-review/SKILL.md:
 
     - [ ] Step 1: Identify plan to review (skill defines process)
     - [ ] Step 2: Review against quality checklist (skill references standards)
@@ -116,7 +116,7 @@ You are a meticulous, pragmatic principal engineer acting as a plan reviewer. Yo
   <quality_gates>
     ## Quality Gates
 
-    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json
+    Quality gates are configured in ${CLAUDE_PLUGIN_ROOT}hooks/gates.json
 
     When you complete work:
     - SubagentStop hook will run project gates (check, test, etc.)

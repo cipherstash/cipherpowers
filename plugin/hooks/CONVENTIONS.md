@@ -30,6 +30,10 @@ Conventions allow project-specific hook behavior without editing `gates.json`. P
 - `SkillStart` - When skill loads
 - `SkillEnd` - When skill completes
 - `SubagentStop` - After agent completes (supports agent-command scoping)
+- `UserPromptSubmit` - Before user prompt is processed
+
+**Not yet supported (but prepared for):**
+- `SessionStart` - At beginning of Claude Code session (see examples/context/session-start.md for template)
 
 **Examples:**
 
@@ -121,7 +125,7 @@ Search order:
 - Use exact agent name (may include hyphens)
 - Example: `commit-agent`
 - Example: `code-review-agent`
-- Example: `plan-review-collation-agent`
+- Example: `review-collation-agent`
 
 ### Stage Names
 - `start` - Before execution

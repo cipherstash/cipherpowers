@@ -102,7 +102,7 @@ The hook makes this seamless - commands are available when needed without agents
 ### 1. Copy the Template
 
 ```bash
-cp ${CLAUDE_PLUGIN_ROOT}plugin/templates/CLAUDE.md ./CLAUDE.md
+cp ${CLAUDE_PLUGIN_ROOT}templates/CLAUDE.md ./CLAUDE.md
 ```
 
 ### 2. Define Commands in Frontmatter

@@ -13,7 +13,7 @@ Create a comprehensive retrospective summary of completed work, capturing decisi
      - Step 3: Save and link (to work directory or CLAUDE.md)
 
 2. **The agent references project documentation standards:**
-   - `@plugin/standards/documentation.md` - Summary format and standards
+   - `@${CLAUDE_PLUGIN_ROOT}standards/documentation.md` - Summary format and standards
 
 **Key Principle:**
 Exhaustion after completion is when capture matters most. The harder the work, the more valuable the lessons.
