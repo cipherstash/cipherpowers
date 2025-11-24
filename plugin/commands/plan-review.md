@@ -52,7 +52,7 @@ Both agents receive identical prompt:
 
 ```
 Use Task tool with:
-  subagent_type: "cipherpowers:plan-review-collation-agent"
+  subagent_type: "cipherpowers:review-collation-agent"
   description: "Collate plan review findings"
   prompt: "Collate two independent plan reviews that were just completed.
 
@@ -64,7 +64,7 @@ Use Task tool with:
   - Exclusive issues (requires judgment - one found)
   - Divergences (requires investigation - agents disagree)
 
-  Follow plan-review-collation-agent agent workflow to produce structured collated report.
+  Follow review-collation-agent agent workflow to produce structured collated report.
 
   **Save collated report with timestamp:** `.work/{YYYY-MM-DD}-collated-plan-review-{HHmmss}.md`"
 ```
@@ -136,6 +136,6 @@ Use Task tool with:
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md`
 - Plan Review Skill: `${CLAUDE_PLUGIN_ROOT}skills/conducting-plan-review/SKILL.md`
 - Plan Reviewer Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-review-agent.md`
-- Review Collator Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-review-collation-agent.md`
+- Review Collator Agent: `${CLAUDE_PLUGIN_ROOT}agents/review-collation-agent.md` (generic collation for all review types)
 - Template: `${CLAUDE_PLUGIN_ROOT}templates/plan-evaluation-template.md`
 - Integration: Use before `/execute` to validate plans

@@ -133,9 +133,12 @@ You are [agent type] conducting an independent verification review.
 
 **Dispatch collation agent to compare the two reviews.**
 
-**Collation agent prompt template:**
+**Dispatch collation agent:**
 ```
-You are collating two independent [review type] reviews.
+Use Task tool with:
+  subagent_type: "cipherpowers:review-collation-agent"
+  description: "Collate dual [review type] reviews"
+  prompt: "You are collating two independent [review type] reviews.
 
 **Critical instructions:**
 - You MUST follow the collation report template structure
@@ -271,7 +274,7 @@ Phase 1: Dual Independent Review
   → Agent #2 finds: 4 BLOCKING issues, 5 NON-BLOCKING
 
 Phase 2: Collate Findings
-  → Dispatch general-purpose agent as collator
+  → Dispatch review-collation-agent
   → Collator compares both reviews
   → Produces collated report
 
@@ -306,7 +309,7 @@ Phase 1: Dual Independent Review
   → Agent #2 finds: 13 issues (4 critical, 1 high, 4 medium, 4 low)
 
 Phase 2: Collate Findings
-  → Dispatch general-purpose agent as collator
+  → Dispatch review-collation-agent
   → Identifies: 7 common, 6 exclusive, 0 divergences
 
 Collated Report:
