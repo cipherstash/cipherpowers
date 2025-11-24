@@ -39,6 +39,7 @@ exports.injectContext = injectContext;
 const fs = __importStar(require("fs/promises"));
 const path = __importStar(require("path"));
 const utils_1 = require("./utils");
+const session_1 = require("./session");
 /**
  * Discover context file following priority order.
  * Priority: flat > slash-command subdir > slash-command nested > skill subdir > skill nested
@@ -58,15 +59,67 @@ async function discoverContextFile(cwd, name, stage) {
     }
     return null;
 }
+/**
+ * Discover agent-command scoped context file.
+ * Pattern: {agent}-{command}-{stage}.md
+ *
+ * Priority:
+ * 1. {agent}-{command}-{stage}.md (most specific)
+ * 2. {agent}-{stage}.md (agent-specific)
+ * 3. Standard discovery (backward compat)
+ */
+async function discoverAgentCommandContext(cwd, agent, commandOrSkill, stage) {
+    // Strip namespace prefix from agent name (cipherpowers:rust-agent → rust-agent)
+    const agentName = agent.replace(/^[^:]+:/, '');
+    const paths = [];
+    // Most specific: {agent}-{command}-{stage}.md
+    if (commandOrSkill) {
+        const contextName = commandOrSkill.replace(/^\//, '').replace(/^[^:]+:/, '');
+        paths.push(path.join(cwd, '.claude', 'context', `${agentName}-${contextName}-${stage}.md`));
+    }
+    // Agent-specific: {agent}-{stage}.md
+    paths.push(path.join(cwd, '.claude', 'context', `${agentName}-${stage}.md`));
+    // Backward compat: try standard discovery with command/skill name
+    if (commandOrSkill) {
+        const contextName = commandOrSkill.replace(/^\//, '').replace(/^[^:]+:/, '');
+        const standardPath = await discoverContextFile(cwd, contextName, stage);
+        if (standardPath) {
+            paths.push(standardPath);
+        }
+    }
+    for (const filePath of paths) {
+        if (await (0, utils_1.fileExists)(filePath)) {
+            return filePath;
+        }
+    }
+    return null;
+}
 async function injectContext(hookEvent, input) {
     let name;
     let stage;
+    // Handle SubagentStop with agent-command scoping
+    if (hookEvent === 'SubagentStop' && input.agent_name) {
+        stage = 'end';
+        // Get active command/skill from session state
+        const session = new session_1.Session(input.cwd);
+        const activeCommand = await session.get('active_command');
+        const activeSkill = await session.get('active_skill');
+        const commandOrSkill = activeCommand || activeSkill;
+        const contextFile = await discoverAgentCommandContext(input.cwd, input.agent_name, commandOrSkill, stage);
+        if (contextFile) {
+            const content = await fs.readFile(contextFile, 'utf-8');
+            return content;
+        }
+        return null;
+    }
+    // Handle SlashCommand events
     if (hookEvent === 'SlashCommandStart' || hookEvent === 'SlashCommandEnd') {
-        name = input.command?.replace(/^\//, '');
+        name = input.command?.replace(/^\//, '').replace(/^[^:]+:/, '');
         stage = hookEvent === 'SlashCommandStart' ? 'start' : 'end';
     }
+    // Handle Skill events
     else if (hookEvent === 'SkillStart' || hookEvent === 'SkillEnd') {
-        name = input.skill;
+        name = input.skill?.replace(/^[^:]+:/, '');
         stage = hookEvent === 'SkillStart' ? 'start' : 'end';
     }
     if (!name || !stage)

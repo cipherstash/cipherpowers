@@ -63,7 +63,7 @@ Edit your project's `gates.json` to match your build tooling:
       "gates": ["check"]
     },
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer"],
+      "enabled_agents": ["rust-agent"],
       "gates": ["check", "test"]
     }
   }
@@ -174,7 +174,7 @@ Edit `gates.json` to remove hooks:
       "gates": []
     },
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer"],  // ← Keep enabled
+      "enabled_agents": ["rust-agent"],  // ← Keep enabled
       "gates": ["check", "test"]
     }
   }

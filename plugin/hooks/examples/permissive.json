@@ -22,7 +22,7 @@
       "gates": ["check"]
     },
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer"],
+      "enabled_agents": ["rust-agent"],
       "gates": ["check", "test"]
     }
   }

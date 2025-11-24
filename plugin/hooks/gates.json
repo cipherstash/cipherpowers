@@ -25,7 +25,7 @@
       "gates": ["check"]
     },
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer", "code-reviewer", "ultrathink-debugger"],
+      "enabled_agents": ["rust-agent", "code-review-agent", "ultrathink-debugger"],
       "gates": ["check", "test"]
     }
   }

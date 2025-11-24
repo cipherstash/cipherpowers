@@ -32,13 +32,13 @@ jq '.hooks.PostToolUse.enabled_tools' plugin/hooks/gates.json
 
 **Setup:**
 ```bash
-# Ensure gates.json has rust-engineer enabled
+# Ensure gates.json has rust-agent enabled
 jq '.hooks.SubagentStop.enabled_agents' plugin/hooks/gates.json
-# Should include "rust-engineer"
+# Should include "rust-agent"
 ```
 
 **Test:**
-1. Dispatch rust-engineer agent with simple task
+1. Dispatch rust-agent with simple task
 2. Agent completes work
 3. Observe SubagentStop hook execution
 
@@ -198,18 +198,18 @@ mv /tmp/gates.json plugin/hooks/gates.json
 
 **Setup:**
 ```bash
-# Configure SubagentStop for rust-engineer only
-jq '.hooks.SubagentStop.enabled_agents = ["rust-engineer"]' plugin/hooks/gates.json > /tmp/gates.json
+# Configure SubagentStop for rust-agent only
+jq '.hooks.SubagentStop.enabled_agents = ["rust-agent"]' plugin/hooks/gates.json > /tmp/gates.json
 mv /tmp/gates.json plugin/hooks/gates.json
 ```
 
 **Test:**
-1. Dispatch rust-engineer agent
-2. Dispatch code-reviewer agent
+1. Dispatch rust-agent
+2. Dispatch code-review-agent
 
 **Expected:**
-- rust-engineer: Hook executes when agent completes
-- code-reviewer: No hook execution (not in enabled_agents)
+- rust-agent: Hook executes when agent completes
+- code-review-agent: No hook execution (not in enabled_agents)
 
 ## Verification Checklist
 

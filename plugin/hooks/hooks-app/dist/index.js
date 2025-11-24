@@ -1,23 +1,18 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 // plugin/hooks/hooks-app/src/index.ts
-__exportStar(require("./types"), exports);
-__exportStar(require("./config"), exports);
-__exportStar(require("./context"), exports);
-__exportStar(require("./gate-loader"), exports);
-__exportStar(require("./action-handler"), exports);
-__exportStar(require("./dispatcher"), exports);
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Session = exports.injectContext = exports.loadConfig = exports.handleAction = exports.executeGate = exports.dispatch = void 0;
+// Existing exports
+var dispatcher_1 = require("./dispatcher");
+Object.defineProperty(exports, "dispatch", { enumerable: true, get: function () { return dispatcher_1.dispatch; } });
+var gate_loader_1 = require("./gate-loader");
+Object.defineProperty(exports, "executeGate", { enumerable: true, get: function () { return gate_loader_1.executeGate; } });
+var action_handler_1 = require("./action-handler");
+Object.defineProperty(exports, "handleAction", { enumerable: true, get: function () { return action_handler_1.handleAction; } });
+var config_1 = require("./config");
+Object.defineProperty(exports, "loadConfig", { enumerable: true, get: function () { return config_1.loadConfig; } });
+var context_1 = require("./context");
+Object.defineProperty(exports, "injectContext", { enumerable: true, get: function () { return context_1.injectContext; } });
+// New session exports
+var session_1 = require("./session");
+Object.defineProperty(exports, "Session", { enumerable: true, get: function () { return session_1.Session; } });

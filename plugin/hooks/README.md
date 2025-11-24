@@ -248,7 +248,7 @@ Self-contained configuration defining gates, commands, and actions:
       "gates": ["check"]
     },
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer"],
+      "enabled_agents": ["rust-agent"],
       "gates": ["check", "test"]
     }
   }
@@ -378,7 +378,7 @@ When format passes → calls check gate → if check passes → continues
 {
   "hooks": {
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer", "code-reviewer"],
+      "enabled_agents": ["rust-agent", "code-review-agent"],
       "gates": ["check", "test"]
     }
   }
@@ -472,7 +472,7 @@ Test hooks with mock input:
 echo '{"hook_event": "PostToolUse", "tool_name": "Edit", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
 
 # SubagentStop
-echo '{"hook_event": "SubagentStop", "agent_name": "rust-engineer", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
+echo '{"hook_event": "SubagentStop", "agent_name": "rust-agent", "cwd": "/test"}' | plugin/hooks/dispatcher.sh
 
 # UserPromptSubmit
 echo '{"hook_event": "UserPromptSubmit", "user_message": "run tests", "cwd": "/test"}' | plugin/hooks/dispatcher.sh

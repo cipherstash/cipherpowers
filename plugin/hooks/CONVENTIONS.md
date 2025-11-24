@@ -12,28 +12,45 @@ Conventions allow project-specific hook behavior without editing `gates.json`. P
 
 **Purpose:** Auto-inject content into conversation at hook events.
 
-**Pattern:** `.claude/context/{name}-{stage}.md`
+**Patterns:**
+
+**Basic Pattern:** `.claude/context/{name}-{stage}.md`
+- Commands: `.claude/context/commit-start.md`
+- Skills: `.claude/context/test-driven-development-start.md`
+- Agents: `.claude/context/commit-agent-end.md`
+
+**Agent-Command Scoping:** `.claude/context/{agent}-{command}-{stage}.md`
+- Specific agent + command: `.claude/context/commit-agent-commit-start.md`
+- Agent with different command: `.claude/context/rust-agent-execute-end.md`
+- Plan review agent: `.claude/context/plan-review-agent-plan-review-start.md`
 
 **Supported hooks:**
 - `SlashCommandStart` - Before command executes
 - `SlashCommandEnd` - After command completes
 - `SkillStart` - When skill loads
 - `SkillEnd` - When skill completes
+- `SubagentStop` - After agent completes (supports agent-command scoping)
 
 **Examples:**
 
 ```bash
-# Inject security checklist when code review starts
-.claude/context/code-review-start.md
+# Generic command context - any invocation
+.claude/context/commit-start.md
 
-# Inject planning template when /plan runs
+# Generic agent context - any command using this agent
+.claude/context/commit-agent-end.md
+
+# Agent-command specific - commit-agent invoked by /commit
+.claude/context/commit-agent-commit-start.md
+
+# Agent-command specific - rust-agent invoked by /execute
+.claude/context/rust-agent-execute-end.md
+
+# Planning template for /plan command
 .claude/context/plan-start.md
 
-# Inject TDD standards when TDD skill loads
+# TDD standards when skill loads
 .claude/context/test-driven-development-start.md
-
-# Verify review complete when code review ends
-.claude/context/code-review-end.md
 ```
 
 ### 2. Directory Organization
@@ -61,6 +78,12 @@ All structures supported - use what fits your project size.
 
 Dispatcher searches paths in priority order:
 
+**For SubagentStop (agent completion):**
+1. `.claude/context/{agent}-{command}-end.md` (agent + command/skill)
+2. `.claude/context/{agent}-end.md` (agent only)
+3. Standard discovery paths (backward compat)
+
+**For Commands and Skills:**
 1. `.claude/context/{name}-{stage}.md`
 2. `.claude/context/slash-command/{name}-{stage}.md`
 3. `.claude/context/slash-command/{name}/{stage}.md`
@@ -69,17 +92,36 @@ Dispatcher searches paths in priority order:
 
 First match wins.
 
+**Priority Example (SubagentStop):**
+```
+Agent: rust-agent
+Active command: /execute
+
+Search order:
+1. rust-agent-execute-end.md (most specific)
+2. rust-agent-end.md (agent-specific)
+3. execute-end.md (command-specific, backward compat)
+```
+
 ## Naming Rules
 
 ### Command Names
-- Remove leading slash: `/code-review` → `code-review`
+- Remove leading slash and namespace: `/cipherpowers:code-review` → `code-review`
 - Use exact command name: `/plan` → `plan`
-- Lowercase only
+- Lowercase with hyphens
 
 ### Skill Names
+- Remove namespace prefix: `cipherpowers:executing-plans` → `executing-plans`
 - Use exact skill name (may include hyphens)
 - Example: `test-driven-development`
 - Example: `conducting-code-review`
+
+### Agent Names
+- Remove namespace prefix: `cipherpowers:rust-agent` → `rust-agent`
+- Use exact agent name (may include hyphens)
+- Example: `commit-agent`
+- Example: `code-review-agent`
+- Example: `plan-review-collation-agent`
 
 ### Stage Names
 - `start` - Before execution

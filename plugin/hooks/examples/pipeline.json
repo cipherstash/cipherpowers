@@ -27,7 +27,7 @@
   },
   "hooks": {
     "SubagentStop": {
-      "enabled_agents": ["rust-engineer", "code-reviewer"],
+      "enabled_agents": ["rust-agent", "code-review-agent"],
       "gates": ["format"]
     }
   }

@@ -4,6 +4,7 @@ import { loadConfig } from './config';
 import { injectContext } from './context';
 import { executeGate } from './gate-loader';
 import { handleAction } from './action-handler';
+import { Session } from './session';
 
 export function shouldProcessHook(input: HookInput, hookConfig: HookConfig): boolean {
   const hookEvent = input.hook_event_name;
@@ -39,9 +40,70 @@ export interface DispatchResult {
  */
 const MAX_GATES_PER_DISPATCH = 10;
 
+async function updateSessionState(input: HookInput): Promise<void> {
+  const session = new Session(input.cwd);
+  const event = input.hook_event_name;
+
+  try {
+    switch (event) {
+      case 'SlashCommandStart':
+        if (input.command) {
+          await session.set('active_command', input.command);
+        }
+        break;
+
+      case 'SlashCommandEnd':
+        await session.set('active_command', null);
+        break;
+
+      case 'SkillStart':
+        if (input.skill) {
+          await session.set('active_skill', input.skill);
+        }
+        break;
+
+      case 'SkillEnd':
+        await session.set('active_skill', null);
+        break;
+
+      // Note: SubagentStart/SubagentStop NOT tracked - Claude Code does not
+      // provide unique agent identifiers, making reliable agent tracking impossible
+      // when multiple agents of the same type run in parallel.
+
+      case 'PostToolUse':
+        if (input.file_path) {
+          await session.append('edited_files', input.file_path);
+
+          // Extract and track file extension
+          // Edge case: ext !== input.file_path prevents tracking entire filename
+          // as extension when file has no dot (e.g., "README")
+          const ext = input.file_path.split('.').pop();
+          if (ext && ext !== input.file_path) {
+            await session.append('file_extensions', ext);
+          }
+        }
+        break;
+    }
+  } catch (error) {
+    // Session state is best-effort, don't fail the hook if it errors
+    // Structured error logging for debugging
+    const errorData = {
+      error_type: error instanceof Error ? error.constructor.name : 'UnknownError',
+      error_message: error instanceof Error ? error.message : String(error),
+      hook_event: event,
+      cwd: input.cwd,
+      timestamp: new Date().toISOString()
+    };
+    console.error(`[Session Error] ${JSON.stringify(errorData)}`);
+  }
+}
+
 export async function dispatch(input: HookInput): Promise<DispatchResult> {
   const hookEvent = input.hook_event_name;
   const cwd = input.cwd;
+
+  // Update session state (best-effort)
+  await updateSessionState(input);
 
   // 1. Load config
   const config = await loadConfig(cwd);

@@ -6,9 +6,9 @@
     },
     "SubagentStop": {
       "enabled_agents": [
-        "cipherpowers:coder",
-        "cipherpowers:rust-engineer",
-        "cipherpowers:code-reviewer"
+        "cipherpowers:code-agent",
+        "cipherpowers:rust-agent",
+        "cipherpowers:code-review-agent"
       ],
       "gates": ["plan-compliance"]
     }
