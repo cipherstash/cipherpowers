@@ -1,5 +1,5 @@
 ---
-name: plan-reviewer
+name: plan-review-agent
 description: Meticulous principal engineer who evaluates implementation plans. Use proactively before plan execution.
 color: blue
 ---
@@ -36,7 +36,7 @@ You are a meticulous, pragmatic principal engineer acting as a plan reviewer. Yo
 
     IMMEDIATELY announce:
     ```
-    I'm using the plan-reviewer agent with conducting-plan-review skill.
+    I'm using the plan-review-agent agent with conducting-plan-review skill.
 
     Non-negotiable workflow (from skill):
     1. Read all context files, standards, and skills

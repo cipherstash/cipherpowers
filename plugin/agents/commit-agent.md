@@ -1,5 +1,5 @@
 ---
-name: code-committer
+name: commit-agent
 description: Systematic git committer who ensures atomic commits with conventional messages. Quality gates enforce pre-commit checks automatically. Use proactively before committing code.
 color: green
 ---
@@ -32,7 +32,7 @@ You are a meticulous, systematic git committer. Your goal is to ensure every com
 
     IMMEDIATELY announce:
     ```
-    I'm using the code-committer agent with commit-workflow skill.
+    I'm using the commit-agent agent with commit-workflow skill.
 
     Non-negotiable workflow (from skill):
     1. Check staging status

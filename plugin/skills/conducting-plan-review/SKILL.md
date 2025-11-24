@@ -33,12 +33,12 @@ Use conducting-plan-review when:
 ## Single vs Dual Verification
 
 **Single agent review** (this skill):
-- One plan-reviewer agent applies 35 quality criteria
+- One plan-review-agent agent applies 35 quality criteria
 - Faster, suitable for regular plan reviews
 - Use when: Incremental work, experienced author, lower stakes
 
 **Dual verification review** (comprehensive audit):
-- Two plan-reviewer agents independently apply criteria
+- Two plan-review-agent agents independently apply criteria
 - Collation agent identifies common issues, exclusive issues, divergences
 - Higher quality, better for high-stakes decisions
 - Use when: Complex plans, critical features, uncertain quality

@@ -64,52 +64,71 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 **Empty sections are GOOD if you actually checked.** Missing sections mean you didn't check.
 
-#### 4. Save structured review
+#### 4. Save structured review - ALGORITHMIC ENFORCEMENT
 
 **Template location:**
 `${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
-**YOU MUST use this exact structure:**
+**BEFORE writing review file, verify each required section using this algorithm:**
 
-```markdown
-# Code Review - {Date}
+##### Template Validation Algorithm
 
-## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]
+**1. Check Status section exists**
 
-## Test Results
-- Status: [PASS/FAIL]
-- Details: [test failures or "all passed"]
+Does your review have `## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]`?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
 
-## Check Results
-- Status: [PASS/FAIL]
-- Details: [warnings or "clean"]
+**2. Check Test Results section exists**
 
-## Next Steps
-[Actions required]
+Does your review have `## Test Results` with Status and Details?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
 
-## BLOCKING (Must Fix Before Merge)
-[Issues or "None"]
+**3. Check Check Results section exists**
 
-**[Issue title]:**
-- Description: [clear description]
-- Location: [file:line]
-- Action: [specific, actionable suggestion]
+Does your review have `## Check Results` with Status and Details?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
 
-## NON-BLOCKING (May Be Deferred)
-[Issues or "None"]
+**4. Check Next Steps section exists**
 
-**[Issue title]:**
-- Description: [clear description]
-- Location: [file:line]
-- Action: [specific & actionable suggestion]
+Does your review have `## Next Steps`?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
 
-## Checklist
-[Check all applicable items across 6 categories: Security & Correctness, Testing, Architecture, Error Handling, Code Quality, Process]
-```
+**5. Check BLOCKING section exists**
+
+Does your review have `## BLOCKING (Must Fix Before Merge)`?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
+
+**6. Check NON-BLOCKING section exists**
+
+Does your review have `## NON-BLOCKING (May Be Deferred)`?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
+
+**7. Check Checklist section exists**
+
+Does your review have `## Checklist` with all 6 categories?
+- NO → STOP. Delete draft. Start over with template.
+- YES → CONTINUE
+
+**8. Check for prohibited custom sections**
+
+Have you added ANY sections not listed above (examples of PROHIBITED sections: Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues with subsections)?
+- YES → STOP. Delete custom sections. Use template exactly.
+- NO → CONTINUE
+
+**9. Save review file**
+
+All required sections present, no custom sections → Save to work directory.
 
 **File naming:** See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for `.work` directory location and naming convention (`{YYYY-MM-DD}-review-{N}.md`).
 
-**Do NOT create custom section structures.** Use template exactly. Additional context (verification commands, files changed, commit history) may be added at the end, but core template sections are mandatory.
+**Additional context allowed:**
+You may add supplementary details AFTER the Checklist section (verification commands run, files changed, commit hashes). But the 7 required sections above are mandatory and must appear first in the exact order shown.
 
 
 ## What NOT to Skip
@@ -126,8 +145,11 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 - "Code looks clean" → Check all severity levels anyway
 - "Simple change" → Thorough review prevents production bugs
 - "Senior developer" → Review objectively regardless of author
-- "Template is too simple, adding sections" → Template structure is mandatory. No custom sections.
-- "My format is more thorough" → Thoroughness goes IN the template sections, not around them.
+- "Template is too simple, adding sections" → Step 4 algorithm checks for custom sections. STOP if they exist.
+- "My format is more thorough" → Thoroughness goes IN the template sections. Algorithm enforces exact structure.
+- "Adding Strengths section helps" → PROHIBITED. Algorithm Step 8 blocks this.
+- "Assessment section adds value" → PROHIBITED. Algorithm Step 8 blocks this.
+- "Requirements Verification is useful" → Put in NON-BLOCKING or Checklist. Not a separate section.
 
 ## Related Skills
 

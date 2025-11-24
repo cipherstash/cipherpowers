@@ -21,7 +21,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **DO NOT use naive keyword matching:**
 - ❌ Task contains "ultrathink" → select ultrathink-debugger
-- ❌ Task contains "rust" → select rust-engineer
+- ❌ Task contains "rust" → select rust-agent
 - ❌ Task mentions agent name → select that agent
 
 **DO use semantic understanding:**
@@ -32,13 +32,13 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **Examples of INCORRECT selection:**
 - Task: "Fix simple bug (don't use ultrathink-debugger, it's overkill)" → ❌ Selecting ultrathink-debugger because "ultrathink" appears
-- Task: "Implement feature X in Python (not Rust)" → ❌ Selecting rust-engineer because "rust" appears
-- Task: "Add tests like the code-reviewer suggested" → ❌ Selecting code-reviewer because it's mentioned
+- Task: "Implement feature X in Python (not Rust)" → ❌ Selecting rust-agent because "rust" appears
+- Task: "Add tests like the code-review-agent suggested" → ❌ Selecting code-review-agent because it's mentioned
 
 **Examples of CORRECT selection:**
 - Task: "Fix simple bug in auth.py" → ✅ general-purpose (simple bug, not complex)
 - Task: "Investigate random CI failures with timing issues" → ✅ ultrathink-debugger (complex, timing, environment-specific)
-- Task: "Add new endpoint to user service (Rust)" → ✅ rust-engineer (Rust implementation work)
+- Task: "Add new endpoint to user service (Rust)" → ✅ rust-agent (Rust implementation work)
 - Task: "Don't use ultrathink for this simple validation fix" → ✅ general-purpose (task explicitly says it's simple)
 
 **Selection criteria:**
@@ -106,7 +106,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 ## Development Agents
 
-### rust-engineer
+### rust-agent
 **When to use:** Rust development tasks requiring TDD and code review discipline
 
 **Scenarios:**
@@ -122,7 +122,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 ## Review Agents
 
-### code-reviewer
+### code-review-agent
 **When to use:** Reviewing code changes before merging
 
 **Scenarios:**
@@ -136,7 +136,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **Key characteristic:** Structured review process with severity levels (BLOCKING/NON-BLOCKING)
 
-### plan-reviewer
+### plan-review-agent
 **When to use:** Evaluating implementation plans before execution
 
 **Scenarios:**
@@ -177,13 +177,13 @@ When selecting agents (manually or automatically), you must analyze the **task r
 → **ultrathink-debugger** - Complex timing/environment issue needs deep investigation
 
 **Scenario 5: Simple bug fix in Rust**
-→ **rust-engineer** - Standard development workflow with TDD
+→ **rust-agent** - Standard development workflow with TDD
 
 **Scenario 6: Just finished writing implementation plan**
-→ **plan-reviewer** - Validate plan before execution
+→ **plan-review-agent** - Validate plan before execution
 
 **Scenario 7: About to execute plan, want quality check**
-→ **plan-reviewer** - Ensure plan is comprehensive and executable
+→ **plan-review-agent** - Ensure plan is comprehensive and executable
 
 ## Remember
 
@@ -191,6 +191,6 @@ When selecting agents (manually or automatically), you must analyze the **task r
 - Use **technical-writer** when code changes
 - Use **retrospective-writer** when work completes
 - Use **ultrathink-debugger** for complex debugging (not simple bugs)
-- Use **rust-engineer** for all Rust development
-- Use **code-reviewer** before merging code
-- Use **plan-reviewer** before executing plans
+- Use **rust-agent** for all Rust development
+- Use **code-review-agent** before merging code
+- Use **plan-review-agent** before executing plans

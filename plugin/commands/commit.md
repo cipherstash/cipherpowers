@@ -10,7 +10,7 @@ Systematic git commit with atomic commits and conventional messages.
    - YES → Continue to step 2
    - NO → This command was invoked incorrectly
 
-2. Have you already dispatched to code-committer agent?
+2. Have you already dispatched to commit-agent agent?
    - YES → Wait for agent to complete
    - NO → Continue to step 3
 
@@ -18,7 +18,7 @@ Systematic git commit with atomic commits and conventional messages.
 
 ```
 Use Task tool with:
-  subagent_type: "cipherpowers:code-committer"
+  subagent_type: "cipherpowers:commit-agent"
   description: "Commit workflow"
   prompt: """
   [User's original request or task context]
@@ -38,7 +38,7 @@ Use Task tool with:
 
 ## What the Agent Does
 
-The code-committer agent implements:
+The commit-agent agent implements:
 - Staging status check
 - Diff review and understanding
 - Atomic commit analysis
@@ -46,6 +46,6 @@ The code-committer agent implements:
 - Commit verification
 
 **References:**
-- Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-committer.md`
+- Agent: `${CLAUDE_PLUGIN_ROOT}agents/commit-agent.md`
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/commit-workflow/SKILL.md`
 - Standards: `${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md`

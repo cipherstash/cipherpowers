@@ -85,7 +85,7 @@ If you want to chain additional gates after plan-compliance (like check/test), e
   },
   "hooks": {
     "SubagentStop": {
-      "enabled_agents": ["general-purpose", "cipherpowers:rust-engineer", "cipherpowers:coder"],
+      "enabled_agents": ["general-purpose", "cipherpowers:rust-agent", "cipherpowers:code-agent"],
       "gates": ["check"]
     }
   }

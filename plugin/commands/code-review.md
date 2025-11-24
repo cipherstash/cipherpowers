@@ -10,7 +10,7 @@ Thorough code review with test verification and structured feedback.
    - YES → Continue to step 2
    - NO → This command was invoked incorrectly
 
-2. Have you already dispatched to code-reviewer agent?
+2. Have you already dispatched to code-review-agent agent?
    - YES → Wait for agent to complete
    - NO → Continue to step 3
 
@@ -18,7 +18,7 @@ Thorough code review with test verification and structured feedback.
 
 ```
 Use Task tool with:
-  subagent_type: "cipherpowers:code-reviewer"
+  subagent_type: "cipherpowers:code-review-agent"
   description: "Code review workflow"
   prompt: """
   [User's original request or task context]
@@ -40,7 +40,7 @@ Use Task tool with:
 
 ## What the Agent Does
 
-The code-reviewer agent implements:
+The code-review-agent agent implements:
 - Identify code to review (git commands)
 - Run all project tests and checks
 - Review against practice standards (ALL severity levels)
@@ -48,6 +48,6 @@ The code-reviewer agent implements:
 - No approval without thorough review
 
 **References:**
-- Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-reviewer.md`
+- Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-review-agent.md`
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md`
 - Standards: `${CLAUDE_PLUGIN_ROOT}standards/code-review.md`

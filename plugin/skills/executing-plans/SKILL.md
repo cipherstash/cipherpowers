@@ -34,7 +34,7 @@ For each task:
    - What technology? (Rust vs other languages)
 
    **Agent selection:**
-   - Rust implementation → `cipherpowers:rust-engineer`
+   - Rust implementation → `cipherpowers:rust-agent`
    - Complex, multi-layered debugging → `cipherpowers:ultrathink-debugger`
    - Documentation updates → `cipherpowers:technical-writer`
    - General implementation → `general-purpose`
@@ -75,7 +75,7 @@ For each task:
 **REQUIRED SUB-SKILL:** Use cipherpowers:requesting-code-review
 
 After batch complete:
-1. Follow requesting-code-review skill to dispatch code-reviewer agent
+1. Follow requesting-code-review skill to dispatch code-review-agent agent
 2. Fix BLOCKING issues before continuing to next batch
 3. Address NON-BLOCKING feedback or defer with justification
 

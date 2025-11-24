@@ -28,14 +28,14 @@ Use Skill tool with:
 
 4. **FOLLOW THE DUAL-VERIFICATION PATTERN:**
 
-**Phase 1: Dispatch 2 plan-reviewer agents (in parallel):**
+**Phase 1: Dispatch 2 plan-review-agent agents (in parallel):**
 
 ```
 Both agents receive identical prompt:
 
-  subagent_type: "cipherpowers:plan-reviewer"
+  subagent_type: "cipherpowers:plan-review-agent"
   description: "Independent plan review"
-  prompt: "You are a plan-reviewer conducting independent plan evaluation.
+  prompt: "You are a plan-review-agent conducting independent plan evaluation.
 
   **Context:** You are one of two agents performing parallel independent reviews. Another agent is reviewing the same plan independently. A collation agent will later compare both reviews.
 
@@ -52,7 +52,7 @@ Both agents receive identical prompt:
 
 ```
 Use Task tool with:
-  subagent_type: "cipherpowers:review-collator"
+  subagent_type: "cipherpowers:plan-review-collation-agent"
   description: "Collate plan review findings"
   prompt: "Collate two independent plan reviews that were just completed.
 
@@ -64,7 +64,7 @@ Use Task tool with:
   - Exclusive issues (requires judgment - one found)
   - Divergences (requires investigation - agents disagree)
 
-  Follow review-collator agent workflow to produce structured collated report.
+  Follow plan-review-collation-agent agent workflow to produce structured collated report.
 
   **Save collated report with timestamp:** `.work/{YYYY-MM-DD}-collated-plan-review-{HHmmss}.md`"
 ```
@@ -85,7 +85,7 @@ User can request `--single` mode:
 
 ```
 Use Task tool with:
-  subagent_type: "cipherpowers:plan-reviewer"
+  subagent_type: "cipherpowers:plan-review-agent"
   prompt: "Review the implementation plan at [path]. Follow the conducting-plan-review skill to evaluate against all quality criteria."
 ```
 
@@ -117,7 +117,7 @@ Use Task tool with:
 ## What the Dual Verification Does
 
 **Phase 1: Independent dual review**
-- 2 plan-reviewer agents apply 35 quality criteria independently
+- 2 plan-review-agent agents apply 35 quality criteria independently
 - Each evaluates: Security, Testing, Architecture, Error Handling, Code Quality, Process
 - Each assesses plan structure (granularity, completeness, TDD)
 
@@ -135,7 +135,7 @@ Use Task tool with:
 **References:**
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md`
 - Plan Review Skill: `${CLAUDE_PLUGIN_ROOT}skills/conducting-plan-review/SKILL.md`
-- Plan Reviewer Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-reviewer.md`
-- Review Collator Agent: `${CLAUDE_PLUGIN_ROOT}agents/review-collator.md`
+- Plan Reviewer Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-review-agent.md`
+- Review Collator Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-review-collation-agent.md`
 - Template: `${CLAUDE_PLUGIN_ROOT}templates/plan-evaluation-template.md`
 - Integration: Use before `/execute` to validate plans

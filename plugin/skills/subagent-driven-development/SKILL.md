@@ -60,10 +60,10 @@ Task tool (general-purpose):
 
 ### 3. Review Subagent's Work
 
-**Dispatch code-reviewer subagent:**
+**Dispatch code-review-agent subagent:**
 ```
-Task tool (cipherpowers:code-reviewer):
-  Use template at requesting-code-review/code-reviewer.md
+Task tool (cipherpowers:code-review-agent):
+  Use template at requesting-code-review/code-review-agent.md
 
   WHAT_WAS_IMPLEMENTED: [from subagent's report]
   PLAN_OR_REQUIREMENTS: Task N from [plan-file]
@@ -94,7 +94,7 @@ Task tool (cipherpowers:code-reviewer):
 
 ### 6. Final Review
 
-After all tasks complete, dispatch final code-reviewer:
+After all tasks complete, dispatch final code-review-agent:
 - Reviews entire implementation
 - Checks all plan requirements met
 - Validates overall architecture
@@ -118,7 +118,7 @@ Task 1: Hook installation script
 [Dispatch implementation subagent]
 Subagent: Implemented install-hook with tests, 5/5 passing
 
-[Get git SHAs, dispatch code-reviewer]
+[Get git SHAs, dispatch code-review-agent]
 Reviewer: Strengths: Good test coverage. Issues: None. Ready.
 
 [Mark Task 1 complete]
@@ -128,7 +128,7 @@ Task 2: Recovery modes
 [Dispatch implementation subagent]
 Subagent: Added verify/repair, 8/8 tests passing
 
-[Dispatch code-reviewer]
+[Dispatch code-review-agent]
 Reviewer: Strengths: Solid. Issues (Important): Missing progress reporting
 
 [Dispatch fix subagent]
@@ -139,7 +139,7 @@ Fix subagent: Added progress every 100 conversations
 ...
 
 [After all tasks]
-[Dispatch final code-reviewer]
+[Dispatch final code-review-agent]
 Final reviewer: All requirements met, ready to merge
 
 Done!
@@ -186,4 +186,4 @@ Done!
 **Alternative workflow:**
 - **executing-plans** - Use for parallel session instead of same-session execution
 
-See code-reviewer template: requesting-code-review/code-reviewer.md
+See code-review-agent template: requesting-code-review/code-review-agent.md

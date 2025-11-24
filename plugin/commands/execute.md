@@ -41,15 +41,15 @@ Use Skill tool with:
 
 The executing-plans skill provides:
 - Load and parse implementation plan
-- Automatic agent selection (rust-engineer, ultrathink-debugger, etc.)
+- Automatic agent selection (rust-agent, ultrathink-debugger, etc.)
 - Batch execution with review checkpoints
-- Code review after each batch (automatic dispatch to code-reviewer)
+- Code review after each batch (automatic dispatch to code-review-agent)
 - Retrospective capture when work completes
 - Integration with selecting-agents skill
 
 **References:**
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md`
 - Agent Selection: `${CLAUDE_PLUGIN_ROOT}skills/selecting-agents/SKILL.md`
-- Code Review: Automatic dispatch to cipherpowers:code-reviewer
+- Code Review: Automatic dispatch to cipherpowers:code-review-agent
 - Integration: Seamless workflow → `/brainstorm` → `/plan` → `/execute`
 

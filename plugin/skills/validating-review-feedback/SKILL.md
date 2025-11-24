@@ -230,7 +230,7 @@ Plan updated with deferred items: {plan-file-path}
 
 **Requires:**
 - Plan file path (from orchestrator)
-- Review file path (from code-reviewer agent)
+- Review file path (from code-review-agent agent)
 
 **Produces:**
 - Annotated review file (with [FIX]/[WONTFIX]/[DEFERRED] tags)

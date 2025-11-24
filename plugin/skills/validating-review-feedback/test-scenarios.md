@@ -19,7 +19,7 @@
 - Integration tests for burn calculations
 ```
 
-**Mock review (from code-reviewer):**
+**Mock review (from code-review-agent):**
 ```markdown
 # Code Review - Batch 2
 
@@ -39,7 +39,7 @@ No test coverage for ArrivalBurn state entry/exit logic.
 Consider renaming to 'burnParameters' for clarity.
 ```
 
-### Dispatch rust-engineer WITHOUT gatekeeper
+### Dispatch rust-agent WITHOUT gatekeeper
 
 **Prompt:**
 ```
@@ -82,7 +82,7 @@ Plan file: {path-to-plan}
 
 ### Same Setup (plan + review from baseline)
 
-### Dispatch gatekeeper agent BEFORE rust-engineer
+### Dispatch gatekeeper agent BEFORE rust-agent
 
 **Prompt:**
 ```
@@ -175,10 +175,10 @@ Files Updated:
 - Annotated review: {review-path}
 
 Next Steps for Orchestrator:
-Proceed to rust-engineer with annotated review. Fix ONLY [FIX] items.
+Proceed to rust-agent with annotated review. Fix ONLY [FIX] items.
 ```
 
-### Dispatch rust-engineer WITH annotated review
+### Dispatch rust-agent WITH annotated review
 
 **Prompt:**
 ```

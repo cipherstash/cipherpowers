@@ -147,18 +147,22 @@ When writing reviews, call out specific examples that demonstrate:
 **Template:**
 `${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
-**Requirement:** You MUST use the template structure exactly as provided. Do NOT create custom section structures.
+**Enforcement:** Algorithmic template validation (see `${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md` Step 4) - 9-step algorithm verifies each required section exists and blocks custom sections.
 
-**Template sections (mandatory):**
-- Status (BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED)
-- Test Results
-- Check Results
-- Next Steps
-- BLOCKING (Must Fix Before Merge)
-- NON-BLOCKING (May Be Deferred)
-- Checklist (comprehensive review checklist covering security, testing, architecture, error handling, code quality, and process)
+**Template sections (mandatory, in order):**
+1. Status (BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED)
+2. Test Results
+3. Check Results
+4. Next Steps
+5. BLOCKING (Must Fix Before Merge)
+6. NON-BLOCKING (May Be Deferred)
+7. Checklist (comprehensive review checklist covering security, testing, architecture, error handling, code quality, and process)
 
-Additional context (git commands run, files changed, commit history) may be added at the end, but core template sections are mandatory.
+**Prohibited custom sections (algorithm blocks these):**
+- Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues (with subsections)
+
+**Additional context allowed:**
+Supplementary details (git commands run, files changed, commit history) may be added AFTER the Checklist section. Core template sections must appear first in the exact order shown.
 
 **Location:**
 - Current active work directory (projects may provide custom command in CLAUDE.md frontmatter)
