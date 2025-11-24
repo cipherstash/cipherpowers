@@ -56,13 +56,30 @@ export async function executeShellCommand(
   }
 }
 
+/**
+ * Load and execute a built-in TypeScript gate
+ *
+ * Built-in gates are TypeScript modules in src/gates/ that export an execute function.
+ * Gate names use kebab-case and are mapped to camelCase module names:
+ * - "plan-compliance" → planCompliance
+ * - "plugin-path" → pluginPath
+ * - "commands" → commands
+ */
 export async function executeBuiltinGate(gateName: string, input: HookInput): Promise<GateResult> {
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
-  const gatePath = path.join(pluginRoot, 'hooks', 'gates', gateName);
-
   try {
-    const module = await import(gatePath);
-    return await module.execute(input);
+    // Convert kebab-case to camelCase for module lookup
+    // "plan-compliance" -> "planCompliance"
+    const moduleName = gateName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
+    // Import the gate module dynamically
+    const gates = await import('./gates');
+    const gateModule = (gates as any)[moduleName];
+
+    if (!gateModule || typeof gateModule.execute !== 'function') {
+      throw new Error(`Gate module '${moduleName}' not found or missing execute function`);
+    }
+
+    return await gateModule.execute(input);
   } catch (error) {
     throw new Error(`Failed to load built-in gate ${gateName}: ${error}`);
   }

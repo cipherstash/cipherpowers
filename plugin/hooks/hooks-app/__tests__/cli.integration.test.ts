@@ -1,5 +1,5 @@
 // __tests__/cli.integration.test.ts
-import { spawn, ChildProcess } from 'child_process';
+import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -18,7 +18,9 @@ describe('CLI Integration', () => {
   });
 
   describe('Session Management Mode', () => {
-    const runCLI = (args: string[]): Promise<{ stdout: string; stderr: string; exitCode: number }> => {
+    const runCLI = (
+      args: string[]
+    ): Promise<{ stdout: string; stderr: string; exitCode: number }> => {
       return new Promise((resolve, reject) => {
         const proc = spawn('node', ['dist/cli.js', ...args], {
           cwd: path.resolve(__dirname, '..')
@@ -80,7 +82,13 @@ describe('CLI Integration', () => {
       const contains2 = await runCLI(['session', 'contains', 'edited_files', 'file2.ts', testDir]);
       expect(contains2.exitCode).toBe(0);
 
-      const notContains = await runCLI(['session', 'contains', 'edited_files', 'file3.ts', testDir]);
+      const notContains = await runCLI([
+        'session',
+        'contains',
+        'edited_files',
+        'file3.ts',
+        testDir
+      ]);
       expect(notContains.exitCode).toBe(1);
     });
 

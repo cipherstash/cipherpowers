@@ -30,7 +30,9 @@ describe('Integration Tests', () => {
     test('append and check contains', async () => {
       await execAsync(`node ${cliPath} session append file_extensions ts ${testDir}`);
 
-      const result = await execAsync(`node ${cliPath} session contains file_extensions ts ${testDir}`)
+      const result = await execAsync(
+        `node ${cliPath} session contains file_extensions ts ${testDir}`
+      )
         .then(() => true)
         .catch(() => false);
 
@@ -64,7 +66,9 @@ describe('Integration Tests', () => {
 
       const containsTs = await execAsync(
         `node ${cliPath} session contains file_extensions ts ${testDir}`
-      ).then(() => true).catch(() => false);
+      )
+        .then(() => true)
+        .catch(() => false);
       expect(containsTs).toBe(true);
     });
 
@@ -141,8 +145,9 @@ describe('Integration Tests', () => {
       try {
         await execAsync(`node ${cliPath} session get invalid_key ${testDir}`);
         fail('Should have thrown error');
-      } catch (error: any) {
-        expect(error.stderr).toContain('Invalid session key');
+      } catch (error) {
+        const err = error as { stderr?: string };
+        expect(err.stderr).toContain('Invalid session key');
       }
     });
 
@@ -150,8 +155,9 @@ describe('Integration Tests', () => {
       try {
         await execAsync(`node ${cliPath} session append invalid_key value ${testDir}`);
         fail('Should have thrown error');
-      } catch (error: any) {
-        expect(error.stderr).toContain('Invalid array key');
+      } catch (error) {
+        const err = error as { stderr?: string };
+        expect(err.stderr).toContain('Invalid array key');
       }
     });
   });

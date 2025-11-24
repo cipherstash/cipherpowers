@@ -84,7 +84,4 @@ export interface SessionState {
 export type SessionStateArrayKey = 'edited_files' | 'file_extensions';
 
 /** Scalar field keys in SessionState */
-export type SessionStateScalarKey = Exclude<
-  keyof SessionState,
-  SessionStateArrayKey | 'metadata'
->;
+export type SessionStateScalarKey = Exclude<keyof SessionState, SessionStateArrayKey | 'metadata'>;

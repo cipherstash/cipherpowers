@@ -39,7 +39,6 @@ exports.executeGate = executeGate;
 // plugin/hooks/hooks-app/src/gate-loader.ts
 const child_process_1 = require("child_process");
 const util_1 = require("util");
-const path = __importStar(require("path"));
 const execAsync = (0, util_1.promisify)(child_process_1.exec);
 /**
  * Execute shell command from gate configuration with timeout.
@@ -76,12 +75,27 @@ async function executeShellCommand(command, cwd, timeoutMs = 30000) {
         };
     }
 }
+/**
+ * Load and execute a built-in TypeScript gate
+ *
+ * Built-in gates are TypeScript modules in src/gates/ that export an execute function.
+ * Gate names use kebab-case and are mapped to camelCase module names:
+ * - "plan-compliance" → planCompliance
+ * - "plugin-path" → pluginPath
+ * - "commands" → commands
+ */
 async function executeBuiltinGate(gateName, input) {
-    const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
-    const gatePath = path.join(pluginRoot, 'hooks', 'gates', gateName);
     try {
-        const module = await Promise.resolve(`${gatePath}`).then(s => __importStar(require(s)));
-        return await module.execute(input);
+        // Convert kebab-case to camelCase for module lookup
+        // "plan-compliance" -> "planCompliance"
+        const moduleName = gateName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+        // Import the gate module dynamically
+        const gates = await Promise.resolve().then(() => __importStar(require('./gates')));
+        const gateModule = gates[moduleName];
+        if (!gateModule || typeof gateModule.execute !== 'function') {
+            throw new Error(`Gate module '${moduleName}' not found or missing execute function`);
+        }
+        return await gateModule.execute(input);
     }
     catch (error) {
         throw new Error(`Failed to load built-in gate ${gateName}: ${error}`);

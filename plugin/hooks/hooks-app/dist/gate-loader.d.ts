@@ -17,6 +17,15 @@ export interface ShellResult {
  * ERROR HANDLING: Commands timeout after 30 seconds to prevent hung gates.
  */
 export declare function executeShellCommand(command: string, cwd: string, timeoutMs?: number): Promise<ShellResult>;
+/**
+ * Load and execute a built-in TypeScript gate
+ *
+ * Built-in gates are TypeScript modules in src/gates/ that export an execute function.
+ * Gate names use kebab-case and are mapped to camelCase module names:
+ * - "plan-compliance" → planCompliance
+ * - "plugin-path" → pluginPath
+ * - "commands" → commands
+ */
 export declare function executeBuiltinGate(gateName: string, input: HookInput): Promise<GateResult>;
 export declare function executeGate(gateName: string, gateConfig: GateConfig, input: HookInput): Promise<{
     passed: boolean;
