@@ -17,14 +17,21 @@ Evaluate implementation plans before execution to ensure they're comprehensive, 
    - NO → Ask user for plan file location
    - UNSURE → Check `.work/` directory for recent plan files
 
-3. **USE DUAL-VERIFICATION-REVIEW SKILL:**
+3. **MANDATORY: Skill Activation**
 
-```
-Announce: "I'm using the dual-verification-review skill for comprehensive plan review."
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md
 
-Use Skill tool with:
-  skill: "cipherpowers:dual-verification-review"
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:dual-verification-review"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
+Skill(skill: "cipherpowers:dual-verification-review")
+```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
 
 4. **FOLLOW THE DUAL-VERIFICATION PATTERN:**
 

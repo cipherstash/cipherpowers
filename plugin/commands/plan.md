@@ -10,12 +10,21 @@ Create detailed implementation plans with bite-sized tasks ready for execution.
    - YES → Continue to step 2
    - NO → This command was invoked incorrectly
 
-2. **USE WRITING-PLANS SKILL:**
+2. **MANDATORY: Skill Activation**
 
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/writing-plans/SKILL.md
+
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:writing-plans"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
-Use Skill tool with:
-  skill: "cipherpowers:writing-plans"
+Skill(skill: "cipherpowers:writing-plans")
 ```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
 
 4. **FOLLOW THE SKILL EXACTLY:**
    - The skill defines the complete planning methodology

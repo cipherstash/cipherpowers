@@ -19,12 +19,21 @@ Generic dual-verification review dispatcher for high-confidence verification acr
    - Ground truth: Plan tasks for batch
    - Verification agent: execute-review-agent
 
-3. **USE DUAL-VERIFICATION-REVIEW SKILL:**
+3. **MANDATORY: Skill Activation**
 
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md
+
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:dual-verification-review"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
-Use Skill tool with:
-  skill: "cipherpowers:dual-verification-review"
+Skill(skill: "cipherpowers:dual-verification-review")
 ```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
 
 4. **FOLLOW THE SKILL EXACTLY:**
    - Phase 1: Dispatch 2 specialized review agents in parallel

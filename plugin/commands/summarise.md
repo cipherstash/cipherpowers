@@ -5,6 +5,24 @@ Create a comprehensive retrospective summary of completed work, capturing decisi
 <instructions>
 ## Instructions
 
+## MANDATORY: Skill Activation
+
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/capturing-learning/SKILL.md
+
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:capturing-learning"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
+```
+Skill(skill: "cipherpowers:capturing-learning")
+```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
+
+---
+
 1. **Use the retrospective-writer agent:**
    - Agent: `retrospective-writer`
    - This agent follows the capturing-learning skill:

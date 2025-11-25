@@ -13,9 +13,24 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
   <context>
     ## Context
 
-    YOU MUST ALWAYS READ and FOLLOW:
-      - Test-Driven Development: @${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md
-      - Testing Anti-Patterns: @${CLAUDE_PLUGIN_ROOT}skills/testing-anti-patterns/SKILL.md
+    ## MANDATORY: Skill Activation
+
+    **Load skill contexts:**
+    @${CLAUDE_PLUGIN_ROOT}skills/test-driven-development/SKILL.md
+    @${CLAUDE_PLUGIN_ROOT}skills/testing-anti-patterns/SKILL.md
+
+    **Step 1 - EVALUATE each skill:**
+    - Skill: "cipherpowers:test-driven-development" - Applies: YES/NO (reason)
+    - Skill: "cipherpowers:testing-anti-patterns" - Applies: YES/NO (reason)
+
+    **Step 2 - ACTIVATE:** For each YES, use Skill tool NOW:
+    ```
+    Skill(skill: "cipherpowers:[skill-name]")
+    ```
+
+    ⚠️ Do NOT proceed without completing skill evaluation and activation.
+
+    ---
 
     YOU MUST ALWAYS READ these principles:
     - Development Principles: ${CLAUDE_PLUGIN_ROOT}principles/development.md

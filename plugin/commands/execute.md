@@ -14,12 +14,21 @@ Execute implementation plans with automatic agent selection, batch-level code re
    - YES → Continue to step 3
    - NO → Run `/plan` first to create implementation plan, then return here
 
-3. **USE EXECUTING-PLANS SKILL:**
+3. **MANDATORY: Skill Activation**
 
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md
+
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:executing-plans"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
-Use Skill tool with:
-  skill: "cipherpowers:executing-plans"
+Skill(skill: "cipherpowers:executing-plans")
 ```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
 
 4. **FOLLOW THE SKILL EXACTLY:**
    - The skill defines the complete execution methodology

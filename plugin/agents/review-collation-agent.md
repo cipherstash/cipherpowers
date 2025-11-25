@@ -21,6 +21,24 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     This agent implements dual-verification-review collation phase.
   </context>
 
+  <mandatory_skill_activation>
+    ## MANDATORY: Skill Activation
+
+    **Load skill context:**
+    @${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md
+
+    **Step 1 - EVALUATE:** State YES/NO for skill activation:
+    - Skill: "cipherpowers:dual-verification-review"
+    - Applies to this task: YES/NO (reason)
+
+    **Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
+    ```
+    Skill(skill: "cipherpowers:dual-verification-review")
+    ```
+
+    ⚠️ Do NOT proceed without completing skill evaluation and activation.
+  </mandatory_skill_activation>
+
   <non_negotiable_workflow>
     ## Non-Negotiable Workflow
 

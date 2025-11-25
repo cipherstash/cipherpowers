@@ -2,6 +2,24 @@
 
 Thorough code review with test verification and structured feedback.
 
+## MANDATORY: Skill Activation
+
+**Load skill context:**
+@${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md
+
+**Step 1 - EVALUATE:** State YES/NO for skill activation:
+- Skill: "cipherpowers:conducting-code-review"
+- Applies to this task: YES/NO (reason)
+
+**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
+```
+Skill(skill: "cipherpowers:conducting-code-review")
+```
+
+⚠️ Do NOT proceed without completing skill evaluation and activation.
+
+---
+
 ## Algorithmic Dispatch
 
 **Decision tree (follow exactly, no interpretation):**
