@@ -19,3 +19,7 @@ export type {
 // New session exports
 export { Session } from './session';
 export type { SessionState, SessionStateArrayKey, SessionStateScalarKey } from './types';
+
+// Logging exports
+export { logger } from './logger';
+export type { LogLevel } from './logger';

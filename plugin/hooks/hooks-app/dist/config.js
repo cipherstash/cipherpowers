@@ -39,14 +39,20 @@ exports.loadConfig = loadConfig;
 const fs = __importStar(require("fs/promises"));
 const path = __importStar(require("path"));
 const utils_1 = require("./utils");
+const logger_1 = require("./logger");
 const KNOWN_HOOK_EVENTS = [
+    'PreToolUse',
     'PostToolUse',
     'SubagentStop',
     'UserPromptSubmit',
     'SlashCommandStart',
     'SlashCommandEnd',
     'SkillStart',
-    'SkillEnd'
+    'SkillEnd',
+    'SessionStart',
+    'SessionEnd',
+    'Stop',
+    'Notification'
 ];
 const KNOWN_ACTIONS = ['CONTINUE', 'BLOCK', 'STOP'];
 /**
@@ -79,20 +85,97 @@ function validateConfig(config) {
         }
     }
 }
-async function loadConfig(cwd) {
-    const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
-    const paths = [path.join(cwd, '.claude', 'gates.json'), path.join(cwd, 'gates.json')];
-    // Only add plugin root path if CLAUDE_PLUGIN_ROOT is set
-    if (pluginRoot) {
-        paths.push(path.join(pluginRoot, 'hooks', 'gates.json'));
+/**
+ * Get the plugin root directory from CLAUDE_PLUGIN_ROOT env var.
+ * Falls back to computing relative to this file's location.
+ */
+function getPluginRoot() {
+    const envRoot = process.env.CLAUDE_PLUGIN_ROOT;
+    if (envRoot) {
+        return envRoot;
     }
-    for (const configPath of paths) {
-        if (await (0, utils_1.fileExists)(configPath)) {
-            const content = await fs.readFile(configPath, 'utf-8');
-            const config = JSON.parse(content);
-            validateConfig(config);
-            return config;
-        }
+    // Fallback: compute from this file's location
+    // This file is at: plugin/hooks/hooks-app/src/config.ts (dev)
+    // Or at: plugin/hooks/hooks-app/dist/config.js (built)
+    // Plugin root is: plugin/
+    try {
+        return path.resolve(__dirname, '..', '..', '..');
+    }
+    catch {
+        return null;
+    }
+}
+/**
+ * Load a single config file
+ */
+async function loadConfigFile(configPath) {
+    if (await (0, utils_1.fileExists)(configPath)) {
+        const content = await fs.readFile(configPath, 'utf-8');
+        return JSON.parse(content);
     }
     return null;
+}
+/**
+ * Merge two configs. Project config takes precedence over plugin config.
+ * - hooks: project hooks override plugin hooks for same event
+ * - gates: project gates override plugin gates for same name
+ */
+function mergeConfigs(pluginConfig, projectConfig) {
+    return {
+        hooks: {
+            ...pluginConfig.hooks,
+            ...projectConfig.hooks
+        },
+        gates: {
+            ...pluginConfig.gates,
+            ...projectConfig.gates
+        }
+    };
+}
+/**
+ * Load and merge project and plugin configs.
+ *
+ * Priority:
+ * 1. Project: .claude/gates.json (highest)
+ * 2. Project: gates.json
+ * 3. Plugin: ${CLAUDE_PLUGIN_ROOT}/hooks/gates.json (fallback/defaults)
+ *
+ * Configs are MERGED - project overrides plugin for same keys.
+ */
+async function loadConfig(cwd) {
+    const pluginRoot = getPluginRoot();
+    // Load plugin config first (defaults)
+    let mergedConfig = null;
+    if (pluginRoot) {
+        const pluginConfigPath = path.join(pluginRoot, 'hooks', 'gates.json');
+        const pluginConfig = await loadConfigFile(pluginConfigPath);
+        if (pluginConfig) {
+            await logger_1.logger.debug('Loaded plugin gates.json', { path: pluginConfigPath });
+            mergedConfig = pluginConfig;
+        }
+    }
+    // Load project config (overrides)
+    const projectPaths = [
+        path.join(cwd, '.claude', 'gates.json'),
+        path.join(cwd, 'gates.json')
+    ];
+    for (const configPath of projectPaths) {
+        const projectConfig = await loadConfigFile(configPath);
+        if (projectConfig) {
+            await logger_1.logger.debug('Loaded project gates.json', { path: configPath });
+            if (mergedConfig) {
+                mergedConfig = mergeConfigs(mergedConfig, projectConfig);
+                await logger_1.logger.debug('Merged project config with plugin config');
+            }
+            else {
+                mergedConfig = projectConfig;
+            }
+            break; // Only load first project config found
+        }
+    }
+    // Validate merged config
+    if (mergedConfig) {
+        validateConfig(mergedConfig);
+    }
+    return mergedConfig;
 }

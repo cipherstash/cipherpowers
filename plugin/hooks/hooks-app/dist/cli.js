@@ -2,11 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const dispatcher_1 = require("./dispatcher");
 const session_1 = require("./session");
+const logger_1 = require("./logger");
 async function main() {
     const args = process.argv.slice(2);
     // Check if first arg is "session" - session management mode
     if (args.length > 0 && args[0] === 'session') {
         await handleSessionCommand(args.slice(1));
+        return;
+    }
+    // Check if first arg is "log-path" - return log file path for mise tasks
+    if (args.length > 0 && args[0] === 'log-path') {
+        console.log(logger_1.logger.getLogFilePath());
+        return;
+    }
+    // Check if first arg is "log-dir" - return log directory for mise tasks
+    if (args.length > 0 && args[0] === 'log-dir') {
+        console.log(logger_1.logger.getLogDir());
         return;
     }
     // Otherwise, hook dispatch mode (existing behavior)
@@ -121,6 +132,7 @@ async function handleSessionCommand(args) {
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        await logger_1.logger.error('Session command failed', { command, error: errorMessage });
         console.error(`Session error: ${errorMessage}`);
         process.exit(1);
     }
@@ -136,21 +148,47 @@ async function handleHookDispatch() {
             chunks.push(chunk);
         }
         const inputStr = Buffer.concat(chunks).toString('utf-8');
+        // ALWAYS log hook invocation (unconditional - for debugging)
+        await logger_1.logger.always('HOOK_INVOKED', {
+            input_length: inputStr.length,
+            input_preview: inputStr.substring(0, 200)
+        });
+        // Log raw input at CLI entry point
+        await logger_1.logger.debug('CLI received hook input', {
+            input_length: inputStr.length,
+            input_preview: inputStr.substring(0, 200)
+        });
         // Parse input
         let input;
         try {
             input = JSON.parse(inputStr);
         }
         catch (error) {
+            await logger_1.logger.error('CLI failed to parse JSON input', {
+                input_preview: inputStr.substring(0, 200),
+                error: error instanceof Error ? error.message : String(error)
+            });
             console.error(JSON.stringify({
                 continue: false,
                 message: 'Invalid JSON input'
             }));
             process.exit(1);
         }
+        // Log parsed hook event
+        await logger_1.logger.info('CLI dispatching hook', {
+            event: input.hook_event_name,
+            cwd: input.cwd,
+            tool: input.tool_name,
+            agent: input.agent_name,
+            command: input.command,
+            skill: input.skill
+        });
         // Validate required fields
         if (!input.hook_event_name || !input.cwd) {
-            // Graceful exit - missing required fields
+            await logger_1.logger.warn('CLI missing required fields, exiting', {
+                has_event: !!input.hook_event_name,
+                has_cwd: !!input.cwd
+            });
             return;
         }
         // Dispatch
@@ -168,12 +206,22 @@ async function handleHookDispatch() {
             output.continue = false;
             output.message = result.stopMessage;
         }
+        // Log result
+        await logger_1.logger.info('CLI hook completed', {
+            event: input.hook_event_name,
+            has_context: !!result.context,
+            has_block: !!result.blockReason,
+            has_stop: !!result.stopMessage,
+            output_keys: Object.keys(output)
+        });
         // Write output
         if (Object.keys(output).length > 0) {
             console.log(JSON.stringify(output));
         }
     }
     catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        await logger_1.logger.error('Hook dispatch failed', { error: errorMessage });
         console.error(JSON.stringify({
             continue: false,
             message: `Unexpected error: ${error}`

@@ -6,3 +6,5 @@ export { injectContext } from './context';
 export type { HookInput, GateResult, GateExecute, GateConfig, HookConfig, GatesConfig } from './types';
 export { Session } from './session';
 export type { SessionState, SessionStateArrayKey, SessionStateScalarKey } from './types';
+export { logger } from './logger';
+export type { LogLevel } from './logger';

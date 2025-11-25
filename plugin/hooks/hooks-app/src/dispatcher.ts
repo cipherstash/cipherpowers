@@ -5,6 +5,7 @@ import { injectContext } from './context';
 import { executeGate } from './gate-loader';
 import { handleAction } from './action-handler';
 import { Session } from './session';
+import { logger } from './logger';
 
 export function shouldProcessHook(input: HookInput, hookConfig: HookConfig): boolean {
   const hookEvent = input.hook_event_name;
@@ -39,6 +40,9 @@ export interface DispatchResult {
  * Prevents infinite loops from misconfigured gate chains.
  */
 const MAX_GATES_PER_DISPATCH = 10;
+
+// Built-in gates removed - context injection is the primary behavior
+// Context injection happens via injectContext() which discovers .claude/context/ files
 
 async function updateSessionState(input: HookInput): Promise<void> {
   const session = new Session(input.cwd);
@@ -101,32 +105,51 @@ async function updateSessionState(input: HookInput): Promise<void> {
 export async function dispatch(input: HookInput): Promise<DispatchResult> {
   const hookEvent = input.hook_event_name;
   const cwd = input.cwd;
+  const startTime = Date.now();
+
+  await logger.event('debug', hookEvent, {
+    tool: input.tool_name,
+    agent: input.agent_name || input.subagent_name,
+    file: input.file_path,
+    cwd,
+  });
 
   // Update session state (best-effort)
   await updateSessionState(input);
 
-  // 1. Load config
-  const config = await loadConfig(cwd);
-  if (!config) {
-    return {}; // Clean exit - graceful degradation when no config
-  }
-
-  // 2. Check if hook event is configured
-  const hookConfig = config.hooks[hookEvent];
-  if (!hookConfig) {
-    return {}; // Clean exit - graceful degradation when hook not configured
-  }
-
-  // 3. Filter by enabled lists
-  if (!shouldProcessHook(input, hookConfig)) {
-    return {}; // Clean exit
-  }
-
-  // 4. Context injection
+  // 1. ALWAYS run context injection FIRST (primary behavior)
+  // This discovers .claude/context/{name}-{stage}.md files
   const contextContent = await injectContext(hookEvent, input);
   let accumulatedContext = contextContent || '';
 
-  // 5. Run gates in sequence with circular chain prevention
+  // 2. Load config for additional gates (optional)
+  const config = await loadConfig(cwd);
+  if (!config) {
+    await logger.debug('No gates.json config found', { cwd });
+    // Return context injection result even without gates.json
+    return accumulatedContext ? { context: accumulatedContext } : {};
+  }
+
+  // 3. Check if hook event has additional gates configured
+  const hookConfig = config.hooks[hookEvent];
+  if (!hookConfig) {
+    await logger.debug('Hook event not configured in gates.json', { event: hookEvent });
+    // Return context injection result even if hook not in gates.json
+    return accumulatedContext ? { context: accumulatedContext } : {};
+  }
+
+  // 4. Filter by enabled lists
+  if (!shouldProcessHook(input, hookConfig)) {
+    await logger.debug('Hook filtered out by enabled list', {
+      event: hookEvent,
+      tool: input.tool_name,
+      agent: input.agent_name,
+    });
+    // Still return context injection result
+    return accumulatedContext ? { context: accumulatedContext } : {};
+  }
+
+  // 5. Run additional gates in sequence (from gates.json)
   const gates = hookConfig.gates || [];
   let gatesExecuted = 0;
 
@@ -150,7 +173,16 @@ export async function dispatch(input: HookInput): Promise<DispatchResult> {
     gatesExecuted++;
 
     // Execute gate
+    const gateStartTime = Date.now();
     const { passed, result } = await executeGate(gateName, gateConfig, input);
+    const gateDuration = Date.now() - gateStartTime;
+
+    await logger.event('info', hookEvent, {
+      gate: gateName,
+      passed,
+      duration_ms: gateDuration,
+      tool: input.tool_name,
+    });
 
     // Determine action
     const action = passed ? gateConfig.on_pass || 'CONTINUE' : gateConfig.on_fail || 'BLOCK';
@@ -163,6 +195,13 @@ export async function dispatch(input: HookInput): Promise<DispatchResult> {
     }
 
     if (!actionResult.continue) {
+      await logger.event('warn', hookEvent, {
+        gate: gateName,
+        action,
+        blocked: !!actionResult.blockReason,
+        stopped: !!actionResult.stopMessage,
+        duration_ms: Date.now() - startTime,
+      });
       return {
         context: accumulatedContext,
         blockReason: actionResult.blockReason,
@@ -175,6 +214,12 @@ export async function dispatch(input: HookInput): Promise<DispatchResult> {
       gates.push(actionResult.chainedGate);
     }
   }
+
+  await logger.event('debug', hookEvent, {
+    status: 'completed',
+    gates_executed: gatesExecuted,
+    duration_ms: Date.now() - startTime,
+  });
 
   return {
     context: accumulatedContext
