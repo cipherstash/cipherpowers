@@ -21,28 +21,7 @@
         "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
       }]
     }],
-    "SlashCommandStart": [{
-      "matcher": ".*",
-      "hooks": [{
-        "type": "command",
-        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
-      }]
-    }],
-    "SlashCommandEnd": [{
-      "matcher": ".*",
-      "hooks": [{
-        "type": "command",
-        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
-      }]
-    }],
-    "SkillStart": [{
-      "matcher": ".*",
-      "hooks": [{
-        "type": "command",
-        "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js"
-      }]
-    }],
-    "SkillEnd": [{
+    "SessionStart": [{
       "matcher": ".*",
       "hooks": [{
         "type": "command",
