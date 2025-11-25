@@ -1,5 +1,20 @@
 {
   "gates": {
+    "commands": {
+      "description": "Context-aware command injection from CLAUDE.md frontmatter",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    },
+    "plan-compliance": {
+      "description": "Verify work follows the active plan",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    },
+    "plugin-path": {
+      "description": "Verify plugin path resolution in subagents",
+      "on_pass": "CONTINUE",
+      "on_fail": "CONTINUE"
+    },
     "check": {
       "description": "Run project quality checks (formatting, linting, types)",
       "command": "echo '[PLACEHOLDER] Quality checks passed. TODO: Configure with actual project check command (e.g., mise run check, npm run lint, cargo clippy)'",
@@ -20,6 +35,9 @@
     }
   },
   "hooks": {
+    "UserPromptSubmit": {
+      "gates": ["commands"]
+    },
     "PostToolUse": {
       "enabled_tools": ["Edit", "Write", "mcp__serena__replace_symbol_body"],
       "gates": ["check"]

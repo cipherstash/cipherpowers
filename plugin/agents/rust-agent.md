@@ -21,6 +21,10 @@ Use PROACTIVELY for Rust development, performance optimization, or systems progr
     - Development Principles: ${CLAUDE_PLUGIN_ROOT}principles/development.md
     - Testing Principles: ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
+    YOU MUST ALWAYS READ these standards:
+    - Rust guidelines: ${CLAUDE_PLUGIN_ROOT}standards/rust/microsoft-rust-guidelines.md
+    - Rust dependency guidelines: ${CLAUDE_PLUGIN_ROOT}standards/rust/dependencies.md
+
     YOU MUST ALWAYS READ:
     - @README.md
     - @CLAUDE.md

@@ -1,9 +1,9 @@
 ---
-name: Development Practices
+name: Development Principles
 description: Create software that is simple, consistent, and documented to ensure modularity, maintainability, and extensibility.
 when_to_use: when writing code to ensure it follows core principles of simplicity, consistency, and clear documentation
 applies_to: all projects
-related_practices: documentation.md, testing.md
+related_Principles: documentation.md, testing.md
 version: 1.0.0
 ---
 
@@ -13,14 +13,14 @@ Our goal is to create software that is modular, maintainable, & extensible.
 
 ## Core principles
 
-Simple (not elegant)
+Simple (not clever)
 Consistent (not stamped with individuality)
 Documented (with the why)
 
 
 ### Simple
 
-- Keep it simple (not elegant)
+- Keep it simple (not clever)
 - Do the simplest thing that could possibly work
 - Implement requirements when actually needed
 - Embrace test-driven development to improve code design
