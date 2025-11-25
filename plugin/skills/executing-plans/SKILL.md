@@ -81,7 +81,7 @@ After batch complete:
 
 **Code review is mandatory between batches. No exceptions.**
 
-**Optional:** If concerned about plan adherence, user can request `/review execute-completion` for dual-verification of batch implementation vs plan specification.
+**Optional:** If concerned about plan adherence, user can request `/verify execute` for dual-verification of batch implementation vs plan specification.
 
 ### Step 4: Report
 When batch complete:
@@ -177,7 +177,7 @@ When an agent reports STATUS: BLOCKED:
 - Check for STATUS in agent completions
 - Handle BLOCKED status by asking user (never auto-approve deviations)
 - Code review after every batch (mandatory)
-- User can request `/review execute-completion` if concerned about plan adherence
+- User can request `/verify execute` if concerned about plan adherence
 - Don't skip verifications
 - Reference skills when plan says to
 - Between batches: just report and wait

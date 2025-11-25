@@ -185,20 +185,21 @@ The /execute command demonstrates:
 - Hybrid agent selection (keyword matching + LLM analysis + user confirmation)
 - Integration of multiple agents in coordinated workflow
 - Automatic code review checkpoints after each batch
-- Optional execute completion review via `/review execute-completion` (on-demand, not automatic)
+- Optional execute completion verification via `/verify execute` (on-demand, not automatic)
 - Retrospective prompting when work completes
 
-**Example: Review Architecture with Shared Collation**
-- `plugin/commands/review.md` = Generic dual-verification review dispatcher (works for all review types)
+**Example: Verification Architecture with Shared Collation**
+- `plugin/commands/verify.md` = Generic dual-verification dispatcher (works for all verification types)
 - `plugin/skills/dual-verification-review/SKILL.md` = Core dual-verification pattern (Phase 1: dispatch 2 agents, Phase 2: collate, Phase 3: present)
-- `plugin/agents/review-collation-agent.md` = Generic collation agent (compares findings from any review type)
-- Specialized review agents: `execute-review-agent` (plan adherence), `plan-review-agent` (plan quality), `code-review-agent` (code quality)
+- `plugin/agents/review-collation-agent.md` = Generic collation agent (compares findings from any verification type)
+- `plugin/agents/research-agent.md` = Research verification agent (multi-angle exploration with evidence)
+- Specialized agents: `execute-review-agent` (plan adherence), `plan-review-agent` (plan quality), `code-review-agent` (code quality), `research-agent` (research verification)
 
-The review architecture demonstrates:
-- DRY principle: One collation agent serves all review types (plan, code, execute)
+The verification architecture demonstrates:
+- DRY principle: One collation agent serves all verification types (plan, code, execute, research, docs)
 - Confidence levels: Common issues (VERY HIGH), Exclusive issues (MODERATE), Divergences (INVESTIGATE)
-- Clear separation: Execute review checks plan adherence, code review checks quality/standards
-- On-demand verification: Execute completion review is optional (user-requested, not automatic)
+- Clear separation: Execute verification checks plan adherence, code verification checks quality/standards, research verification explores topics
+- On-demand verification: All verification types are user-requested via `/verify [type]`
 
 ## Environment Variables
 
