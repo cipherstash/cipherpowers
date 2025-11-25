@@ -18,8 +18,4 @@ export type {
 
 // New session exports
 export { Session } from './session';
-export type {
-  SessionState,
-  SessionStateArrayKey,
-  SessionStateScalarKey
-} from './types';
+export type { SessionState, SessionStateArrayKey, SessionStateScalarKey } from './types';

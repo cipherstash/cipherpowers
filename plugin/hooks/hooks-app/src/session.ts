@@ -25,10 +25,7 @@ export class Session {
   /**
    * Set a session state value
    */
-  async set<K extends keyof SessionState>(
-    key: K,
-    value: SessionState[K]
-  ): Promise<void> {
+  async set<K extends keyof SessionState>(key: K, value: SessionState[K]): Promise<void> {
     const state = await this.load();
     state[key] = value;
     await this.save(state);

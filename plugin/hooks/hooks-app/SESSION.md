@@ -84,7 +84,7 @@ export async function execute(input: HookInput): Promise<GateResult> {
 
 ```bash
 # Source helpers (to be created in future task)
-source "${CLAUDE_PLUGIN_ROOT}/hooks/session-helpers.sh"
+source "${CLAUDE_PLUGIN_ROOT}hooks/session-helpers.sh"
 
 # Use session functions
 session_set "active_command" "/execute" "$CWD"
@@ -101,13 +101,13 @@ fi
 
 ```bash
 # Set session value
-node "${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js" session set active_command /execute "$CWD"
+node "${CLAUDE_PLUGIN_ROOT}hooks/hooks-app/dist/cli.js" session set active_command /execute "$CWD"
 
 # Get session value
-COMMAND=$(node "${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js" session get active_command "$CWD")
+COMMAND=$(node "${CLAUDE_PLUGIN_ROOT}hooks/hooks-app/dist/cli.js" session get active_command "$CWD")
 
 # Check contains
-if node "${CLAUDE_PLUGIN_ROOT}/hooks/hooks-app/dist/cli.js" session contains file_extensions rs "$CWD"; then
+if node "${CLAUDE_PLUGIN_ROOT}hooks/hooks-app/dist/cli.js" session contains file_extensions rs "$CWD"; then
   echo "Rust files edited"
 fi
 ```

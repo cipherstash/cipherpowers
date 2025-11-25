@@ -18,9 +18,7 @@ describe('Session', () => {
   describe('constructor', () => {
     test('sets state file path', () => {
       const session = new Session(testDir);
-      expect(session['stateFile']).toBe(
-        join(testDir, '.claude', 'session', 'state.json')
-      );
+      expect(session['stateFile']).toBe(join(testDir, '.claude', 'session', 'state.json'));
     });
   });
 
@@ -184,11 +182,11 @@ describe('Session', () => {
       const results = await Promise.allSettled([
         session.append('edited_files', 'file1.ts'),
         session.append('edited_files', 'file2.ts'),
-        session.append('edited_files', 'file3.ts'),
+        session.append('edited_files', 'file3.ts')
       ]);
 
       // At least one operation should succeed
-      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      const successCount = results.filter((r) => r.status === 'fulfilled').length;
       expect(successCount).toBeGreaterThan(0);
 
       // State file should be valid (not corrupted)
