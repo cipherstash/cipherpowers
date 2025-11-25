@@ -97,7 +97,7 @@ Read these to understand quality standards:
 
 #### 2. Review against quality checklist
 
-**Review ALL categories from plan-evaluation-template.md:**
+**Review ALL categories from plan-review-template.md:**
 
 1. **Security & Correctness** (6 items)
    - Does plan address security vulnerabilities in design?
@@ -148,6 +148,27 @@ Read these to understand quality standards:
 
 **Empty BLOCKING section is GOOD if you actually checked.** Missing sections mean you didn't check.
 
+**BLOCKING vs SUGGESTIONS decision:**
+
+Use BLOCKING when:
+- Security vulnerability in design
+- Missing error handling strategy
+- No test strategy or TDD approach
+- Tasks too large (>5 minutes)
+- Missing exact file paths or commands
+- Scope doesn't match requirements
+
+Use SUGGESTIONS when:
+- Could add logging for debugging
+- Could improve variable naming
+- Could add documentation
+- Could consider performance optimization
+- Could leverage existing pattern
+
+**Rule of thumb:**
+- BLOCKING = Plan will fail during execution or produce insecure/incorrect code
+- SUGGESTIONS = Plan would succeed but quality could be higher
+
 #### 3. Evaluate plan structure
 
 **Task Granularity:**
@@ -168,7 +189,7 @@ Read these to understand quality standards:
 #### 4. Save structured evaluation
 
 **Template location:**
-`${CLAUDE_PLUGIN_ROOT}templates/plan-evaluation-template.md`
+`${CLAUDE_PLUGIN_ROOT}templates/plan-review-template.md`
 
 **YOU MUST use this exact structure:**
 

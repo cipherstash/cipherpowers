@@ -1,7 +1,7 @@
 ---
 name: dual-verification-review
-description: Use two independent agents to systematically verify content against ground truth, then collate findings to identify common issues, exclusive issues, and divergences
-when_to_use: comprehensive documentation audits, plan reviews, code reviews, verifying content matches implementation, quality assurance for critical content
+description: Use two independent agents for reviews or research, then collate findings to identify common findings, unique insights, and divergences
+when_to_use: comprehensive audits, plan reviews, code reviews, research tasks, codebase exploration, verifying content matches implementation, quality assurance for critical content
 version: 1.0.0
 ---
 
@@ -9,46 +9,53 @@ version: 1.0.0
 
 ## Overview
 
-Use two independent agents to systematically verify content against ground truth, then use a collation agent to compare findings.
+Use two independent agents to systematically review content or research a topic, then use a collation agent to compare findings.
 
-**Core principle:** Independent dual review + systematic collation = higher quality, managed context.
+**Core principle:** Independent dual perspective + systematic collation = higher quality, managed context.
 
-**Announce at start:** "I'm using the dual-verification-review skill for comprehensive review."
+**Announce at start:** "I'm using the dual-verification-review skill for comprehensive [review/research]."
 
 ## When to Use
 
 Use dual-verification-review when:
 
+**For Reviews:**
 - **High-stakes decisions:** Before executing implementation plans, merging to production, or deploying
 - **Comprehensive audits:** Documentation accuracy, plan quality, code correctness
 - **Quality assurance:** Critical content that must be verified against ground truth
 - **Risk mitigation:** When cost of missing issues exceeds cost of dual review
-- **Building confidence:** When you need high-confidence assessment before proceeding
+
+**For Research:**
+- **Codebase exploration:** Understanding unfamiliar code from multiple angles
+- **Problem investigation:** Exploring a bug or issue with different hypotheses
+- **Information gathering:** Researching a topic where completeness matters
+- **Architecture analysis:** Understanding system design from different perspectives
+- **Building confidence:** When you need high-confidence understanding before proceeding
 
 **Don't use when:**
 - Simple, low-stakes changes (typo fixes, minor documentation tweaks)
 - Time-critical situations (production incidents requiring immediate action)
 - Single perspective is sufficient (trivial updates, following up on previous review)
-- Cost outweighs benefit (incremental updates to well-tested code)
+- Cost outweighs benefit (quick questions with obvious answers)
 
 ## Quick Reference
 
 | Phase | Action | Output |
 |-------|--------|--------|
-| **Phase 1** | Dispatch 2 agents in parallel with identical prompts | Two independent review reports |
-| **Phase 2** | Dispatch collation agent to compare reviews | Collated report with confidence levels |
-| **Phase 3** | Present findings to user | Common (fix now), Exclusive (decide), Divergences (investigate) |
+| **Phase 1** | Dispatch 2 agents in parallel with identical prompts | Two independent reports |
+| **Phase 2** | Dispatch collation agent to compare findings | Collated report with confidence levels |
+| **Phase 3** | Present findings to user | Common (high confidence), Exclusive (consider), Divergences (investigate) |
 
 **Confidence levels:**
-- **VERY HIGH:** Both reviewers found (fix immediately)
-- **MODERATE:** One reviewer found (requires judgment)
-- **INVESTIGATE:** Reviewers disagree (user decides)
+- **VERY HIGH:** Both agents found (high confidence - act on this)
+- **MODERATE:** One agent found (unique insight - consider carefully)
+- **INVESTIGATE:** Agents disagree (needs resolution)
 
 ## Why This Pattern Works
 
 **Higher quality through independence:**
-- Common issues = high confidence (both found)
-- Exclusive issues = edge cases one agent caught
+- Common findings = high confidence (both found)
+- Exclusive findings = unique insights one agent caught
 - Divergences = areas needing investigation
 
 **Context management:**
@@ -78,7 +85,7 @@ You are [agent type] conducting an independent verification review.
 **Critical instructions:**
 - Current content CANNOT be assumed correct. Verify every claim.
 - You MUST follow the review report template structure
-- Template location: ${CLAUDE_PLUGIN_ROOT}templates/review-report-template.md
+- Template location: ${CLAUDE_PLUGIN_ROOT}templates/review-template.md
 - You MUST save your review with timestamp: `.work/{YYYY-MM-DD}-[review-type]-{HHmmss}.md`
 - Time-based naming prevents conflicts when agents run in parallel.
 - Work completely independently - the collation agent will find and compare all reviews.
@@ -325,6 +332,45 @@ Collated Report:
 Phase 3: Present to User
   → Fix common issues immediately (high confidence)
   → User decides on exclusive issues case-by-case
+```
+
+## Example Usage: Codebase Research
+
+```
+User: How does the authentication system work in this codebase?
+
+You: I'm using the dual-verification-review skill for comprehensive research.
+
+Phase 1: Dual Independent Research
+  → Dispatch 2 Explore agents in parallel
+  → Each investigates auth system independently
+  → Agent #1 finds: JWT middleware, session handling, role-based access
+  → Agent #2 finds: OAuth integration, token refresh, permission checks
+
+Phase 2: Collate Findings
+  → Dispatch review-collation-agent
+  → Identifies: 4 common findings, 3 unique insights, 1 divergence
+
+Collated Report:
+  Common Findings (High Confidence): 4
+    - JWT tokens used for API auth (both found)
+    - Middleware in src/auth/middleware.ts (both found)
+    - Role enum defines permissions (both found)
+    - Refresh tokens stored in Redis (both found)
+
+  Unique Insights: 3
+    - Agent #1: Found legacy session fallback for admin routes
+    - Agent #2: Found OAuth config for SSO integration
+    - Agent #2: Found rate limiting on auth endpoints
+
+  Divergence: 1
+    - Token expiry: Agent #1 says 1 hour, Agent #2 says 24 hours
+    - → Verification: Config has 1h access + 24h refresh (both partially correct)
+
+Phase 3: Present to User
+  → Common findings = confident understanding
+  → Unique insights = additional context worth knowing
+  → Resolved divergence = clarified token strategy
 ```
 
 ## Related Skills

@@ -126,15 +126,11 @@ Reviewers disagree or have contradictory findings.
 - [ ] **[Issue]:** [brief action item]
 - [ ] **[Issue]:** [brief action item]
 
-**Rationale:** Both reviewers independently identified these as blocking issues.
-
 ### Judgment Required (Exclusive BLOCKING)
 [Issues where only one reviewer found blocking concerns - user should review reasoning and decide]
 
 - [ ] **[Issue]** (Reviewer #[1/2] only): [brief description]
   - Review reasoning: [why this needs user judgment]
-
-**Rationale:** Only one reviewer flagged as blocking. Assess whether this represents a real concern or edge case.
 
 ### For Consideration (NON-BLOCKING)
 [Improvement suggestions found by one or both reviewers]
@@ -143,16 +139,12 @@ Reviewers disagree or have contradictory findings.
   - Benefit: [how this improves quality]
   - Found by: [Both / Reviewer #1 / Reviewer #2]
 
-**Rationale:** These improvements are optional but would enhance quality.
-
 ### Investigation Needed (Divergences)
 [Areas where reviewers disagree - verification analysis provided, but user makes final call]
 
 - [ ] **[Issue]:** [divergence description]
   - Verification suggests: [recommendation from verification agent]
   - User should: [decide based on verification / investigate further / clarify requirements]
-
-**Rationale:** Divergences indicate uncertainty that requires resolution before proceeding.
 
 ## Overall Assessment
 
@@ -187,25 +179,3 @@ Reviewers disagree or have contradictory findings.
 **If APPROVED:**
 - Proceed with execution/merge
 - Optional: Note suggestions for future improvements
-
----
-
-## Template Usage Notes
-
-**For collation agents:**
-1. Replace all {placeholders} with actual values
-2. Fill metadata section completely
-3. Categorize ALL issues from both reviews
-4. Include verification analysis for any divergences
-5. Provide clear, actionable recommendations
-6. Save to: `.work/{YYYY-MM-DD}-collated-{review-type}-{HHmmss}.md`
-
-**Confidence levels explained:**
-- **VERY HIGH:** Both reviewers found independently → Fix immediately
-- **MODERATE:** One reviewer found → Requires judgment
-- **INVESTIGATE:** Reviewers disagree → Verification provided, user decides
-
-**When to use each section:**
-- **Common Issues:** Same issue found by both (may have different wording)
-- **Exclusive Issues:** Only one reviewer found
-- **Divergences:** Reviewers contradict each other on same location/topic

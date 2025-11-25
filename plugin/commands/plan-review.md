@@ -137,5 +137,5 @@ Use Task tool with:
 - Plan Review Skill: `${CLAUDE_PLUGIN_ROOT}skills/conducting-plan-review/SKILL.md`
 - Plan Reviewer Agent: `${CLAUDE_PLUGIN_ROOT}agents/plan-review-agent.md`
 - Review Collator Agent: `${CLAUDE_PLUGIN_ROOT}agents/review-collation-agent.md` (generic collation for all review types)
-- Template: `${CLAUDE_PLUGIN_ROOT}templates/plan-evaluation-template.md`
+- Template: `${CLAUDE_PLUGIN_ROOT}templates/plan-review-template.md`
 - Integration: Use before `/execute` to validate plans
