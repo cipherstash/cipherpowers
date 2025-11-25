@@ -100,3 +100,70 @@ echo "  1. Add this plugin to Claude Code configuration"
 echo "  2. Restart Claude Code to load the plugin"
 echo ""
 """
+
+# Hook logging tasks
+[tasks.logs]
+description = "Tail hook logs (enable with CIPHERPOWERS_LOG=1)"
+run = """
+LOG_FILE=$(node plugin/hooks/hooks-app/dist/cli.js log-path)
+if [[ -f "$LOG_FILE" ]]; then
+  tail -f "$LOG_FILE"
+else
+  echo "No log file found at: $LOG_FILE"
+  echo ""
+  echo "Enable logging by setting: export CIPHERPOWERS_LOG=1"
+  echo "Then trigger a hook event (e.g., edit a file in Claude Code)"
+fi
+"""
+
+[tasks."logs:errors"]
+description = "Tail hook logs, showing only errors"
+run = """
+LOG_FILE=$(node plugin/hooks/hooks-app/dist/cli.js log-path)
+if [[ -f "$LOG_FILE" ]]; then
+  tail -f "$LOG_FILE" | jq -c 'select(.level == "error")'
+else
+  echo "No log file found at: $LOG_FILE"
+  echo "Enable logging by setting: export CIPHERPOWERS_LOG=1"
+fi
+"""
+
+[tasks."logs:all"]
+description = "Tail all recent hook logs (last 7 days)"
+run = """
+LOG_DIR=$(node plugin/hooks/hooks-app/dist/cli.js log-dir)
+if [[ -d "$LOG_DIR" ]]; then
+  tail -f "$LOG_DIR"/hooks-*.log
+else
+  echo "No log directory found at: $LOG_DIR"
+  echo "Enable logging by setting: export CIPHERPOWERS_LOG=1"
+fi
+"""
+
+[tasks."logs:pretty"]
+description = "Tail hook logs with pretty formatting"
+run = '''
+LOG_FILE=$(node plugin/hooks/hooks-app/dist/cli.js log-path)
+if [[ -f "$LOG_FILE" ]]; then
+  tail -f "$LOG_FILE" | jq -r '"\(.ts | split("T")[1] | split(".")[0]) [\(.level | ascii_upcase)] \(.event // .message) \(del(.ts, .level, .event, .message) | to_entries | map("\(.key)=\(.value)") | join(" "))"'
+else
+  echo "No log file found at: $LOG_FILE"
+  echo "Enable logging by setting: export CIPHERPOWERS_LOG=1"
+fi
+'''
+
+[tasks."logs:path"]
+description = "Show current log file path"
+run = "node plugin/hooks/hooks-app/dist/cli.js log-path"
+
+[tasks."logs:clear"]
+description = "Clear today's log file"
+run = """
+LOG_FILE=$(node plugin/hooks/hooks-app/dist/cli.js log-path)
+if [[ -f "$LOG_FILE" ]]; then
+  rm "$LOG_FILE"
+  echo "Cleared: $LOG_FILE"
+else
+  echo "No log file to clear"
+fi
+"""
