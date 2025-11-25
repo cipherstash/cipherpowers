@@ -25,15 +25,20 @@ Conventions allow project-specific hook behavior without editing `gates.json`. P
 - Plan review agent: `.claude/context/plan-review-agent-plan-review-start.md`
 
 **Supported hooks:**
+- `SessionStart` - At beginning of Claude Code session
+- `SessionEnd` - At end of Claude Code session
 - `SlashCommandStart` - Before command executes
 - `SlashCommandEnd` - After command completes
 - `SkillStart` - When skill loads
 - `SkillEnd` - When skill completes
 - `SubagentStop` - After agent completes (supports agent-command scoping)
 - `UserPromptSubmit` - Before user prompt is processed
+- `PreToolUse` - Before a tool is used
+- `PostToolUse` - After a tool is used
+- `Stop` - When agent stops
+- `Notification` - When notification is received
 
-**Not yet supported (but prepared for):**
-- `SessionStart` - At beginning of Claude Code session (see examples/context/session-start.md for template)
+**All Claude Code hook types are supported.** Plugin provides default context for `SessionStart` via `${CLAUDE_PLUGIN_ROOT}/context/session-start.md`.
 
 **Examples:**
 
@@ -80,19 +85,36 @@ All structures supported - use what fits your project size.
 
 ## Discovery Order
 
-Dispatcher searches paths in priority order:
+Dispatcher searches paths in priority order. **Project-level context takes precedence over plugin-level context.**
 
 **For SubagentStop (agent completion):**
+
+Project paths (checked first):
 1. `.claude/context/{agent}-{command}-end.md` (agent + command/skill)
 2. `.claude/context/{agent}-end.md` (agent only)
-3. Standard discovery paths (backward compat)
+
+Plugin paths (fallback):
+3. `${CLAUDE_PLUGIN_ROOT}/context/{agent}-{command}-end.md`
+4. `${CLAUDE_PLUGIN_ROOT}/context/{agent}-end.md`
+
+Standard discovery (backward compat):
+5. Command/skill-specific paths
 
 **For Commands and Skills:**
+
+Project paths (checked first):
 1. `.claude/context/{name}-{stage}.md`
 2. `.claude/context/slash-command/{name}-{stage}.md`
 3. `.claude/context/slash-command/{name}/{stage}.md`
 4. `.claude/context/skill/{name}-{stage}.md`
 5. `.claude/context/skill/{name}/{stage}.md`
+
+Plugin paths (fallback):
+6. `${CLAUDE_PLUGIN_ROOT}/context/{name}-{stage}.md`
+7. `${CLAUDE_PLUGIN_ROOT}/context/slash-command/{name}-{stage}.md`
+8. `${CLAUDE_PLUGIN_ROOT}/context/slash-command/{name}/{stage}.md`
+9. `${CLAUDE_PLUGIN_ROOT}/context/skill/{name}-{stage}.md`
+10. `${CLAUDE_PLUGIN_ROOT}/context/skill/{name}/{stage}.md`
 
 First match wins.
 
