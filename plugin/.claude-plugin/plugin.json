@@ -7,6 +7,5 @@
     "email": "toby@cipherstash.com",
     "url": "cipherstash.com"
   },
-  "repository": "https://github.com/cipherstash/cipherpowers",
-  "hooks": "./hooks/hooks.json"
+  "repository": "https://github.com/cipherstash/cipherpowers"
 }
