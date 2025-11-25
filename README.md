@@ -148,7 +148,7 @@ For best results when implementing new features or tackling complex tasks, follo
 - Automatically selects specialized agents for each task type
 - Executes in 3-task batches with code review checkpoints
 - Ensures all feedback addressed before proceeding
-- Optional execute completion review (`/review execute-completion`) for plan adherence verification (user-requested, not automatic)
+- Optional execute verification (`/verify execute`) for plan adherence verification (user-requested, not automatic)
 - Prompts for retrospective when complete
 
 **Why this matters:**
@@ -169,7 +169,7 @@ For best results when implementing new features or tackling complex tasks, follo
 - `/plan` - Create detailed implementation plans
 - `/plan-review` - Evaluate implementation plans before execution
 - `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
-- `/review execute-completion` - Optional dual-verification of batch implementation vs plan (on-demand, not automatic)
+- `/verify execute` - Optional dual-verification of batch implementation vs plan (on-demand, not automatic)
 
 **Code Quality:**
 - `/code-review` - Manual code review trigger

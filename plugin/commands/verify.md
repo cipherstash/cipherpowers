@@ -49,6 +49,8 @@ Skill(skill: "cipherpowers:dual-verification-review")
 | research | cipherpowers:research-agent | Information completeness, accuracy |
 | docs | cipherpowers:technical-writer | Documentation accuracy, completeness |
 
+**Note:** `/verify plan` supersedes the standalone `/plan-review` command. Both use the same dual-verification pattern with plan-review-agent.
+
 ## Verification Types
 
 ### Code Verification

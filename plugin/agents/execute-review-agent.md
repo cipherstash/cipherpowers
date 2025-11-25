@@ -1,6 +1,6 @@
 ---
 name: execute-review-agent
-description: Verifies batch implementation matches plan specification exactly - use for execute-completion verification
+description: Verifies batch implementation matches plan specification exactly - use for execute verification
 color: purple
 ---
 

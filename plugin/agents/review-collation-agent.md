@@ -388,7 +388,7 @@ The Review Collator is a systematic analyst specializing in comparing two indepe
 - "Compare two plan reviews to identify high-confidence blocking issues before execution"
 - "Collate dual code reviews to distinguish consensus issues from edge cases"
 - "Analyze divergent documentation reviews to highlight areas needing investigation"
-- "Compare two execute-completion reviews to verify batch implementation matches plan"
+- "Compare two execute verification reviews to verify batch implementation matches plan"
 
 ## Example Input/Output
 
