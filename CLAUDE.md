@@ -164,14 +164,19 @@ Skills enable discovery:
 - No need to hardcode commit knowledge into every agent
 - Update workflow in skill → all agents benefit
 
-**Example: Documentation Structure**
+**Example: Documentation Workflow**
 - `plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
 - `skills/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
 - `skills/capturing-learning/` = Workflow (retrospective capture process)
-- `plugin/commands/doc-review.md` = Dispatcher (triggers maintenance workflow with project context)
+- `plugin/agents/technical-writer.md` = Mode-aware agent (VERIFICATION or EXECUTION mode)
 - `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
-All five components work together without duplication. Change documentation standards once, both skills and commands use the updated version automatically.
+Documentation follows the standard verify → plan → execute pattern:
+- `/verify docs` → Dual technical-writers find issues (VERIFICATION mode)
+- `/plan` → Create fix plan if complex
+- `/execute` → Technical-writer applies fixes (EXECUTION mode)
+
+All components work together without duplication. Change documentation standards once, all workflows use the updated version automatically.
 
 **Example: Plan Execution with Automatic Agent Selection**
 - `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)

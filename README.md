@@ -176,7 +176,7 @@ For best results when implementing new features or tackling complex tasks, follo
 - `/commit` - Commit with conventional format
 
 **Documentation:**
-- `/doc-review` - Sync documentation with code changes
+- `/verify docs` - Dual-verification to find documentation issues
 - `/summarise` - Capture learning and create retrospectives
 
 ## Skills and Practices
