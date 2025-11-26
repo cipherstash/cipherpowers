@@ -33,6 +33,22 @@ function shouldProcessHook(input, hookConfig) {
 const MAX_GATES_PER_DISPATCH = 10;
 // Built-in gates removed - context injection is the primary behavior
 // Context injection happens via injectContext() which discovers .claude/context/ files
+/**
+ * Check if gate should run based on keyword matching (UserPromptSubmit only).
+ * Gates without keywords always run (backwards compatible).
+ */
+function gateMatchesKeywords(gateConfig, userMessage) {
+    // No keywords = always run (backwards compatible)
+    if (!gateConfig.keywords || gateConfig.keywords.length === 0) {
+        return true;
+    }
+    // No user message = skip keyword gates
+    if (!userMessage) {
+        return false;
+    }
+    const lowerMessage = userMessage.toLowerCase();
+    return gateConfig.keywords.some(keyword => lowerMessage.includes(keyword.toLowerCase()));
+}
 async function updateSessionState(input) {
     const session = new session_1.Session(input.cwd);
     const event = input.hook_event_name;
@@ -139,6 +155,11 @@ async function dispatch(input) {
         if (!gateConfig) {
             // Graceful degradation: skip undefined gates with warning
             accumulatedContext += `\nWarning: Gate '${gateName}' not defined, skipping`;
+            continue;
+        }
+        // Keyword filtering for UserPromptSubmit
+        if (hookEvent === 'UserPromptSubmit' && !gateMatchesKeywords(gateConfig, input.user_message)) {
+            await logger_1.logger.debug('Gate skipped - no keyword match', { gate: gateName });
             continue;
         }
         gatesExecuted++;

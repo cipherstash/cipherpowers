@@ -7,7 +7,7 @@ Automated quality enforcement and context injection via Claude Code's hook syste
 **Zero configuration required!** The plugin provides sensible defaults:
 
 - **SessionStart**: Injects agent selection guide
-- **UserPromptSubmit**: Injects project commands from CLAUDE.md when referenced
+- **UserPromptSubmit**: Runs keyword-triggered gates (check, test, build) when relevant keywords detected
 
 **Optional: Add project-specific configuration:**
 
@@ -55,7 +55,7 @@ All 12 Claude Code hook types are supported:
 |-------|----------------|------------------|
 | `SessionStart` | `session-start.md` | Plugin injects agent selection guide |
 | `SessionEnd` | `session-end.md` | - |
-| `UserPromptSubmit` | `prompt-submit.md` | Plugin runs `commands` gate |
+| `UserPromptSubmit` | `prompt-submit.md` | Keyword-triggered gates (check, test, build) |
 | `SlashCommandStart` | `{command}-start.md` | - |
 | `SlashCommandEnd` | `{command}-end.md` | - |
 | `SkillStart` | `{skill}-start.md` | - |
@@ -131,15 +131,44 @@ Gates without `command` field are TypeScript modules in `src/gates/`:
 ```json
 {
   "gates": {
-    "commands": {
-      "description": "Inject project commands",
-      "on_pass": "CONTINUE"
+    "plan-compliance": {
+      "description": "Verify work follows the active plan",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
     }
   }
 }
 ```
 
 See **[TYPESCRIPT.md](./TYPESCRIPT.md)** for creating TypeScript gates.
+
+### Keyword-Triggered Gates
+
+Gates can define `keywords` to only run when the user message contains matching terms:
+
+```json
+{
+  "gates": {
+    "test": {
+      "description": "Run project test suite",
+      "keywords": ["test", "testing", "spec", "verify"],
+      "command": "npm test",
+      "on_pass": "CONTINUE",
+      "on_fail": "BLOCK"
+    }
+  },
+  "hooks": {
+    "UserPromptSubmit": {
+      "gates": ["test"]
+    }
+  }
+}
+```
+
+**Behavior:**
+- Gates with `keywords` only run if any keyword is found in the user message
+- Gates without `keywords` always run (backwards compatible)
+- Keyword matching is case-insensitive
 
 ## Configuration Merging
 

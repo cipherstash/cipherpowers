@@ -1,10 +1,5 @@
 {
   "gates": {
-    "commands": {
-      "description": "Context-aware command injection from CLAUDE.md frontmatter",
-      "on_pass": "CONTINUE",
-      "on_fail": "CONTINUE"
-    },
     "plan-compliance": {
       "description": "Verify work follows the active plan",
       "on_pass": "CONTINUE",
@@ -17,18 +12,21 @@
     },
     "check": {
       "description": "Run project quality checks (formatting, linting, types)",
+      "keywords": ["lint", "check", "format", "quality", "clippy", "typecheck"],
       "command": "echo '[PLACEHOLDER] Quality checks passed. TODO: Configure with actual project check command (e.g., mise run check, npm run lint, cargo clippy)'",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
     },
     "test": {
       "description": "Run project test suite",
+      "keywords": ["test", "testing", "spec", "verify"],
       "command": "echo '[PLACEHOLDER] Tests passed. TODO: Configure with actual project test command (e.g., mise run test, npm test, cargo test)'",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
     },
     "build": {
       "description": "Run project build",
+      "keywords": ["build", "compile", "package"],
       "command": "echo '[PLACEHOLDER] Build passed. TODO: Configure with actual project build command (e.g., mise run build, npm run build, cargo build)'",
       "on_pass": "CONTINUE",
       "on_fail": "CONTINUE"
@@ -36,7 +34,7 @@
   },
   "hooks": {
     "UserPromptSubmit": {
-      "gates": ["commands"]
+      "gates": ["check", "test", "build"]
     },
     "PostToolUse": {
       "enabled_tools": ["Edit", "Write", "mcp__serena__replace_symbol_body"],

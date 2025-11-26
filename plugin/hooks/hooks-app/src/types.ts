@@ -38,6 +38,7 @@ export type GateExecute = (input: HookInput) => Promise<GateResult>;
 
 export interface GateConfig {
   command?: string;
+  keywords?: string[];  // Keywords that trigger this gate (UserPromptSubmit only)
   on_pass?: string;
   on_fail?: string;
 }

@@ -20,6 +20,7 @@ export interface GateResult {
 export type GateExecute = (input: HookInput) => Promise<GateResult>;
 export interface GateConfig {
     command?: string;
+    keywords?: string[];
     on_pass?: string;
     on_fail?: string;
 }
