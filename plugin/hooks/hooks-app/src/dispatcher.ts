@@ -47,8 +47,14 @@ const MAX_GATES_PER_DISPATCH = 10;
 /**
  * Check if gate should run based on keyword matching (UserPromptSubmit only).
  * Gates without keywords always run (backwards compatible).
+ *
+ * Note: Uses substring matching, not word-boundary matching. This means "test"
+ * will match "latest" or "contest". This is intentional for flexibility - users
+ * can say "let's test this" or "testing the feature" and both will match.
+ * If word-boundary matching is needed in the future, consider using regex like:
+ * /\b${keyword}\b/i.test(message)
  */
-function gateMatchesKeywords(gateConfig: GateConfig, userMessage: string | undefined): boolean {
+export function gateMatchesKeywords(gateConfig: GateConfig, userMessage: string | undefined): boolean {
   // No keywords = always run (backwards compatible)
   if (!gateConfig.keywords || gateConfig.keywords.length === 0) {
     return true;

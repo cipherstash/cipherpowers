@@ -38,7 +38,13 @@ export type GateExecute = (input: HookInput) => Promise<GateResult>;
 
 export interface GateConfig {
   command?: string;
-  keywords?: string[];  // Keywords that trigger this gate (UserPromptSubmit only)
+  /**
+   * Keywords that trigger this gate (UserPromptSubmit hook only).
+   * When specified, the gate only runs if the user message contains one of these keywords.
+   * For all other hooks (PostToolUse, SubagentStop, etc.), this field is ignored.
+   * Gates without keywords always run (backwards compatible).
+   */
+  keywords?: string[];
   on_pass?: string;
   on_fail?: string;
 }

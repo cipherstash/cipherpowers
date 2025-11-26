@@ -1,6 +1,6 @@
 // plugin/hooks/hooks-app/__tests__/dispatcher.test.ts
-import { shouldProcessHook, dispatch } from '../src/dispatcher';
-import { HookInput, HookConfig } from '../src/types';
+import { shouldProcessHook, dispatch, gateMatchesKeywords } from '../src/dispatcher';
+import { HookInput, HookConfig, GateConfig } from '../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
@@ -182,5 +182,82 @@ describe('Dispatcher - Gate Chaining', () => {
     // Should hit circuit breaker
     expect(result.blockReason).toContain('Exceeded max gate chain depth');
     expect(result.blockReason).toContain('circular');
+  });
+});
+
+describe('Keyword Matching', () => {
+  test('no keywords - gate always runs', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test'
+    };
+
+    expect(gateMatchesKeywords(gateConfig, 'hello world')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, undefined)).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, '')).toBe(true);
+  });
+
+  test('empty keywords array - gate always runs', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: []
+    };
+
+    expect(gateMatchesKeywords(gateConfig, 'hello world')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, undefined)).toBe(true);
+  });
+
+  test('no user message with keywords - gate does not run', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: ['test', 'testing']
+    };
+
+    expect(gateMatchesKeywords(gateConfig, undefined)).toBe(false);
+    expect(gateMatchesKeywords(gateConfig, '')).toBe(false);
+  });
+
+  test('keyword match - case insensitive', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: ['test']
+    };
+
+    expect(gateMatchesKeywords(gateConfig, 'run the TEST')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'RUN THE Test')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'test this')).toBe(true);
+  });
+
+  test('multiple keywords - any matches', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: ['test', 'testing', 'spec', 'verify']
+    };
+
+    expect(gateMatchesKeywords(gateConfig, 'run the tests')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'verify this works')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'check the spec')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'we are testing')).toBe(true);
+  });
+
+  test('no keyword match - gate does not run', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: ['test', 'testing']
+    };
+
+    expect(gateMatchesKeywords(gateConfig, 'hello world')).toBe(false);
+    expect(gateMatchesKeywords(gateConfig, 'run the linter')).toBe(false);
+  });
+
+  test('substring matching - partial word matches', () => {
+    const gateConfig: GateConfig = {
+      command: 'npm test',
+      keywords: ['test']
+    };
+
+    // Intentional substring matching (not word-boundary)
+    expect(gateMatchesKeywords(gateConfig, 'latest version')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'contest results')).toBe(true);
+    expect(gateMatchesKeywords(gateConfig, 'testing')).toBe(true);
   });
 });

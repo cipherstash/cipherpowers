@@ -177,9 +177,13 @@ Gates without keywords always run (for PostToolUse, SubagentStop hooks).
 
 ## Migration from CLAUDE.md Frontmatter
 
+### Breaking Change
+
+**CLAUDE.md frontmatter is no longer supported.** The plugin has removed parsing of YAML frontmatter from CLAUDE.md files. Projects must migrate to `.claude/gates.json` configuration.
+
 If you previously used CLAUDE.md frontmatter:
 
-**Before (deprecated):**
+**Before (removed):**
 ```yaml
 ---
 commands:

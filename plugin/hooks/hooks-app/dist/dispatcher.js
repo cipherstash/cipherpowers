@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldProcessHook = shouldProcessHook;
+exports.gateMatchesKeywords = gateMatchesKeywords;
 exports.dispatch = dispatch;
 const config_1 = require("./config");
 const context_1 = require("./context");
@@ -36,6 +37,12 @@ const MAX_GATES_PER_DISPATCH = 10;
 /**
  * Check if gate should run based on keyword matching (UserPromptSubmit only).
  * Gates without keywords always run (backwards compatible).
+ *
+ * Note: Uses substring matching, not word-boundary matching. This means "test"
+ * will match "latest" or "contest". This is intentional for flexibility - users
+ * can say "let's test this" or "testing the feature" and both will match.
+ * If word-boundary matching is needed in the future, consider using regex like:
+ * /\b${keyword}\b/i.test(message)
  */
 function gateMatchesKeywords(gateConfig, userMessage) {
     // No keywords = always run (backwards compatible)

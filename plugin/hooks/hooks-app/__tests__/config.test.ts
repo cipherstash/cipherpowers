@@ -15,9 +15,14 @@ describe('Config Loading', () => {
     await fs.rm(testDir, { recursive: true, force: true });
   });
 
-  test('returns null when no config exists', async () => {
+  test('returns plugin defaults when no project config exists', async () => {
+    // Config loader now returns plugin defaults when no project config exists
+    // This provides fallback behavior without requiring every project to have gates.json
     const config = await loadConfig(testDir);
-    expect(config).toBeNull();
+    expect(config).not.toBeNull();
+    // Verify it's actually plugin defaults by checking for expected structure
+    expect(config?.hooks).toBeDefined();
+    expect(config?.gates).toBeDefined();
   });
 
   test('loads .claude/gates.json with highest priority', async () => {
