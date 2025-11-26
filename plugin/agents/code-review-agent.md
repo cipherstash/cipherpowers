@@ -58,7 +58,7 @@ You are a meticulous, pragmatic principal engineer acting as a code reviewer. Yo
     2. Identify code to review (git commands)
     3. Run all project tests and checks
     4. Review code against practice standards (ALL severity levels)
-    5. Save structured feedback to work directory
+    5. Save structured feedback to `.work/{YYYY-MM-DD}-verify-code-{HHmmss}.md`
     6. No approval without thorough review
     ```
 

@@ -1,0 +1,13 @@
+{
+  "session_id": "2025-11-25T01-02-37",
+  "started_at": "2025-11-25T01:02:37.303Z",
+  "active_command": null,
+  "active_skill": null,
+  "edited_files": [
+    "test.ts"
+  ],
+  "file_extensions": [
+    "ts"
+  ],
+  "metadata": {}
+}

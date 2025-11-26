@@ -13,7 +13,7 @@ Systematic plan evaluation process ensuring plans are comprehensive, executable,
 
 ## When to Use
 
-Use conducting-plan-review when:
+Use verifying-plans when:
 
 - **Before executing implementation plan:** Validate quality and completeness before agents start work
 - **After writing a plan:** Quality-check the plan you just created
@@ -21,42 +21,11 @@ Use conducting-plan-review when:
 - **When plan scope is uncertain:** Verify all requirements are covered
 - **Default before /execute:** Standard quality gate before plan execution
 
-**Choose verification mode:**
-- **Dual verification (default):** High-stakes plans, first-time execution, critical features
-- **Single agent:** Regular plans, time-sensitive work, following up on dual review
-
 **Don't use when:**
 - Plan is simple checklist (1-3 trivial steps)
 - Doing research/exploration (not implementation plan)
 - Plan already executed and complete
 
-## Single vs Dual Verification
-
-**Single agent review** (this skill):
-- One plan-review-agent agent applies 35 quality criteria
-- Faster, suitable for regular plan reviews
-- Use when: Incremental work, experienced author, lower stakes
-
-**Dual verification review** (comprehensive audit):
-- Two plan-review-agent agents independently apply criteria
-- Collation agent identifies common issues, exclusive issues, divergences
-- Higher quality, better for high-stakes decisions
-- Use when: Complex plans, critical features, uncertain quality
-
-**See:** `${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md` for comprehensive dual-verification approach.
-
-**When to use dual verification:**
-- Pre-execution review of large/complex plans
-- High-risk features (security, data integrity, performance)
-- Uncertain plan quality or completeness
-- First time planning a particular type of work
-- Plans that will be executed by multiple agents
-
-**When single agent review is sufficient:**
-- Regular incremental work
-- Experienced planner, established patterns
-- Follow-up reviews after addressing BLOCKING issues
-- Time-sensitive situations (balanced against risk)
 
 ## Quick Reference
 
@@ -86,7 +55,7 @@ Read these to understand quality standards:
 #### 1. Identify plan to review
 
 **Locate the plan:**
-- Plan files are typically in `.work/` directory
+- Plan files are typically in `.work/<feature-name>` directory
 - Naming pattern: `YYYY-MM-DD-<feature-name>.md`
 - Check current directory or ask user for plan location
 
@@ -97,7 +66,7 @@ Read these to understand quality standards:
 
 #### 2. Review against quality checklist
 
-**Review ALL categories from plan-review-template.md:**
+**Review ALL categories from verify-plan-template.md:**
 
 1. **Security & Correctness** (6 items)
    - Does plan address security vulnerabilities in design?
@@ -189,7 +158,7 @@ Use SUGGESTIONS when:
 #### 4. Save structured evaluation
 
 **Template location:**
-`${CLAUDE_PLUGIN_ROOT}templates/plan-review-template.md`
+`${CLAUDE_PLUGIN_ROOT}templates/verify-plan-template.md`
 
 **YOU MUST use this exact structure:**
 
@@ -233,9 +202,9 @@ Use SUGGESTIONS when:
 
 **File naming:**
 
-Save to `.work/{YYYY-MM-DD}-plan-evaluation-{HHmmss}.md`
+Save to `.work/{YYYY-MM-DD}-verify-plan-{HHmmss}.md`
 
-Example: `.work/2025-11-22-plan-evaluation-143052.md`
+Example: `.work/2025-11-22-verify-plan-143052.md`
 
 **Time-based naming ensures:**
 - No conflicts when multiple agents run in parallel (dual verification)

@@ -18,22 +18,22 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     - @README.md
     - @CLAUDE.md
 
-    This agent implements dual-verification-review collation phase.
+    This agent implements dual-verification collation phase.
   </context>
 
   <mandatory_skill_activation>
     ## MANDATORY: Skill Activation
 
     **Load skill context:**
-    @${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md
+    @${CLAUDE_PLUGIN_ROOT}skills/dual-verification/SKILL.md
 
     **Step 1 - EVALUATE:** State YES/NO for skill activation:
-    - Skill: "cipherpowers:dual-verification-review"
+    - Skill: "cipherpowers:dual-verification"
     - Applies to this task: YES/NO (reason)
 
     **Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
     ```
-    Skill(skill: "cipherpowers:dual-verification-review")
+    Skill(skill: "cipherpowers:dual-verification")
     ```
 
     ⚠️ Do NOT proceed without completing skill evaluation and activation.
@@ -209,7 +209,7 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
 
     **YOU MUST use the collation report template. NO EXCEPTIONS.**
 
-    **Template location:** `${CLAUDE_PLUGIN_ROOT}templates/collation-report-template.md`
+    **Template location:** `${CLAUDE_PLUGIN_ROOT}templates/verify-collation-template.md`
 
     **Read the template and follow its structure EXACTLY:**
     - Metadata section (review type, date, reviewers, subject, review files)
@@ -231,12 +231,12 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
 
     **YOU MUST save the collated report before completing. NO EXCEPTIONS.**
 
-    **File naming:** Save to `.work/{YYYY-MM-DD}-collated-[review-type]-{HHmmss}.md`
+    **File naming:** Save to `.work/{YYYY-MM-DD}-verify-{type}-collated-{HHmmss}.md`
 
     Examples:
-    - Plan reviews: `.work/2025-11-22-collated-plan-review-143145.md`
-    - Code reviews: `.work/2025-11-22-collated-code-review-143145.md`
-    - Doc reviews: `.work/2025-11-22-collated-doc-review-143145.md`
+    - Plan verification: `.work/2025-11-22-verify-plan-collated-143145.md`
+    - Code verification: `.work/2025-11-22-verify-code-collated-143145.md`
+    - Doc verification: `.work/2025-11-22-verify-doc-collated-143145.md`
 
     **Time-based naming ensures** unique filename even if multiple collations run.
 

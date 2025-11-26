@@ -22,7 +22,7 @@ Conventions allow project-specific hook behavior without editing `gates.json`. P
 **Agent-Command Scoping:** `.claude/context/{agent}-{command}-{stage}.md`
 - Specific agent + command: `.claude/context/commit-agent-commit-start.md`
 - Agent with different command: `.claude/context/rust-agent-execute-end.md`
-- Plan review agent: `.claude/context/plan-review-agent-plan-review-start.md`
+- Plan review agent: `.claude/context/plan-review-agent-verify-start.md`
 
 **Supported hooks:**
 - `SessionStart` - At beginning of Claude Code session

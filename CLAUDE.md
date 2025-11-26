@@ -78,7 +78,7 @@ Commands and agents that dispatch to skills or provide project-specific workflow
 - Some commands (like `/execute`) orchestrate main Claude context with agent dispatch
 
 **Agents:** Specialized subagent prompts with enforced workflows
-- Handle specific roles (code-reviewer, rust-engineer, ultrathink-debugger, technical-writer, retrospective-writer, and others)
+- Handle specific roles (code-reviewer, rust-engineer, ultrathink-debugger, technical-writer, and others)
 - Contain non-negotiable workflows using persuasion principles
 - Reference practices for project-specific commands and conventions
 - Reference skills for methodology
@@ -183,7 +183,7 @@ All components work together without duplication. Change documentation standards
 - `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
 - `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
-- Specialized agents (commit-agent, code-agent, gatekeeper, plan-review-agent, rust-agent, ultrathink-debugger, code-review-agent, technical-writer, retrospective-writer)
+- Specialized agents (commit-agent, code-agent, gatekeeper, plan-review-agent, rust-agent, ultrathink-debugger, code-review-agent, technical-writer)
 
 The /execute command demonstrates:
 - Algorithmic format for workflow enforcement (100% compliance vs 0-33% imperative)

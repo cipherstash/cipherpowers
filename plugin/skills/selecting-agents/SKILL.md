@@ -71,22 +71,6 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **Key characteristic:** Reactive to code changes - syncs docs with current code state
 
-### retrospective-writer
-**When to use:** After completing a feature, task, or significant work session
-
-**Scenarios:**
-- Finished implementing a feature
-- Completed a complex debugging session
-- Wrapped up a refactoring effort
-- Solved a difficult problem
-- Learned something valuable during development
-
-**Skill used:** `capturing-learning` (potentially `writing-retrospectives`)
-
-**Command:** `/summarise`
-
-**Key characteristic:** Reflective after completion - captures decisions, lessons, insights
-
 ## Debugging Agents
 
 ### ultrathink-debugger
@@ -145,21 +129,21 @@ When selecting agents (manually or automatically), you must analyze the **task r
 - When plan quality needs validation
 - When plan scope or approach is uncertain
 
-**Skill used:** `conducting-plan-review`
+**Skill used:** `verifying-plans`
 
-**Command:** `/plan-review`
+**Command:** `/verify plan`
 
 **Key characteristic:** Evaluates plan against 35 quality criteria across 6 categories (Security, Testing, Architecture, Error Handling, Code Quality, Process)
 
 ## Common Confusions
 
-| Confusion | Correct Agent | Why |
-|-----------|---------------|-----|
-| "Just finished feature, need docs" | **Both agents needed** | technical-writer syncs API/feature docs, retrospective-writer captures learning |
+| Confusion | Correct Choice | Why |
+|-----------|----------------|-----|
+| "Just finished feature, need docs" | **technical-writer + /summarise** | technical-writer syncs API/feature docs, /summarise captures learning |
 | "Quick docs update" | **technical-writer** | All doc maintenance uses systematic process |
-| "Fixed bug, should document" | **retrospective-writer** | Capturing what you learned, not updating technical docs |
-| "Changed README" | **Depends** | Updated feature docs = technical-writer. Captured work summary = retrospective-writer |
-| "Production debugging done" | **retrospective-writer** | Document the investigation insights and lessons learned |
+| "Fixed bug, should document" | **/summarise command** | Capturing what you learned, not updating technical docs |
+| "Changed README" | **Depends** | Updated feature docs = technical-writer. Captured work summary = /summarise |
+| "Production debugging done" | **/summarise command** | Document the investigation insights and lessons learned |
 
 ## Selection Examples
 
@@ -167,11 +151,11 @@ When selecting agents (manually or automatically), you must analyze the **task r
 → **technical-writer** - Code changed, docs need sync
 
 **Scenario 2: Spent 3 hours debugging Azure timeout**
-→ **retrospective-writer** - Capture the investigation, decisions, solution
+→ **/summarise command** - Capture the investigation, decisions, solution
 
 **Scenario 3: Both apply - finished user authentication feature**
 → **technical-writer first** - Update API docs, configuration guide
-→ **retrospective-writer second** - Capture why you chose OAuth2, what issues you hit
+→ **/summarise second** - Capture why you chose OAuth2, what issues you hit
 
 **Scenario 4: Random test failures in CI**
 → **ultrathink-debugger** - Complex timing/environment issue needs deep investigation
@@ -187,9 +171,9 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 ## Remember
 
-- Most completed work needs **both** documentation agents (technical-writer for code sync, retrospective-writer for learning)
+- Most completed work needs **both** documentation types (technical-writer agent for code sync, /summarise for learning)
 - Use **technical-writer** when code changes
-- Use **retrospective-writer** when work completes
+- Use **/summarise command** when work completes
 - Use **ultrathink-debugger** for complex debugging (not simple bugs)
 - Use **rust-agent** for all Rust development
 - Use **code-review-agent** before merging code

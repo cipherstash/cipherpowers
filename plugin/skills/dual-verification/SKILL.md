@@ -1,5 +1,5 @@
 ---
-name: dual-verification-review
+name: dual-verification
 description: Use two independent agents for reviews or research, then collate findings to identify common findings, unique insights, and divergences
 when_to_use: comprehensive audits, plan reviews, code reviews, research tasks, codebase exploration, verifying content matches implementation, quality assurance for critical content
 version: 1.0.0
@@ -13,11 +13,11 @@ Use two independent agents to systematically review content or research a topic,
 
 **Core principle:** Independent dual perspective + systematic collation = higher quality, managed context.
 
-**Announce at start:** "I'm using the dual-verification-review skill for comprehensive [review/research]."
+**Announce at start:** "I'm using the dual-verification skill for comprehensive [review/research]."
 
 ## When to Use
 
-Use dual-verification-review when:
+Use dual-verification when:
 
 **For Reviews:**
 - **High-stakes decisions:** Before executing implementation plans, merging to production, or deploying
@@ -85,8 +85,8 @@ You are [agent type] conducting an independent verification review.
 **Critical instructions:**
 - Current content CANNOT be assumed correct. Verify every claim.
 - You MUST follow the review report template structure
-- Template location: ${CLAUDE_PLUGIN_ROOT}templates/review-template.md
-- You MUST save your review with timestamp: `.work/{YYYY-MM-DD}-[review-type]-{HHmmss}.md`
+- Template location: ${CLAUDE_PLUGIN_ROOT}templates/verify-template.md
+- You MUST save your review with timestamp: `.work/{YYYY-MM-DD}-verify-{type}-{HHmmss}.md`
 - Time-based naming prevents conflicts when agents run in parallel.
 - Work completely independently - the collation agent will find and compare all reviews.
 
@@ -149,9 +149,9 @@ Use Task tool with:
 
 **Critical instructions:**
 - You MUST follow the collation report template structure
-- Template location: ${CLAUDE_PLUGIN_ROOT}templates/collation-report-template.md
+- Template location: ${CLAUDE_PLUGIN_ROOT}templates/verify-collation-template.md
 - Read the template BEFORE starting collation
-- Save to: `.work/{YYYY-MM-DD}-collated-[review-type]-{HHmmss}.md`
+- Save to: `.work/{YYYY-MM-DD}-verify-{type}-collated-{HHmmss}.md`
 
 **Inputs:**
 - Review #1: [path to first review file]
@@ -272,7 +272,7 @@ Make the pattern flexible by specifying:
 ```
 User: Review this implementation plan before execution
 
-You: I'm using the dual-verification-review skill for comprehensive review.
+You: I'm using the dual-verification skill for comprehensive review.
 
 Phase 1: Dual Independent Review
   → Dispatch 2 plan-review-agent agents in parallel
@@ -307,7 +307,7 @@ Phase 3: Present to User
 ```
 User: Audit README.md and CLAUDE.md for accuracy
 
-You: I'm using the dual-verification-review skill for comprehensive documentation audit.
+You: I'm using the dual-verification skill for comprehensive documentation audit.
 
 Phase 1: Dual Independent Review
   → Dispatch 2 technical-writer agents in parallel
@@ -323,7 +323,7 @@ Collated Report:
   Common Issues (High Confidence): 7
     - Missing mise commands (CRITICAL)
     - Incorrect skill path (MEDIUM)
-    - Missing /plan-review command (HIGH)
+    - Missing /verify command (HIGH)
 
   Exclusive Issues: 6
     - Agent #1 only: 3 issues
@@ -339,7 +339,7 @@ Phase 3: Present to User
 ```
 User: How does the authentication system work in this codebase?
 
-You: I'm using the dual-verification-review skill for comprehensive research.
+You: I'm using the dual-verification skill for comprehensive research.
 
 Phase 1: Dual Independent Research
   → Dispatch 2 Explore agents in parallel
@@ -381,11 +381,11 @@ Phase 3: Present to User
 - Quality assurance for critical content
 
 **Other review skills:**
-- conducting-plan-review: Single plan-review-agent (faster, less thorough)
+- verifying-plans: Single plan-review-agent (faster, less thorough)
 - conducting-code-review: Single code-review-agent (regular reviews)
 - maintaining-docs-after-changes: Single technical-writer (incremental updates)
 
-**Use dual-verification-review when stakes are high, use single-agent skills for regular work.**
+**Use dual-verification when stakes are high, use single-agent skills for regular work.**
 
 ## Common Mistakes
 

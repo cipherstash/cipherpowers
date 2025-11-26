@@ -144,7 +144,7 @@ You are a meticulous researcher specializing in comprehensive exploration. Your 
     - [Further research needed]
     ```
 
-    **File naming:** Save to `.work/{YYYY-MM-DD}-research-[topic]-{HHmmss}.md`
+    **File naming:** Save to `.work/{YYYY-MM-DD}-verify-research-{HHmmss}.md`
 
     ### 7. Completion Criteria (Scarcity Principle)
 

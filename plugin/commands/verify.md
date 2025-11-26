@@ -19,15 +19,15 @@ Generic dual-verification dispatcher for high-confidence verification across all
 2. **MANDATORY: Skill Activation**
 
 **Load skill context:**
-@${CLAUDE_PLUGIN_ROOT}skills/dual-verification-review/SKILL.md
+@${CLAUDE_PLUGIN_ROOT}skills/dual-verification/SKILL.md
 
 **Step 1 - EVALUATE:** State YES/NO for skill activation:
-- Skill: "cipherpowers:dual-verification-review"
+- Skill: "cipherpowers:dual-verification"
 - Applies to this task: YES/NO (reason)
 
 **Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
-Skill(skill: "cipherpowers:dual-verification-review")
+Skill(skill: "cipherpowers:dual-verification")
 ```
 
 ⚠️ Do NOT proceed without completing skill evaluation and activation.
@@ -48,8 +48,6 @@ Skill(skill: "cipherpowers:dual-verification-review")
 | execute | cipherpowers:execute-review-agent | Plan adherence, implementation match |
 | research | cipherpowers:research-agent | Information completeness, accuracy |
 | docs | cipherpowers:technical-writer | Documentation accuracy, completeness |
-
-**Note:** `/verify plan` supersedes the standalone `/plan-review` command. Both use the same dual-verification pattern with plan-review-agent.
 
 ## Verification Types
 
@@ -214,7 +212,7 @@ Execute workflow uses verify for batch verification:
 
 ## Related Skills
 
-- `dual-verification-review` - Core pattern for all dual-verification
+- `dual-verification` - Core pattern for all dual-verification
 - `executing-plans` - Plan execution workflow integrating verification
 
 ## Related Agents
