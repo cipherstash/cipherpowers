@@ -133,7 +133,7 @@ Search order:
 
 ### Command Names
 - Remove leading slash and namespace: `/cipherpowers:code-review` → `code-review`
-- Use exact command name: `/plan` → `plan`
+- Use exact command name: `/cipherpowers:plan` → `plan`
 - Lowercase with hyphens
 
 ### Skill Names
@@ -257,7 +257,7 @@ mv .claude/context/code-review-start.md.disabled \
 
 **File:** `.claude/context/code-review-start.md`
 
-**Triggered by:** `/code-review` command
+**Triggered by:** `/cipherpowers:code-review` command
 
 **Content example:**
 ```markdown
@@ -275,7 +275,7 @@ mv .claude/context/code-review-start.md.disabled \
 
 **File:** `.claude/context/plan-start.md`
 
-**Triggered by:** `/plan` command
+**Triggered by:** `/cipherpowers:plan` command
 
 **Content example:**
 ```markdown

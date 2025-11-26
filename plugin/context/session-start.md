@@ -17,7 +17,7 @@ Before dispatching work to specialized agents, review the agent selection guide:
 - `cipherpowers:commit-agent` - Atomic commits with conventional format
 
 **Commands:**
-- `/summarise` - Learning capture after work completion (uses capturing-learning skill)
+- `/cipherpowers:summarise` - Learning capture after work completion (uses capturing-learning skill)
 
 **Selection criteria:**
 1. Task type (implementation, debugging, review, documentation)

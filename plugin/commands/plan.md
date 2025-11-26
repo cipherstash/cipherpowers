@@ -39,7 +39,7 @@ Skill(skill: "cipherpowers:writing-plans")
 - **100% reliability**: No interpretation, no skipping brainstorming
 - **Skill integration**: Automatic discovery via Skill tool
 - **Consistent structure**: Every plan follows proven template
-- **Ready for execution**: Plans integrate with `/execute` command
+- **Ready for execution**: Plans integrate with `/cipherpowers:execute` command
 
 ## What the Skill Does
 
@@ -53,5 +53,5 @@ The writing-plans skill provides:
 **References:**
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/writing-plans/SKILL.md`
 - Template: Used by skill for consistent structure
-- Integration: Seamless workflow → `/brainstorm` → `/plan` → `/execute`
+- Integration: Seamless workflow → `/cipherpowers:brainstorm` → `/cipherpowers:plan` → `/cipherpowers:execute`
 

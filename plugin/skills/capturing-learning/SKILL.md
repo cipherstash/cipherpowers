@@ -147,7 +147,7 @@ Ensure future discoverability:
 ## Integration with Commands/Agents
 
 This skill can be invoked by:
-- `/summarise` command for retrospective capture
+- `/cipherpowers:summarise` command for retrospective capture
 - Pre-merge checklist item
 - Sprint/iteration retrospective workflows
 - Code review requirements

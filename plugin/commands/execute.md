@@ -12,7 +12,7 @@ Execute implementation plans with automatic agent selection, batch-level code re
 
 2. Does a plan exist to execute?
    - YES → Continue to step 3
-   - NO → Run `/plan` first to create implementation plan, then return here
+   - NO → Run `/cipherpowers:plan` first to create implementation plan, then return here
 
 3. **MANDATORY: Skill Activation**
 
@@ -60,5 +60,5 @@ The executing-plans skill provides:
 - Skill: `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md`
 - Agent Selection: `${CLAUDE_PLUGIN_ROOT}skills/selecting-agents/SKILL.md`
 - Code Review: Automatic dispatch to cipherpowers:code-review-agent
-- Integration: Seamless workflow → `/brainstorm` → `/plan` → `/execute`
+- Integration: Seamless workflow → `/cipherpowers:brainstorm` → `/cipherpowers:plan` → `/cipherpowers:execute`
 

@@ -4,7 +4,7 @@ This file demonstrates convention-based context injection.
 
 **Location:** `.claude/context/code-review-start.md`
 
-**Triggered by:** Running `/code-review` command (SlashCommandStart hook)
+**Triggered by:** Running `/cipherpowers:code-review` command (SlashCommandStart hook)
 
 **Purpose:** Inject project-specific review requirements automatically.
 

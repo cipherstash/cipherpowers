@@ -13,7 +13,7 @@ Use the right agent for the job. Each agent is optimized for specific scenarios 
 
 **This skill helps you choose** which specialized agent to use based on the task at hand.
 
-**For automatic agent selection:** When executing implementation plans, use the `/execute` command which applies this skill's logic automatically with hybrid keyword/LLM analysis. Manual selection using this skill is for ad-hoc agent dispatch outside of plan execution.
+**For automatic agent selection:** When executing implementation plans, use the `/cipherpowers:execute` command which applies this skill's logic automatically with hybrid keyword/LLM analysis. Manual selection using this skill is for ad-hoc agent dispatch outside of plan execution.
 
 ## Agent Selection Logic
 
@@ -67,7 +67,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **Skill used:** `maintaining-docs-after-changes`
 
-**Command:** `/doc-review`
+**Command:** `/cipherpowers:verify docs`
 
 **Key characteristic:** Reactive to code changes - syncs docs with current code state
 
@@ -116,7 +116,7 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 **Skill used:** `conducting-code-review`
 
-**Command:** `/code-review`
+**Command:** `/cipherpowers:code-review`
 
 **Key characteristic:** Structured review process with severity levels (BLOCKING/NON-BLOCKING)
 
@@ -124,14 +124,14 @@ When selecting agents (manually or automatically), you must analyze the **task r
 **When to use:** Evaluating implementation plans before execution
 
 **Scenarios:**
-- After writing a plan with `/plan`
-- Before executing a plan with `/execute`
+- After writing a plan with `/cipherpowers:plan`
+- Before executing a plan with `/cipherpowers:execute`
 - When plan quality needs validation
 - When plan scope or approach is uncertain
 
 **Skill used:** `verifying-plans`
 
-**Command:** `/verify plan`
+**Command:** `/cipherpowers:verify plan`
 
 **Key characteristic:** Evaluates plan against 35 quality criteria across 6 categories (Security, Testing, Architecture, Error Handling, Code Quality, Process)
 

@@ -9,7 +9,7 @@ Block on all quality gate failures. Use when:
 
 Copy to use:
 ```bash
-cp plugin/hooks/examples/strict.json plugin/hooks/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/strict.json .claude/gates.json
 ```
 
 ## permissive.json
@@ -21,7 +21,7 @@ Warn on failures but continue. Use when:
 
 Copy to use:
 ```bash
-cp plugin/hooks/examples/permissive.json plugin/hooks/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/permissive.json .claude/gates.json
 ```
 
 ## pipeline.json
@@ -33,7 +33,7 @@ Chain gates in sequence (format → check → test → build). Use when:
 
 Copy to use:
 ```bash
-cp plugin/hooks/examples/pipeline.json plugin/hooks/gates.json
+cp ${CLAUDE_PLUGIN_ROOT}/hooks/examples/pipeline.json .claude/gates.json
 ```
 
 ## Customization

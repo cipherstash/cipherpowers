@@ -64,7 +64,7 @@ The plugin provides example configurations you can copy:
 ```bash
 # Copy example configuration (recommended)
 mkdir -p .claude
-cp ./hooks/examples/strict.json .claude/gates.json
+cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
 ```
 
 
@@ -98,26 +98,26 @@ Once installed, CipherPowers provides specialized slash commands in Claude Code:
 **Try the planning workflow:**
 ```
 # Start with an idea
-/brainstorm
+/cipherpowers:brainstorm
 
 # Create an implementation plan
-/plan
+/cipherpowers:plan
 
 # Execute the plan with automatic agent selection
-/execute [plan-file-path]
+/cipherpowers:execute [plan-file-path]
 ```
 
 **Or trigger code quality checks directly:**
 ```
 # In any Claude Code session
-/code-review
+/cipherpowers:code-review
 ```
 
 ## Recommended Workflow
 
 For best results when implementing new features or tackling complex tasks, follow this three-step workflow:
 
-### 1. Brainstorm (`/brainstorm`)
+### 1. Brainstorm (`/cipherpowers:brainstorm`)
 **When:** You have an idea but need to refine requirements and explore design options.
 
 **What it does:**
@@ -128,7 +128,7 @@ For best results when implementing new features or tackling complex tasks, follo
 
 **Skip if:** You already have a fully-detailed design spec.
 
-### 2. Plan (`/plan`)
+### 2. Plan (`/cipherpowers:plan`)
 **When:** After brainstorming, when you're ready to break down the implementation.
 
 **What it does:**
@@ -137,18 +137,18 @@ For best results when implementing new features or tackling complex tasks, follo
 - Includes step-by-step instructions and expected outcomes
 - Saves implementation plan to `.work/` directory
 
-**Note:** Design documents from `/brainstorm` are saved to `docs/plans/`
+**Note:** Design documents from `/cipherpowers:brainstorm` are saved to `docs/plans/`
 
 **Skip if:** The task is trivial (single file, < 10 lines of code).
 
-### 3. Execute (`/execute [plan-file]`)
+### 3. Execute (`/cipherpowers:execute [plan-file]`)
 **When:** You have a plan file and are ready to implement.
 
 **What it does:**
 - Automatically selects specialized agents for each task type
 - Executes in 3-task batches with code review checkpoints
 - Ensures all feedback addressed before proceeding
-- Optional execute verification (`/verify execute`) for plan adherence verification (user-requested, not automatic)
+- Optional execute verification (`/cipherpowers:verify execute`) for plan adherence verification (user-requested, not automatic)
 - Prompts for retrospective when complete
 
 **Why this matters:**
@@ -158,26 +158,26 @@ For best results when implementing new features or tackling complex tasks, follo
 - On-demand plan adherence verification when needed
 - Captures learning for future reference
 
-**Alternative:** For simple tasks without a plan, work directly in the session and use `/code-review` and `/commit` manually.
+**Alternative:** For simple tasks without a plan, work directly in the session and use `/cipherpowers:code-review` and `/cipherpowers:commit` manually.
 
 ## Available Commands
 
 ### CipherPowers Commands
 
 **Planning Workflow:**
-- `/brainstorm` - Refine ideas using Socratic method
-- `/plan` - Create detailed implementation plans
-- `/plan-review` - Evaluate implementation plans before execution
-- `/execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
-- `/verify execute` - Optional dual-verification of batch implementation vs plan (on-demand, not automatic)
+- `/cipherpowers:brainstorm` - Refine ideas using Socratic method
+- `/cipherpowers:plan` - Create detailed implementation plans
+- `/cipherpowers:verify plan` - Evaluate implementation plans before execution
+- `/cipherpowers:execute [plan-file]` - Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion
+- `/cipherpowers:verify execute` - Optional dual-verification of batch implementation vs plan (on-demand, not automatic)
 
 **Code Quality:**
-- `/code-review` - Manual code review trigger
-- `/commit` - Commit with conventional format
+- `/cipherpowers:code-review` - Manual code review trigger
+- `/cipherpowers:commit` - Commit with conventional format
 
 **Documentation:**
-- `/verify docs` - Dual-verification to find documentation issues
-- `/summarise` - Capture learning and create retrospectives
+- `/cipherpowers:verify docs` - Dual-verification to find documentation issues
+- `/cipherpowers:summarise` - Capture learning and create retrospectives
 
 ## Skills and Practices
 
@@ -262,7 +262,7 @@ The marketplace-based installation handles this automatically. If you're having 
 - `CONVENTIONS.md` - Convention-based context injection
 - `INTEGRATION_TESTS.md` - Testing procedures
 - `examples/` - Six gate configurations: strict.json, permissive.json, pipeline.json, convention-based.json, typescript-gates.json, plan-execution.json
-- `examples/context/` - Ready-to-use context injection files for code review, planning, and TDD
+- `examples/context/` - Four ready-to-use context files: code-review-start.md, plan-start.md, test-driven-development-start.md, session-start.md
 
 **Deep Dive:** See `CLAUDE.md` (auto-loaded by Claude Code and serves as reference documentation) for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
 - Understand the three-layer architecture (skills, automation, documentation)

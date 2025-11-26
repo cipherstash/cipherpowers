@@ -70,12 +70,12 @@ Reusable process knowledge documented as testable, discoverable guides for techn
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
 **Commands:** Slash commands users type
-- CipherPowers commands: `/brainstorm`, `/plan`, `/plan-review`, `/execute`, `/code-review`, `/commit`, `/doc-review`, `/summarise`
+- CipherPowers commands: `/cipherpowers:brainstorm`, `/cipherpowers:plan`, `/cipherpowers:execute`, `/cipherpowers:code-review`, `/cipherpowers:commit`, `/cipherpowers:verify`, `/cipherpowers:summarise`
 - Thin dispatchers providing context
 - Reference practices for project-specific configuration
 - Reference skills for process guidance
 - Do NOT contain workflow logic (that's in agents)
-- Some commands (like `/execute`) orchestrate main Claude context with agent dispatch
+- Some commands (like `/cipherpowers:execute`) orchestrate main Claude context with agent dispatch
 
 **Agents:** Specialized subagent prompts with enforced workflows
 - Handle specific roles (code-reviewer, rust-engineer, ultrathink-debugger, technical-writer, and others)
@@ -94,8 +94,12 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 **Templates:**
 - `./plugin/templates/agent-template.md` - Agent structure with persuasion principles
 - `./plugin/templates/practice-template.md` - Practice structure with standards + config pattern
-- `./plugin/templates/skill-template.md` - Practice structure with standards + config pattern
+- `./plugin/templates/skill-template.md` - Skill structure with when_to_use frontmatter
 - `./plugin/templates/code-review-template.md` - Code review structure with standards + config pattern
+- `./plugin/templates/code-review-request.md` - Code review request structure
+- `./plugin/templates/verify-template.md` - Verification review structure (for dual-verification reviews)
+- `./plugin/templates/verify-plan-template.md` - Plan verification structure
+- `./plugin/templates/verify-collation-template.md` - Collation report structure
 
 ### 3. Documentation Layer (`plugin/standards/`, `plugin/examples/`)
 
@@ -172,9 +176,9 @@ Skills enable discovery:
 - `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
 Documentation follows the standard verify → plan → execute pattern:
-- `/verify docs` → Dual technical-writers find issues (VERIFICATION mode)
-- `/plan` → Create fix plan if complex
-- `/execute` → Technical-writer applies fixes (EXECUTION mode)
+- `/cipherpowers:verify docs` → Dual technical-writers find issues (VERIFICATION mode)
+- `/cipherpowers:plan` → Create fix plan if complex
+- `/cipherpowers:execute` → Technical-writer applies fixes (EXECUTION mode)
 
 All components work together without duplication. Change documentation standards once, all workflows use the updated version automatically.
 
@@ -185,12 +189,12 @@ All components work together without duplication. Change documentation standards
 - `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (commit-agent, code-agent, gatekeeper, plan-review-agent, rust-agent, ultrathink-debugger, code-review-agent, technical-writer)
 
-The /execute command demonstrates:
+The /cipherpowers:execute command demonstrates:
 - Algorithmic format for workflow enforcement (100% compliance vs 0-33% imperative)
 - Hybrid agent selection (keyword matching + LLM analysis + user confirmation)
 - Integration of multiple agents in coordinated workflow
 - Automatic code review checkpoints after each batch
-- Optional execute completion verification via `/verify execute` (on-demand, not automatic)
+- Optional execute completion verification via `/cipherpowers:verify execute` (on-demand, not automatic)
 - Retrospective prompting when work completes
 
 **Example: Verification Architecture with Shared Collation**
@@ -204,7 +208,7 @@ The verification architecture demonstrates:
 - DRY principle: One collation agent serves all verification types (plan, code, execute, research, docs)
 - Confidence levels: Common issues (VERY HIGH), Exclusive issues (MODERATE), Divergences (INVESTIGATE)
 - Clear separation: Execute verification checks plan adherence, code verification checks quality/standards, research verification explores topics
-- On-demand verification: All verification types are user-requested via `/verify [type]`
+- On-demand verification: All verification types are user-requested via `/cipherpowers:verify [type]`
 
 ## Environment Variables
 
@@ -231,18 +235,25 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **`./plugin/` - Plugin Content**
 - All content shipped with the plugin to users
-- **`plugin/principles/`, `plugin/standards/`** - Coding standards, conventions, guidelines
+- **`plugin/principles/`** - Fundamental development philosophies (development.md, testing.md)
+- **`plugin/standards/`** - Project-specific conventions and practices
 - **`plugin/templates/`** - Templates for agents, practices, skills
 - **`plugin/agents/`** - Specialized subagent prompts
 - **`plugin/commands/`** - Slash commands
 - **`plugin/skills/`** - Organization-specific skills
 - **`plugin/hooks/`** - Quality enforcement hooks (PostToolUse, SubagentStop)
 - **`plugin/hooks/examples/`** - Example hook configurations (gate configs, context files)
+- **`plugin/docs/`** - Additional documentation (configuring-project-commands.md)
+- **`plugin/context/`** - Plugin-level context injection files (fallback defaults)
 - **`plugin/examples/`** - Example documentation (currently contains README.md)
 
-**Key distinction:**
+**Key distinctions:**
 - `./docs/` = Documentation about building cipherpowers itself (not shipped with plugin)
 - `./plugin/standards/` = Standards for users of cipherpowers (shipped with plugin)
+
+**Principles vs Standards:**
+- `plugin/principles/` contains fundamental development philosophies that are universal across all projects (e.g., development.md defines core development approach, testing.md defines testing philosophy)
+- `plugin/standards/` contains project-specific conventions and practices that teams can customize (e.g., code review severity levels, git workflows, documentation formats)
 
 **Referencing paths in agent markdown files**
 

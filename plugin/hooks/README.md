@@ -102,7 +102,7 @@ All reviews must verify:
 EOF
 ```
 
-Now when `/code-review` runs, requirements auto-inject!
+Now when `/cipherpowers:code-review` runs, requirements auto-inject!
 
 See **[CONVENTIONS.md](./CONVENTIONS.md)** for full documentation.
 

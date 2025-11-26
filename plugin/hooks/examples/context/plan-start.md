@@ -2,7 +2,7 @@
 
 **Location:** `.claude/context/plan-start.md`
 
-**Triggered by:** Running `/plan` command (SlashCommandStart hook)
+**Triggered by:** Running `/cipherpowers:plan` command (SlashCommandStart hook)
 
 Your implementation plan must include:
 

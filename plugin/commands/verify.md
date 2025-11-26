@@ -208,7 +208,7 @@ Execute workflow uses verify for batch verification:
 
 ## Related Commands
 
-- `/execute` - Plan execution workflow (uses /verify for batch verification)
+- `/cipherpowers:execute` - Plan execution workflow (uses /cipherpowers:verify for batch verification)
 
 ## Related Skills
 

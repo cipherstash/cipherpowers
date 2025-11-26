@@ -35,7 +35,7 @@ This follows **convention over configuration** - no separate config files needed
 
 The `user-prompt-submit.sh` hook automatically injects relevant commands based on:
 
-1. **Slash commands** - `/commit`, `/execute`, `/code-review` trigger specific commands
+1. **Slash commands** - `/cipherpowers:commit`, `/cipherpowers:execute`, `/cipherpowers:code-review` trigger specific commands
 2. **Message keywords** - "run tests", "check quality", "build" trigger relevant commands
 3. **No injection** - General questions don't inject commands (saves tokens)
 
@@ -284,10 +284,10 @@ This preserves your mise workflow while making the plugin tool-agnostic.
 The `user-prompt-submit.sh` hook detects needed commands through:
 
 **1. Slash Command Mapping:**
-- `/commit` → test, check, build
-- `/execute` → test, check, build
-- `/code-review` → test, check
-- `/brainstorm`, `/plan` → no injection
+- `/cipherpowers:commit` → test, check, build
+- `/cipherpowers:execute` → test, check, build
+- `/cipherpowers:code-review` → test, check
+- `/cipherpowers:brainstorm`, `/cipherpowers:plan` → no injection
 
 **2. Keyword Detection:**
 - "test", "testing", "spec", "verify" → test

@@ -129,7 +129,7 @@ The dispatcher automatically tracks session state on hook events:
 **When to Clear Session State:**
 
 Session state should be manually cleared when:
-1. **Switching workflows:** Moving from `/execute` to `/plan` or other major command changes
+1. **Switching workflows:** Moving from `/cipherpowers:execute` to `/cipherpowers:plan` or other major command changes
 2. **Starting fresh:** Beginning a new feature or task that doesn't depend on previous session
 3. **On explicit user request:** When user wants to reset session tracking
 4. **After project switch:** When activating a different project (different CWD)
@@ -148,7 +148,7 @@ node hooks-app/dist/cli.js session clear /path/to/project
 **Best Practices:**
 - Session state is per-project (stored in .claude/session/ relative to CWD)
 - Each CWD has independent session state (enables monorepo isolation - different projects don't interfere)
-- Long-running workflows (like `/execute`) accumulate state throughout execution
+- Long-running workflows (like `/cipherpowers:execute`) accumulate state throughout execution
 - Clearing too frequently loses valuable context; clearing too rarely causes stale data
 - Consider session timeout/expiry for long-lived projects (future enhancement)
 
