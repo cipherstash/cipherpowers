@@ -4,6 +4,17 @@ Generic dual-verification dispatcher for high-confidence verification across all
 
 **Core principle:** Agents cannot be trusted. Two independent agents + systematic collation = confidence.
 
+## Usage
+
+```
+/cipherpowers:verify <type> [scope] [--model=<sonnet|opus|haiku>]
+```
+
+**Model guidance:**
+- `opus` - Deep analysis, security-critical verification, complex codebases
+- `sonnet` - Balanced quality/speed (default for most verification types)
+- `haiku` - Quick checks, simple verifications, execute adherence checks
+
 ## Algorithmic Workflow
 
 **Decision tree (follow exactly, no interpretation):**
@@ -41,13 +52,18 @@ Skill(skill: "cipherpowers:dual-verification")
 
 ## Dispatch Table
 
-| Type | Agent | Focus |
-|------|-------|-------|
-| code | cipherpowers:code-review-agent | Code quality, standards, testing |
-| plan | cipherpowers:plan-review-agent | Plan quality, 35 criteria |
-| execute | cipherpowers:execute-review-agent | Plan adherence, implementation match |
-| research | cipherpowers:research-agent | Information completeness, accuracy |
-| docs | cipherpowers:technical-writer | Documentation accuracy, completeness |
+| Type | Agent | Focus | Default Model |
+|------|-------|-------|---------------|
+| code | cipherpowers:code-review-agent + cipherpowers:code-agent | Heterogeneous review (Standards + Engineering) | sonnet |
+| plan | cipherpowers:plan-review-agent + cipherpowers:code-agent | Plan quality + Technical feasibility | sonnet |
+| execute | cipherpowers:execute-review-agent ×2 | Plan adherence, implementation match | haiku |
+| research | cipherpowers:research-agent ×2 | Information completeness, accuracy | sonnet |
+| docs | cipherpowers:technical-writer + cipherpowers:code-agent | Docs structure + Code example accuracy | haiku |
+
+**Model parameter rules:**
+- If user specified `--model=X` → pass `model: X` to ALL dispatched agents
+- If no model specified → use default model from table above
+- Collation agent always uses `haiku` (simple comparison task)
 
 ## Verification Types
 
@@ -64,14 +80,15 @@ Skill(skill: "cipherpowers:dual-verification")
 
 **Workflow:**
 ```
-/verify code [scope]
+/verify code [scope] [--model=<sonnet|opus|haiku>]
 
-→ Dispatches 2 code-review-agent agents in parallel
+→ Dispatches 1 code-review-agent and 1 code-agent in parallel
+  (with model parameter if specified, otherwise sonnet)
 → Each agent independently reviews:
   - Read code changes
   - Run tests and checks
   - Review against standards
-→ Dispatches review-collation-agent
+→ Dispatches review-collation-agent (always haiku)
 → Produces collated report with confidence levels
 ```
 
@@ -86,11 +103,12 @@ Skill(skill: "cipherpowers:dual-verification")
 
 **Workflow:**
 ```
-/verify plan [plan-file]
+/verify plan [plan-file] [--model=<sonnet|opus|haiku>]
 
-→ Dispatches 2 plan-review-agent agents in parallel
+→ Dispatches 1 plan-review-agent and 1 code-agent in parallel
+  (with model parameter if specified, otherwise sonnet)
 → Each agent independently evaluates against criteria
-→ Dispatches review-collation-agent
+→ Dispatches review-collation-agent (always haiku)
 → Produces collated report with confidence levels
 ```
 
@@ -111,14 +129,15 @@ Skill(skill: "cipherpowers:dual-verification")
 
 **Workflow:**
 ```
-/verify execute [batch-number] [plan-file]
+/verify execute [batch-number] [plan-file] [--model=<sonnet|opus|haiku>]
 
 → Dispatches 2 execute-review-agent agents in parallel
+  (with model parameter if specified, otherwise haiku)
 → Each agent independently verifies:
   - Read plan tasks for batch
   - Read implementation changes
   - Verify each task: COMPLETE / INCOMPLETE / DEVIATED
-→ Dispatches review-collation-agent
+→ Dispatches review-collation-agent (always haiku)
 → Produces collated report with confidence levels
 ```
 
@@ -139,14 +158,15 @@ Skill(skill: "cipherpowers:dual-verification")
 
 **Workflow:**
 ```
-/verify research [topic]
+/verify research [topic] [--model=<sonnet|opus|haiku>]
 
 → Dispatches 2 research-agent agents in parallel
+  (with model parameter if specified, otherwise sonnet)
 → Each agent independently explores:
   - Different entry points
   - Multiple sources (codebase, web, docs)
   - Different perspectives
-→ Dispatches review-collation-agent
+→ Dispatches review-collation-agent (always haiku)
 → Produces collated report:
   - Common findings (high confidence)
   - Unique insights (worth knowing)
@@ -165,11 +185,12 @@ Skill(skill: "cipherpowers:dual-verification")
 
 **Workflow:**
 ```
-/verify docs [files]
+/verify docs [files] [--model=<sonnet|opus|haiku>]
 
-→ Dispatches 2 technical-writer agents in parallel
+→ Dispatches 1 technical-writer and 1 code-agent in parallel
+  (with model parameter if specified, otherwise haiku)
 → Each agent independently verifies against codebase
-→ Dispatches review-collation-agent
+→ Dispatches review-collation-agent (always haiku)
 → Produces collated report with confidence levels
 ```
 
@@ -217,11 +238,11 @@ Execute workflow uses verify for batch verification:
 
 ## Related Agents
 
-- `code-review-agent` - Code quality verification
-- `plan-review-agent` - Plan quality verification
+- `code-review-agent` & `code-agent` - Code quality verification
+- `plan-review-agent` & `code-agent` - Plan quality verification
 - `execute-review-agent` - Plan adherence verification
 - `research-agent` - Research verification
-- `technical-writer` - Documentation verification
+- `technical-writer` & `code-agent` - Documentation verification
 - `review-collation-agent` - Generic collation (works for all types)
 
 ## Remember

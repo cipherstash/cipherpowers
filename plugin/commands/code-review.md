@@ -2,6 +2,17 @@
 
 Thorough code review with test verification and structured feedback.
 
+## Usage
+
+```
+/cipherpowers:code-review [--model=<sonnet|opus|haiku>]
+```
+
+**Model guidance:**
+- `opus` - Deep analysis, security-critical code, complex architecture
+- `sonnet` - Balanced quality/speed (default if not specified)
+- `haiku` - Quick reviews, simple changes
+
 ## MANDATORY: Skill Activation
 
 **Load skill context:**
@@ -37,6 +48,7 @@ Skill(skill: "cipherpowers:conducting-code-review")
 ```
 Use Task tool with:
   subagent_type: "cipherpowers:code-review-agent"
+  model: [from --model arg if provided, otherwise omit to use default]
   description: "Code review workflow"
   prompt: """
   [User's original request or task context]
@@ -46,6 +58,10 @@ Use Task tool with:
   Review the recent changes and provide structured feedback.
   """
 ```
+
+**Model parameter rules:**
+- If user specified `--model=X` → pass `model: X` to Task tool
+- If no model specified → omit model parameter (agent default applies)
 
 4. **STOP. Do not proceed in main context.**
 
