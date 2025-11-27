@@ -2,17 +2,42 @@
 
 Automated quality enforcement and context injection via Claude Code's hook system. A **self-referential TypeScript application** that uses its own configuration format.
 
+> **💡 CONTEXT INJECTION IS AUTOMATIC**
+>
+> Just create `.claude/context/{name}-{stage}.md` files - they auto-inject at the right time.
+> **No configuration files needed.** No gates.json. No setup.
+>
+> The `gates.json` file is ONLY for optional quality enforcement (lint, test, build checks).
+
 ## Quick Start
 
-**Zero configuration required!** The plugin provides sensible defaults:
+### Zero-Config Context Injection (Recommended)
 
-- **SessionStart**: Injects agent selection guide
-- **UserPromptSubmit**: Runs keyword-triggered gates (check, test, build) when relevant keywords detected
-
-**Optional: Add project-specific configuration:**
+**Just create context files - they auto-inject automatically:**
 
 ```bash
-# Create project gates.json (overrides plugin defaults)
+# Create context directory
+mkdir -p .claude/context
+
+# Add context for /code-review command
+cat > .claude/context/code-review-start.md << 'EOF'
+## Security Requirements
+- Authentication on all endpoints
+- Input validation for user data
+- No secrets in logs
+- HTTPS only
+EOF
+
+# That's it! When /code-review runs, requirements auto-inject!
+```
+
+**Works with ANY command, skill, or agent.** Follow the naming pattern: `.claude/context/{name}-{stage}.md`
+
+### Advanced: Quality Gates (Optional)
+
+**Need to enforce quality checks?** Add `gates.json` configuration:
+
+```bash
 mkdir -p .claude
 cat > .claude/gates.json << 'EOF'
 {
@@ -30,20 +55,23 @@ cat > .claude/gates.json << 'EOF'
 EOF
 ```
 
-See **[SETUP.md](./SETUP.md)** for detailed configuration.
+See **[SETUP.md](./SETUP.md)** for detailed gate configuration.
 
 ## How It Works
 
 ```
-Hook Event → Context Injection → gates.json Gates → Action
-                 ↓                      ↓              ↓
-          .claude/context/       TypeScript or     CONTINUE
-          plugin/context/        Shell command     BLOCK/STOP
+Hook Event → Context Injection (AUTOMATIC) → [OPTIONAL: gates.json Gates] → Action
+                 ↓                                        ↓
+          .claude/context/                         Quality checks
+          plugin/context/                          Custom commands
+          (zero config!)                           (requires gates.json)
 ```
 
-1. **Context Injection** (always runs first): Discovers `.claude/context/{name}-{stage}.md` files
-2. **Gate Execution**: Runs configured gates from merged `gates.json`
+1. **Context Injection** (AUTOMATIC): Always runs first, discovers `.claude/context/{name}-{stage}.md` files
+2. **Gate Execution** (OPTIONAL): If `gates.json` configured, runs quality checks/custom commands
 3. **Action Handling**: CONTINUE, BLOCK, STOP, or chain to another gate
+
+**Context injection works standalone - gates.json is only for optional quality enforcement.**
 
 See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for detailed system design.
 
@@ -89,24 +117,51 @@ Examples:
 
 Projects can override any plugin-provided context by creating their own file.
 
-### Example: Code Review Requirements
+### Complete Zero-Config Example
+
+**Step 1: Create context file**
 
 ```bash
+mkdir -p .claude/context
 cat > .claude/context/code-review-start.md << 'EOF'
-## Security Requirements
+## Security Checklist
 
-All reviews must verify:
-- Authentication on all endpoints
-- Input validation
-- No secrets in logs
+- [ ] Authentication on all endpoints
+- [ ] Input validation for user data
+- [ ] No secrets in logs
+- [ ] HTTPS only
+- [ ] Rate limiting configured
 EOF
 ```
 
-Now when `/cipherpowers:code-review` runs, requirements auto-inject!
+**Step 2: Run the command**
+
+```bash
+/code-review src/api/users.ts
+```
+
+**Step 3: Context auto-injects**
+
+The security checklist appears in the conversation automatically. **No configuration files needed!**
+
+**This works with ANY slash command, skill, or agent.** Just follow the naming pattern: `.claude/context/{name}-{stage}.md`
+
+### Hook-to-File Mapping
+
+| Hook Type | File Pattern | Example |
+|-----------|--------------|---------|
+| `SessionStart` | `session-start.md` | Session begins |
+| `UserPromptSubmit` | `prompt-submit.md` | User sends message |
+| `SlashCommandStart` | `{command}-start.md` | `/code-review-start.md` |
+| `SkillStart` | `{skill}-start.md` | `test-driven-development-start.md` |
+| `SubagentStop` | `{agent}-end.md` | `rust-agent-end.md` |
+| `PreToolUse` | `{tool}-pre.md` | `Edit-pre.md` |
 
 See **[CONVENTIONS.md](./CONVENTIONS.md)** for full documentation.
 
-## Gate Configuration
+## Gate Configuration (Optional)
+
+**Most users only need context files.** Gates are for optional quality enforcement and custom commands.
 
 Gates are defined in `gates.json` and can be:
 
@@ -169,6 +224,33 @@ Gates can define `keywords` to only run when the user message contains matching 
 - Gates with `keywords` only run if any keyword is found in the user message
 - Gates without `keywords` always run (backwards compatible)
 - Keyword matching is case-insensitive
+
+### Agent Filtering for SubagentStop
+
+**Important:** Without `enabled_agents`, SubagentStop triggers for ALL agents - including verification-only agents that don't modify code.
+
+```json
+{
+  "hooks": {
+    "SubagentStop": {
+      "enabled_agents": ["rust-agent", "code-agent", "commit-agent"],
+      "gates": ["check", "test"]
+    }
+  }
+}
+```
+
+**Why this matters:**
+- Verification agents (technical-writer in VERIFICATION mode, research-agent) only read files
+- Running `check` and `test` gates after read-only verification is unnecessary
+- Gate failures for verification agents confuse the workflow (false positives)
+
+**Recommended pattern:** Only include agents that modify code:
+- `rust-agent`, `code-agent` - write/edit code
+- `commit-agent` - makes git commits
+- Exclude: `technical-writer` (verification mode), `research-agent`, `plan-review-agent`
+
+**Note:** `enabled_tools` works the same way for PostToolUse hooks.
 
 ## Configuration Merging
 

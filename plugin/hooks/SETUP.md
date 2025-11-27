@@ -1,10 +1,58 @@
 # Quality Hooks Setup
 
-## Project-Level Configuration
+## Simple Setup (Context Files Only)
 
-Quality hooks use a **project-level** `gates.json` configuration file that you customize for your project's commands and requirements.
+**For most projects, context files are all you need.**
 
-### Configuration Priority
+Context injection is AUTOMATIC - no configuration files required. Just create `.claude/context/` directory and add markdown files following the naming pattern.
+
+### Quick Setup
+
+```bash
+# 1. Create context directory
+mkdir -p .claude/context
+
+# 2. Add context files for your commands/skills
+# For /code-review command
+cat > .claude/context/code-review-start.md << 'EOF'
+## Security Requirements
+- Authentication on all endpoints
+- Input validation
+- No secrets in logs
+EOF
+
+# For test-driven-development skill
+cat > .claude/context/test-driven-development-start.md << 'EOF'
+## TDD Standards
+- Write failing test first
+- Implement minimal code to pass
+- Refactor with tests passing
+EOF
+
+# For session start
+cat > .claude/context/session-start.md << 'EOF'
+## Project Context
+- TypeScript project using Vitest
+- Follow functional programming style
+- Use strict type checking
+EOF
+```
+
+### That's It!
+
+Context files auto-inject when commands/skills run. **No gates.json needed.**
+
+**Need quality gates or custom commands?** Continue to "Advanced Setup" below.
+
+---
+
+## Advanced Setup (gates.json Configuration)
+
+**Only needed for quality enforcement (lint, test, build checks) or custom commands.**
+
+Quality hooks support optional **project-level** `gates.json` configuration for running quality checks.
+
+### gates.json Search Priority
 
 The hooks search for `gates.json` in this order:
 
@@ -12,7 +60,7 @@ The hooks search for `gates.json` in this order:
 2. **`gates.json`** - Project root configuration
 3. **`${CLAUDE_PLUGIN_ROOT}hooks/gates.json`** - Plugin default (fallback)
 
-## Quick Setup
+### Quick gates.json Setup
 
 ### Option 1: Recommended (.claude/gates.json)
 
@@ -257,6 +305,27 @@ Add to `.gitignore`:
    ```bash
    jq '.hooks.PostToolUse.enabled_tools' .claude/gates.json
    ```
+
+### Gate Fails for Verification-Only Agents
+
+**Symptom:** SubagentStop gates fail for agents that only read files (technical-writer in verification mode, research-agent).
+
+**Cause:** Missing `enabled_agents` filter - gates run for ALL agents.
+
+**Solution:** Add `enabled_agents` to only include code-modifying agents:
+
+```json
+{
+  "hooks": {
+    "SubagentStop": {
+      "enabled_agents": ["rust-agent", "code-agent", "commit-agent"],
+      "gates": ["check", "test"]
+    }
+  }
+}
+```
+
+**Why:** Verification agents don't modify code, so check/test gates are unnecessary and produce false positive failures.
 
 ### Commands Failing
 
