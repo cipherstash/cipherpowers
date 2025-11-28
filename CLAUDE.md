@@ -308,58 +308,30 @@ Commands and agents reference skills and practices using environment variables:
 
 ## Quality Hooks
 
-CipherPowers provides automated quality enforcement through Claude Code's hook system.
+CipherPowers provides gate configurations in `plugin/hooks/gates.json`. The turboshovel plugin (required) provides the hooks runtime that executes these gates.
 
-**Hook Points:**
-- **PostToolUse**: Runs after code editing tools (Edit, Write, etc.)
-- **SubagentStop**: Runs when specialized agents complete their work
-
-**Configuration:**
-Quality hooks use project-level `gates.json` configuration files with priority:
-1. `.claude/gates.json` (recommended - project-specific)
-2. `gates.json` (project root)
-3. `${CLAUDE_PLUGIN_ROOT}hooks/gates.json` (plugin default fallback)
-
-**Gate Actions:**
-- **CONTINUE**: Proceed (default on pass)
-- **BLOCK**: Prevent agent from proceeding (default on fail)
-- **STOP**: Stop Claude entirely
-- **{gate_name}**: Chain to another gate (subroutine call)
-
-**Convention-Based Context Injection:**
-Zero-config content injection via file naming patterns. Place markdown files in `.claude/context/` following the pattern `{command-or-skill}-{start|end}.md` and they auto-inject when hooks fire. See `plugin/hooks/examples/context/` for ready-to-use examples:
-- `code-review-start.md` - Security/performance requirements
-- `plan-start.md` - Planning templates
-- `test-driven-development-start.md` - TDD standards
-
-Full documentation: `plugin/hooks/CONVENTIONS.md`
+**Gates defined:**
+- `plan-compliance` - Verify agents provide STATUS in completion reports (shell script at `plugin/scripts/plan-compliance.sh`)
 
 **Setup:**
-```bash
-# Copy example configuration
-mkdir -p .claude
-cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
 
-# Customize for project's build tooling
-vim .claude/gates.json
+1. Install turboshovel plugin:
+```bash
+# Installation command TBD - see turboshovel documentation
 ```
 
-**Example configurations:**
-- `examples/strict.json` - Block on all failures (production code)
-- `examples/permissive.json` - Warn only (prototyping)
-- `examples/pipeline.json` - Chained gates (format → check → test)
+2. CipherPowers gates.json will be automatically discovered by turboshovel
 
-**Documentation:**
-- `plugin/hooks/README.md` - Overview and examples
-- `plugin/hooks/SETUP.md` - Configuration guide
-- `plugin/hooks/INTEGRATION_TESTS.md` - Testing procedures
+**Migration from older CipherPowers versions:**
+- Previous versions included hooks implementation directly
+- Now requires separate turboshovel plugin for hooks runtime
+- Gate configurations remain in `plugin/hooks/gates.json`
+- Custom gates in old gates.json should be migrated manually (see gates.json.backup)
 
-**Benefits:**
-- Consistent quality enforcement across all agent work
-- Early issue detection at edit time or completion
-- Flexible per-gate actions (enforce, warn, stop, chain)
-- Tool-agnostic (works with npm, cargo, mise, make, etc.)
-- Self-contained project-level configuration
+See turboshovel documentation for:
+- Hook points (PostToolUse, SubagentStop, UserPromptSubmit)
+- Gate actions (CONTINUE, BLOCK, STOP, chaining)
+- Convention-based context injection
 
 ## Working with Skills in this Repository
 
