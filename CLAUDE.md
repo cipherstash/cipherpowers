@@ -27,13 +27,13 @@ CipherPowers itself uses mise for task orchestration. These commands are used th
 
 - **check-has-changes**: `mise run check-has-changes` - Verify there are uncommitted changes
 
-**Note:** While CipherPowers itself uses mise, the plugin is tool-agnostic and works with any build/test tooling (npm, cargo, make, etc.). See `plugin/docs/configuring-project-commands.md` for details on the tool-agnostic approach.
+**Note:** While CipherPowers itself uses mise, the plugin is tool-agnostic and works with any build/test tooling (npm, cargo, make, etc.). See `docs/configuring-project-commands.md` for details on the tool-agnostic approach.
 
 ## Architecture
 
 CipherPowers combines three layers:
 
-### 1. Skills Layer (`skills/`)
+### 1. Skills Layer (`./plugin/skills/`)
 
 Reusable process knowledge documented as testable, discoverable guides for techniques and workflows.
 
@@ -50,22 +50,22 @@ Reusable process knowledge documented as testable, discoverable guides for techn
 **Organization-specific skills:**
 
 **Documentation:**
-- **Maintaining docs** (`skills/maintaining-docs-after-changes/`) - Two-phase sync process
-- **Capturing learning** (`skills/capturing-learning/`) - Retrospective capture process
+- **Maintaining docs** (`./plugin/skills/maintaining-docs-after-changes/`) - Two-phase sync process
+- **Capturing learning** (`./plugin/skills/capturing-learning/`) - Retrospective capture process
 
 **Meta:**
-- **Algorithmic enforcement** (`skills/algorithmic-command-enforcement/`) - Why algorithms > imperatives
-- **Using skills** (`skills/using-cipherpowers/`) - CipherPowers skill discovery
+- **Algorithmic enforcement** (`./plugin/skills/algorithmic-command-enforcement/`) - Why algorithms > imperatives
+- **Using skills** (`./plugin/skills/using-cipherpowers/`) - CipherPowers skill discovery
 
 **Testing:**
-- **TDD enforcement** (`skills/tdd-enforcement-algorithm/`) - Prevent code before tests
+- **TDD enforcement** (`./plugin/skills/tdd-enforcement-algorithm/`) - Prevent code before tests
 
 **Collaboration:**
-- **Code review** (`skills/conducting-code-review/`) - Complete review workflow
-- **Commit workflow** (`skills/commit-workflow/`) - Atomic commits with conventional format
-- **Selecting agents** (`skills/selecting-agents/`) - Choose right agent for task
+- **Code review** (`./plugin/skills/conducting-code-review/`) - Complete review workflow
+- **Commit workflow** (`./plugin/skills/commit-workflow/`) - Atomic commits with conventional format
+- **Selecting agents** (`./plugin/skills/selecting-agents/`) - Choose right agent for task
 
-### 2. Automation Layer (`commands/`, `agents/`)
+### 2. Automation Layer (`./plugin/commands/`, `./plugin/agents/`)
 
 Commands and agents that dispatch to skills or provide project-specific workflows.
 
@@ -101,12 +101,12 @@ CipherPowers uses an agent-centric model where agents contain the complete workf
 - `./plugin/templates/verify-plan-template.md` - Plan verification structure
 - `./plugin/templates/verify-collation-template.md` - Collation report structure
 
-### 3. Documentation Layer (`plugin/standards/`, `plugin/examples/`)
+### 3. Documentation Layer (`./plugin/standards/`, `./plugin/examples/`)
 
 Standards, guidelines, and reference materials.
 
-**Practices:** Coding standards, conventions, guidelines (in `plugin/standards/`)
-**Examples:** Real-world examples and templates (in `plugin/examples/`)
+**Practices:** Coding standards, conventions, guidelines (in `./plugin/standards/`)
+**Examples:** Real-world examples and templates (in `./plugin/examples/`)
 **Purpose:** Support skills and provide team reference
 
 ## Organizational Benefits
@@ -114,7 +114,7 @@ Standards, guidelines, and reference materials.
 This three-layer separation achieves key software engineering principles:
 
 ✅ **DRY (Don't Repeat Yourself)**
-- Standards live in one place (`plugin/principles/`, `plugin/standards/`)
+- Standards live in one place (`./plugin/principles/`, `./plugin/standards/`)
 - Skills reference practices instead of duplicating them
 - Commands reference skills instead of reimplementing workflows
 - Changes propagate automatically through references
@@ -136,7 +136,7 @@ This three-layer separation achieves key software engineering principles:
 - Baseline tests prove problems exist without the skill
 - With-skill tests verify effectiveness under pressure
 - Test scenarios document expected violations and how skill prevents them
-- See `skills/*/test-scenarios.md` for examples
+- Some skills include `test-scenarios.md` files as examples
 
 ✅ **Maintainability**
 - Update standards once in practices, all skills benefit
@@ -145,10 +145,10 @@ This three-layer separation achieves key software engineering principles:
 - Clear boundaries prevent coupling and drift
 
 **Example: Code Review Workflow**
-- `skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
-- `plugin/standards/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
-- `plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
-- `plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
+- `./plugin/skills/conducting-code-review/SKILL.md` = Complete workflow (test verification, structured feedback, work directory save)
+- `./plugin/standards/code-review.md` = Standards (severity levels) + Project Config (commands, file conventions)
+- `./plugin/agents/code-reviewer.md` = Workflow enforcement with persuasion principles (non-negotiable steps, rationalization defenses)
+- `./plugin/commands/code-review.md` = Thin dispatcher (sets context, references skill)
 
 All components work together without duplication:
 - Update severity standards in practices → agent uses new standards automatically
@@ -157,10 +157,10 @@ All components work together without duplication:
 - Commands remain simple dispatchers → workflow discovery via skills
 
 **Example: Commit Workflow**
-- `skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
-- `plugin/standards/conventional-commits.md` = Commit message format standards
-- `plugin/standards/git-guidelines.md` = Git workflow standards
-- `plugin/commands/commit.md` = Thin dispatcher (references skill)
+- `./plugin/skills/commit-workflow/SKILL.md` = Complete workflow (pre-commit checks, atomic commits, conventional format)
+- `./plugin/standards/conventional-commits.md` = Commit message format standards
+- `./plugin/standards/git-guidelines.md` = Git workflow standards
+- `./plugin/commands/commit.md` = Thin dispatcher (references skill)
 
 Skills enable discovery:
 - Claude Code's native Skill tool discovers all skills automatically
@@ -169,11 +169,11 @@ Skills enable discovery:
 - Update workflow in skill → all agents benefit
 
 **Example: Documentation Workflow**
-- `plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
-- `skills/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
-- `skills/capturing-learning/` = Workflow (retrospective capture process)
-- `plugin/agents/technical-writer.md` = Mode-aware agent (VERIFICATION or EXECUTION mode)
-- `plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
+- `./plugin/standards/documentation.md` = Standards (formatting, completeness, structure)
+- `./plugin/skills/maintaining-docs-after-changes/` = Workflow (two-phase sync process)
+- `./plugin/skills/capturing-learning/` = Workflow (retrospective capture process)
+- `./plugin/agents/technical-writer.md` = Mode-aware agent (VERIFICATION or EXECUTION mode)
+- `./plugin/commands/summarise.md` = Dispatcher (triggers learning capture with work tracking integration)
 
 Documentation follows the standard verify → plan → execute pattern:
 - `/cipherpowers:verify docs` → Dual technical-writers find issues (VERIFICATION mode)
@@ -183,10 +183,10 @@ Documentation follows the standard verify → plan → execute pattern:
 All components work together without duplication. Change documentation standards once, all workflows use the updated version automatically.
 
 **Example: Plan Execution with Automatic Agent Selection**
-- `plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
+- `./plugin/commands/execute.md` = Orchestrator command (algorithmic decision tree for when to use, hybrid agent selection, batch execution)
 - `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md` = Core workflow (batch pattern, verification)
-- `plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
-- `plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
+- `./plugin/skills/selecting-agents/SKILL.md` = Agent selection guide (characteristics, scenarios)
+- `./plugin/standards/code-review.md` = Review standards referenced at batch checkpoints
 - Specialized agents (commit-agent, code-agent, gatekeeper, plan-review-agent, rust-agent, ultrathink-debugger, code-review-agent, technical-writer)
 
 The /cipherpowers:execute command demonstrates:
@@ -198,10 +198,10 @@ The /cipherpowers:execute command demonstrates:
 - Retrospective prompting when work completes
 
 **Example: Verification Architecture with Shared Collation**
-- `plugin/commands/verify.md` = Generic dual-verification dispatcher (works for all verification types)
-- `plugin/skills/dual-verification-review/SKILL.md` = Core dual-verification pattern (Phase 1: dispatch 2 agents, Phase 2: collate, Phase 3: present)
-- `plugin/agents/review-collation-agent.md` = Generic collation agent (compares findings from any verification type)
-- `plugin/agents/research-agent.md` = Research verification agent (multi-angle exploration with evidence)
+- `./plugin/commands/verify.md` = Generic dual-verification dispatcher (works for all verification types)
+- `./plugin/skills/dual-verification-review/SKILL.md` = Core dual-verification pattern (Phase 1: dispatch 2 agents, Phase 2: collate, Phase 3: present)
+- `./plugin/agents/review-collation-agent.md` = Generic collation agent (compares findings from any verification type)
+- `./plugin/agents/research-agent.md` = Research verification agent (multi-angle exploration with evidence)
 - Specialized agents: `execute-review-agent` (plan adherence), `plan-review-agent` (plan quality), `code-review-agent` (code quality), `research-agent` (research verification)
 
 The verification architecture demonstrates:
@@ -235,25 +235,25 @@ CipherPowers uses a clear separation between project documentation and plugin co
 
 **`./plugin/` - Plugin Content**
 - All content shipped with the plugin to users
-- **`plugin/principles/`** - Fundamental development philosophies (development.md, testing.md)
-- **`plugin/standards/`** - Project-specific conventions and practices
-- **`plugin/templates/`** - Templates for agents, practices, skills
-- **`plugin/agents/`** - Specialized subagent prompts
-- **`plugin/commands/`** - Slash commands
-- **`plugin/skills/`** - Organization-specific skills
-- **`plugin/hooks/`** - Gate configuration (gates.json only)
-- **`plugin/scripts/`** - Shell scripts (plan-compliance.sh)
-- **`plugin/docs/`** - Additional documentation (configuring-project-commands.md)
-- **`plugin/context/`** - Plugin-level context injection files (fallback defaults)
-- **`plugin/examples/`** - Example documentation (currently contains README.md)
+- **`./plugin/principles/`** - Fundamental development philosophies (development.md, testing.md)
+- **`./plugin/standards/`** - Project-specific conventions and practices
+- **`./plugin/templates/`** - Templates for agents, practices, skills
+- **`./plugin/agents/`** - Specialized subagent prompts
+- **`./plugin/commands/`** - Slash commands
+- **`./plugin/skills/`** - Organization-specific skills
+- **`./plugin/hooks/`** - Gate configuration (gates.json only)
+- **`./plugin/scripts/`** - Shell scripts (plan-compliance.sh)
+- **`./plugin/docs/`** - Additional documentation (configuring-project-commands.md)
+- **`./plugin/context/`** - Plugin-level context injection files (fallback defaults)
+- **`./plugin/examples/`** - Example documentation (currently contains README.md)
 
 **Key distinctions:**
 - `./docs/` = Documentation about building cipherpowers itself (not shipped with plugin)
 - `./plugin/standards/` = Standards for users of cipherpowers (shipped with plugin)
 
 **Principles vs Standards:**
-- `plugin/principles/` contains fundamental development philosophies that are universal across all projects (e.g., development.md defines core development approach, testing.md defines testing philosophy)
-- `plugin/standards/` contains project-specific conventions and practices that teams can customize (e.g., code review severity levels, git workflows, documentation formats)
+- `./plugin/principles/` contains fundamental development philosophies that are universal across all projects (e.g., development.md defines core development approach, testing.md defines testing philosophy)
+- `./plugin/standards/` contains project-specific conventions and practices that teams can customize (e.g., code review severity levels, git workflows, documentation formats)
 
 **Referencing paths in agent markdown files**
 
@@ -292,10 +292,10 @@ Use the full variable syntax:
 - Skills are automatically discovered by Claude Code
 - Use the Skill tool in conversations: `Skill(command: "cipherpowers:skill-name")`
 - No manual discovery scripts needed
-- All skills in `plugin/skills/` are automatically available
+- All skills in `./plugin/skills/` are automatically available
 
 **Practices Discovery:**
-Browse `plugin/standards/` directory directly. Each practice includes YAML frontmatter with:
+Browse `./plugin/standards/` directory directly. Each practice includes YAML frontmatter with:
 - `name`: Practice name
 - `description`: Brief description
 - `when_to_use`: Guidance on when to apply
@@ -308,40 +308,37 @@ Commands and agents reference skills and practices using environment variables:
 
 ## Quality Hooks
 
-CipherPowers provides gate configurations in `plugin/hooks/gates.json`. The turboshovel plugin (required) provides the hooks runtime that executes these gates.
+CipherPowers provides gate configurations in `./plugin/hooks/gates.json`. The turboshovel plugin (required) provides the hooks runtime that executes these gates.
 
 **Gates defined:**
-- `plan-compliance` - Verify agents provide STATUS in completion reports (shell script at `plugin/scripts/plan-compliance.sh`)
+- `plan-compliance` - Verify agents provide STATUS in completion reports (shell script at `./plugin/scripts/plan-compliance.sh`)
 
 **Setup:**
 
-1. Install turboshovel plugin:
-```bash
-# Installation command TBD - see turboshovel documentation
-```
+1. Install turboshovel plugin (see turboshovel documentation for installation instructions)
 
 2. CipherPowers gates.json will be automatically discovered by turboshovel
 
 **Migration from older CipherPowers versions:**
 - Previous versions included hooks implementation directly
 - Now requires separate turboshovel plugin for hooks runtime
-- Gate configurations remain in `plugin/hooks/gates.json`
+- Gate configurations remain in `./plugin/hooks/gates.json`
 - Custom gates in old gates.json should be migrated manually (see gates.json.backup)
 
 See turboshovel documentation for:
-- Hook points (PostToolUse, SubagentStop, UserPromptSubmit)
-- Gate actions (CONTINUE, BLOCK, STOP, chaining)
+- Hook points and gate actions (CONTINUE, BLOCK, STOP, chaining)
 - Convention-based context injection
+- Full configuration guide
 
 ## Working with Skills in this Repository
 
-When creating or editing skills in `plugin/skills/`:
+When creating or editing skills in `./plugin/skills/`:
 
 1. **Read the meta-skill:** `${CLAUDE_PLUGIN_ROOT}skills/writing-skills/SKILL.md`
 2. **Follow TDD:** Test with subagents BEFORE writing
 3. **Use TodoWrite:** Create todos for the skill creation checklist
 4. **Consider sharing:** Universal skills can be shared across projects and teams
-5. **Skills are auto-discovered:** Once created in `plugin/skills/`, they're automatically available via the Skill tool
+5. **Skills are auto-discovered:** Once created in `./plugin/skills/`, they're automatically available via the Skill tool
 
 ## Creating Agents and Practices
 
@@ -366,7 +363,7 @@ When developing CipherPowers plugin components:
 **Directory Structure:**
 - `./plugin/commands/` - Slash commands (thin dispatchers)
 - `./plugin/agents/` - Specialized subagent prompts with enforced workflows
-- `./plugin/principles/`, `plugin/standards/` - Standards and project configuration
+- `./plugin/principles/`, `./plugin/standards/` - Standards and project configuration
 - `./plugin/skills/` - Organization-specific skills
 - `./plugin/hooks/` - Gate configuration (gates.json only)
 - `./plugin/scripts/` - Shell scripts (plan-compliance.sh)
@@ -385,7 +382,7 @@ When developing CipherPowers plugin components:
 2. For skills: Follow TDD approach with test scenarios before implementation
 3. For agents: Include all four persuasion principles (Authority, Commitment, Scarcity, Social Proof)
 4. For practices: Separate universal standards from project-specific configuration
-5. Skills are auto-discovered; practices can be browsed in `plugin/standards/`
+5. Skills are auto-discovered; practices can be browsed in `./plugin/standards/`
 6. Ensure proper references using environment variables
 
 **Environment Variables:**
@@ -408,7 +405,7 @@ CipherPowers captures significant lessons from development work to build organiz
 - When multiple approaches were tried
 - When work took longer than expected
 - When discovering non-obvious insights
-- See `plugin/skills/capturing-learning/SKILL.md` for methodology
+- See `./plugin/skills/capturing-learning/SKILL.md` for methodology
 
 
 ## Team Usage
