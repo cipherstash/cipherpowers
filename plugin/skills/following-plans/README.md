@@ -39,7 +39,7 @@ TASK: {task identifier}
 ```
 
 ### 3. Plan Compliance Gate
-**Location:** `plugin/hooks/gates/plan-compliance.sh`
+**Location:** `plugin/scripts/plan-compliance.sh`
 
 **Runs on:** SubagentStop hook
 
@@ -96,7 +96,7 @@ If you want to chain additional gates after plan-compliance (like check/test), e
 
 ### Example Configuration
 
-See `${CLAUDE_PLUGIN_ROOT}hooks/examples/plan-execution.json` for a complete example.
+Gate configuration is in `${CLAUDE_PLUGIN_ROOT}hooks/gates.json`. See turboshovel documentation for hooks runtime setup.
 
 ## Usage
 
@@ -171,17 +171,17 @@ Test the gate manually:
 # Test with STATUS: OK
 echo '{"output": "STATUS: OK\nTask complete"}' | \
   HOOK_INPUT='{"output": "STATUS: OK\nTask complete"}' \
-  ${CLAUDE_PLUGIN_ROOT}hooks/gates/plan-compliance.sh
+  ${CLAUDE_PLUGIN_ROOT}scripts/plan-compliance.sh
 
 # Test with STATUS: BLOCKED
 echo '{"output": "STATUS: BLOCKED\nREASON: Plan approach won't work"}' | \
   HOOK_INPUT='{"output": "STATUS: BLOCKED\nREASON: Plan approach won't work"}' \
-  ${CLAUDE_PLUGIN_ROOT}hooks/gates/plan-compliance.sh
+  ${CLAUDE_PLUGIN_ROOT}scripts/plan-compliance.sh
 
 # Test with missing STATUS
 echo '{"output": "Task complete"}' | \
   HOOK_INPUT='{"output": "Task complete"}' \
-  ${CLAUDE_PLUGIN_ROOT}hooks/gates/plan-compliance.sh
+  ${CLAUDE_PLUGIN_ROOT}scripts/plan-compliance.sh
 ```
 
 ## Design Principles
