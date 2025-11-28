@@ -241,8 +241,8 @@ CipherPowers uses a clear separation between project documentation and plugin co
 - **`plugin/agents/`** - Specialized subagent prompts
 - **`plugin/commands/`** - Slash commands
 - **`plugin/skills/`** - Organization-specific skills
-- **`plugin/hooks/`** - Quality enforcement hooks (PostToolUse, SubagentStop)
-- **`plugin/hooks/examples/`** - Example hook configurations (gate configs, context files)
+- **`plugin/hooks/`** - Gate configuration (gates.json only)
+- **`plugin/scripts/`** - Shell scripts (plan-compliance.sh)
 - **`plugin/docs/`** - Additional documentation (configuring-project-commands.md)
 - **`plugin/context/`** - Plugin-level context injection files (fallback defaults)
 - **`plugin/examples/`** - Example documentation (currently contains README.md)
@@ -396,8 +396,8 @@ When developing CipherPowers plugin components:
 - `./plugin/agents/` - Specialized subagent prompts with enforced workflows
 - `./plugin/principles/`, `plugin/standards/` - Standards and project configuration
 - `./plugin/skills/` - Organization-specific skills
-- `./plugin/hooks/` - Quality enforcement hooks (PostToolUse, SubagentStop)
-- `./plugin/hooks/examples/` - Example hook configurations (gate configs, context files)
+- `./plugin/hooks/` - Gate configuration (gates.json only)
+- `./plugin/scripts/` - Shell scripts (plan-compliance.sh)
 - `./plugin/templates/` - Templates for agents, practices, and skills
 - `./plugin/examples/` - Example documentation
 
