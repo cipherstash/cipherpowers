@@ -75,6 +75,9 @@ FIX/
     └── common-errors-reference.md
 ```
 
+**Template:** `${CLAUDE_PLUGIN_ROOT}templates/symptom-debugging-template.md`
+**Skill:** `${CLAUDE_PLUGIN_ROOT}skills/documenting-debugging-workflows/SKILL.md`
+
 ### UNDERSTAND/ - Deep Learning
 
 For when you need context, not just instructions.
@@ -179,6 +182,8 @@ Every directory MUST have a `README.md` with consistent structure:
 
 READMEs serve as both index and gateway. They enable self-service navigation.
 
+**Template:** `${CLAUDE_PLUGIN_ROOT}templates/documentation-readme-template.md`
+
 ## Dual Navigation Pattern
 
 Maintain two parallel navigation systems:
@@ -223,6 +228,9 @@ propulsion/
 - TL;DR for time-constrained readers
 - Verification status tracked
 - Self-contained (can be shared independently)
+
+**Template:** `${CLAUDE_PLUGIN_ROOT}templates/research-package-template.md`
+**Skill:** `${CLAUDE_PLUGIN_ROOT}skills/creating-research-packages/SKILL.md`
 
 ## Cross-Referencing Strategy
 
@@ -319,6 +327,8 @@ Use scannable tables for rapid lookup:
 
 Include visual icons (✅, ⚠️, ☠️) for quick assessment.
 
+**Template:** `${CLAUDE_PLUGIN_ROOT}templates/quick-reference-template.md`
+
 ## Checklist Quality Gates
 
 Structure quality gates with clear pass/fail criteria:
@@ -339,6 +349,18 @@ Structure quality gates with clear pass/fail criteria:
 ```
 
 Separate "Must Pass" from "Should Review" - make the distinction explicit.
+
+**Template:** `${CLAUDE_PLUGIN_ROOT}templates/verification-checklist-template.md`
+**Skill:** `${CLAUDE_PLUGIN_ROOT}skills/creating-quality-gates/SKILL.md`
+
+## Related Skills
+
+For implementing these patterns:
+
+- **Organizing documentation:** `${CLAUDE_PLUGIN_ROOT}skills/organizing-documentation/SKILL.md`
+- **Creating research packages:** `${CLAUDE_PLUGIN_ROOT}skills/creating-research-packages/SKILL.md`
+- **Documenting debugging workflows:** `${CLAUDE_PLUGIN_ROOT}skills/documenting-debugging-workflows/SKILL.md`
+- **Creating quality gates:** `${CLAUDE_PLUGIN_ROOT}skills/creating-quality-gates/SKILL.md`
 
 ## Benefits
 

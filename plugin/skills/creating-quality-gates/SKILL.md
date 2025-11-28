@@ -255,6 +255,12 @@ Add gate to workflow documentation:
 STOP. Fix issues. Re-run all checks.
 ```
 
+## Related Skills
+
+- **Organizing documentation:** `${CLAUDE_PLUGIN_ROOT}skills/organizing-documentation/SKILL.md`
+- **Creating research packages:** `${CLAUDE_PLUGIN_ROOT}skills/creating-research-packages/SKILL.md`
+- **Documenting debugging workflows:** `${CLAUDE_PLUGIN_ROOT}skills/documenting-debugging-workflows/SKILL.md`
+
 ## References
 
 - Standards: `${CLAUDE_PLUGIN_ROOT}standards/documentation-structure.md`

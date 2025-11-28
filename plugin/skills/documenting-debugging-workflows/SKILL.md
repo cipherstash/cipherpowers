@@ -197,6 +197,12 @@ Flickering textures, z-fighting, or objects appearing through walls.
 - Keep near plane as far as acceptable
 ```
 
+## Related Skills
+
+- **Organizing documentation:** `${CLAUDE_PLUGIN_ROOT}skills/organizing-documentation/SKILL.md`
+- **Creating research packages:** `${CLAUDE_PLUGIN_ROOT}skills/creating-research-packages/SKILL.md`
+- **Creating quality gates:** `${CLAUDE_PLUGIN_ROOT}skills/creating-quality-gates/SKILL.md`
+
 ## References
 
 - Standards: `${CLAUDE_PLUGIN_ROOT}standards/documentation-structure.md`
