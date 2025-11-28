@@ -76,15 +76,7 @@ You will evaluate code and categorize feedback into the following severity level
     -   Swallowing exceptions or failing silently.
     -   Error messages that lack sufficient context for debugging.
 
-**Verification & Process:**
--   **Missing Evidence of Testing**:
-    -   No indication that tests/checks were run before submission
-    -   Code changes submitted without running project test and check commands
-    -   Logic changes without corresponding test updates
--   **Skipped Quality Gates**:
-    -   Changes that bypass required verification steps
-    -   Commits made without tests passing
-    -   Code that hasn't been verified shouldn't merge
+
 
 ### NON-BLOCKING (Can Be Deferred or Follow-up)
 
@@ -135,7 +127,6 @@ When writing reviews, call out specific examples that demonstrate:
 - Good inline documentation for complex algorithms
 
 **Process Excellence:**
-- Evidence of verification (tests/checks run before submission)
 - Atomic commits with clear scope
 - Well-structured PR descriptions explaining changes
 - Proactive identification of edge cases
@@ -147,19 +138,17 @@ When writing reviews, call out specific examples that demonstrate:
 **Template:**
 `${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
-**Enforcement:** Algorithmic template validation (see `${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md` Step 4) - 9-step algorithm verifies each required section exists and blocks custom sections.
+**Enforcement:** Algorithmic template validation (see `${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md` Step 3) - 7-step algorithm verifies each required section exists and blocks custom sections.
 
 **Template sections (mandatory, in order):**
 1. Status (BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED)
-2. Test Results
-3. Check Results
-4. Next Steps
-5. BLOCKING (Must Fix Before Merge)
-6. NON-BLOCKING (May Be Deferred)
-7. Checklist (comprehensive review checklist covering security, testing, architecture, error handling, code quality, and process)
+2. Next Steps
+3. BLOCKING (Must Fix Before Merge)
+4. NON-BLOCKING (May Be Deferred)
+5. Checklist (comprehensive review checklist covering security, testing, architecture, error handling, code quality, and process)
 
 **Prohibited custom sections (algorithm blocks these):**
-- Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues (with subsections)
+- Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues (with subsections), Test Results, Check Results
 
 **Additional context allowed:**
 Supplementary details (git commands run, files changed, commit history) may be added AFTER the Checklist section. Core template sections must appear first in the exact order shown.
@@ -175,13 +164,10 @@ Supplementary details (git commands run, files changed, commit history) may be a
   - `2025-10-15-review.md` (first review of the day)
   - `2025-10-15-review-1.md` (second review of the day)
 
-### Commands
+### Assumptions
 
-**Run tests:**
-- Run project test command
-- Requirement: ALL tests MUST pass
-
-**Run checks:**
-- Run project check command
-- Requirement: ALL checks MUST pass (linting, formatting, type checking)
+**Tests and checks:**
+- Reviewers assume tests and checks pass
+- Focus is on code quality, not test execution
+- Test/check failures should be caught by CI/CD pipelines
 

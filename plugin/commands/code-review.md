@@ -76,10 +76,11 @@ Use Task tool with:
 
 The code-review-agent agent implements:
 - Identify code to review (git commands)
-- Run all project tests and checks
 - Review against practice standards (ALL severity levels)
 - Save structured feedback to work directory
 - No approval without thorough review
+
+**Note:** Tests and checks are assumed to pass. The reviewer focuses on code quality, not test execution.
 
 **References:**
 - Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-review-agent.md`

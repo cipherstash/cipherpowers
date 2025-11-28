@@ -15,17 +15,9 @@ Status guidance:
 - BLOCKED: Has BLOCKING issues that must be fixed before merge
 - APPROVED WITH NON-BLOCKING SUGGESTIONS: Ready to merge, but consider addressing suggestions
 - APPROVED: Clean, ready to merge with no issues
+
+Note: Tests and checks are assumed to pass. This review focuses on code quality.
 -->
-
-
-## Test Results
-- Status: [PASS/FAIL]
-- Details: [test failures or "all passed"]
-
-
-## Check Results
-- Status: [PASS/FAIL]
-- Details: [warnings or "clean"]
 
 
 ## Next Steps
@@ -108,7 +100,6 @@ Status guidance:
 - [ ] Doc comments for public APIs
 
 **Process:**
-- [ ] Tests and checks run before submission (no skipped quality gates, evidence of verification)
 - [ ] No obvious performance issues (N+1 queries, inefficient algorithms on hot paths)
 - [ ] ALL linter warnings addressed by fixing root cause (disable/allow/ignore ONLY when unavoidable)
 - [ ] Requirements met exactly (no scope creep)
