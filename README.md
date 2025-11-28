@@ -70,33 +70,6 @@ See [COMMANDS.md](plugin/docs/COMMANDS.md) for detailed command reference.
 - [WORKFLOW.md](plugin/docs/WORKFLOW.md) - Detailed workflow guidance
 - [CLAUDE.md](CLAUDE.md) - Architecture and plugin development
 
-## Setup (Optional)
-
-### Quality Hooks
-
-CipherPowers provides gate configurations for automated quality enforcement. Requires turboshovel plugin for hooks runtime.
-
-```bash
-# Create project gates
-mkdir -p .claude
-cat > .claude/gates.json << 'EOF'
-{
-  "gates": {
-    "quality-check": {
-      "command": "npm test && npm run lint",
-      "on_pass": "CONTINUE",
-      "on_fail": "BLOCK"
-    }
-  },
-  "hooks": {
-    "SubagentStop": {
-      "gates": ["quality-check"]
-    }
-  }
-}
-EOF
-```
-
 ## Troubleshooting
 
 **Commands not appearing:** Run `/plugin list` to verify installation. Reinstall if needed.
