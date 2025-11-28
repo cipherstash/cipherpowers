@@ -57,18 +57,18 @@ If commands don't appear, restart your Claude Code session.
 
 Configure project-specific quality gates for automated test/check enforcement:
 
-**Step 1: Copy example configuration**
+**Step 1: Install turboshovel plugin**
 
-The plugin provides example configurations you can copy:
+CipherPowers provides gate configurations, but requires the turboshovel plugin for hooks runtime:
 
 ```bash
-# Copy example configuration (recommended)
-mkdir -p .claude
-cp ~/.config/claude/plugins/cipherpowers/plugin/hooks/examples/strict.json .claude/gates.json
+# Install turboshovel plugin (required for hooks)
+# See turboshovel documentation for installation
 ```
 
+**Step 2: Configure gates (optional)**
 
-**Alternatively, create configuration manually:**
+CipherPowers includes a default `gates.json` with plan-compliance checking. For custom gates, create `.claude/gates.json`:
 
 ```bash
 mkdir -p .claude
@@ -76,20 +76,21 @@ cat > .claude/gates.json << 'EOF'
 {
   "gates": {
     "quality-check": {
-      "commands": ["npm test", "npm run lint"],
+      "command": "npm test && npm run lint",
       "on_pass": "CONTINUE",
       "on_fail": "BLOCK"
     }
   },
   "hooks": {
-    "PostToolUse": ["quality-check"],
-    "SubagentStop": ["quality-check"]
+    "SubagentStop": {
+      "gates": ["quality-check"]
+    }
   }
 }
 EOF
 ```
 
-See `plugin/hooks/SETUP.md` in the installed plugin for detailed configuration guide.
+See turboshovel documentation for detailed configuration guide.
 
 ## Getting Started
 
@@ -256,13 +257,10 @@ The marketplace-based installation handles this automatically. If you're having 
 
 **Quick Start:** This README covers installation and basic usage.
 
-**Quality Hooks:** See `plugin/hooks/` directory for:
-- `README.md` - Overview and examples
-- `SETUP.md` - Project-level configuration guide
-- `CONVENTIONS.md` - Convention-based context injection
-- `INTEGRATION_TESTS.md` - Testing procedures
-- `examples/` - Six gate configurations: strict.json, permissive.json, pipeline.json, convention-based.json, typescript-gates.json, plan-execution.json
-- `examples/context/` - Four ready-to-use context files: code-review-start.md, plan-start.md, test-driven-development-start.md, session-start.md
+**Quality Hooks:** CipherPowers provides gate configurations in `plugin/hooks/gates.json`. Requires turboshovel plugin for hooks runtime. See turboshovel documentation for:
+- Hook points (PostToolUse, SubagentStop, UserPromptSubmit)
+- Gate actions and configuration
+- Convention-based context injection
 
 **Deep Dive:** See `CLAUDE.md` (auto-loaded by Claude Code and serves as reference documentation) for complete architecture details, plugin development guide, and team usage patterns. Read CLAUDE.md when you want to:
 - Understand the three-layer architecture (skills, automation, documentation)
