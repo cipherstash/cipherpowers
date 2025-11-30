@@ -61,6 +61,7 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 **Template location:**
 `${CLAUDE_PLUGIN_ROOT}templates/code-review-template.md`
 
+<EXTREMELY-IMPORTANT>
 **BEFORE writing review file, verify each required section using this algorithm:**
 
 ##### Template Validation Algorithm
@@ -104,6 +105,7 @@ Have you added ANY sections not listed above (examples of PROHIBITED sections: S
 **7. Save review file**
 
 All required sections present, no custom sections → Save to work directory.
+</EXTREMELY-IMPORTANT>
 
 **File naming:** See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for `.work` directory location and naming convention (`{YYYY-MM-DD}-review-{N}.md`).
 

@@ -72,6 +72,7 @@ For each task:
 
 ### Step 3: Review Batch (REQUIRED)
 
+<EXTREMELY-IMPORTANT>
 **REQUIRED SUB-SKILL:** Use cipherpowers:requesting-code-review
 
 After batch complete:
@@ -80,6 +81,7 @@ After batch complete:
 3. Address NON-BLOCKING feedback or defer with justification
 
 **Code review is mandatory between batches. No exceptions.**
+</EXTREMELY-IMPORTANT>
 
 **Optional:** If concerned about plan adherence, user can request `/verify execute` for dual-verification of batch implementation vs plan specification.
 
@@ -122,6 +124,7 @@ After all tasks complete and verified:
 
 ## Handling BLOCKED Status
 
+<EXTREMELY-IMPORTANT>
 When an agent reports STATUS: BLOCKED:
 
 1. **Read the BLOCKED reason carefully**
@@ -155,6 +158,7 @@ When an agent reports STATUS: BLOCKED:
    - Investigate → Pause execution, gather more information
 
 **Never approve deviations without user input.**
+</EXTREMELY-IMPORTANT>
 
 ## Related Skills
 

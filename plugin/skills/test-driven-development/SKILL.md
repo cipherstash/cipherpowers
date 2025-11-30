@@ -30,6 +30,7 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 
 ## The Iron Law
 
+<EXTREMELY-IMPORTANT>
 ```
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
@@ -43,6 +44,7 @@ Write code before the test? Delete it. Start over.
 - Delete means delete
 
 Implement fresh from tests. Period.
+</EXTREMELY-IMPORTANT>
 
 ## Red-Green-Refactor
 
@@ -112,6 +114,7 @@ Vague name, tests mock not code
 
 ### Verify RED - Watch It Fail
 
+<EXTREMELY-IMPORTANT>
 **MANDATORY. Never skip.**
 
 ```bash
@@ -126,6 +129,7 @@ Confirm:
 **Test passes?** You're testing existing behavior. Fix test.
 
 **Test errors?** Fix error, re-run until it fails correctly.
+</EXTREMELY-IMPORTANT>
 
 ### GREEN - Minimal Code
 

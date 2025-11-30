@@ -92,6 +92,7 @@ NO → Continue to Step 4
 
 ### Step 3: Report BLOCKED (Required Format)
 
+<EXTREMELY-IMPORTANT>
 ```
 STATUS: BLOCKED
 REASON: [Explain why plan approach won't work and what you want to do instead]
@@ -104,6 +105,7 @@ TASK: Task 3 - Implement authentication middleware
 ```
 
 **STOP HERE. Do not proceed with implementation.**
+</EXTREMELY-IMPORTANT>
 
 ### Step 4: Follow plan exactly
 
@@ -115,7 +117,9 @@ Report STATUS: OK when complete.
 
 ## Status Reporting (REQUIRED)
 
+<EXTREMELY-IMPORTANT>
 **Every task completion MUST include STATUS.**
+</EXTREMELY-IMPORTANT>
 
 ### STATUS: OK
 
