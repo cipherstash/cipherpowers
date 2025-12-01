@@ -40,33 +40,44 @@ Use dual-verification when:
 
 ## Quick Reference
 
-| Phase | Action | Output |
-|-------|--------|--------|
-| **Phase 1** | Dispatch 2 agents in parallel with identical prompts | Two independent reports |
-| **Phase 2** | Dispatch collation agent to compare findings | Collated report with confidence levels |
-| **Phase 3** | Present findings to user | Common (high confidence), Exclusive (consider), Divergences (investigate) |
+| Phase | Action | Output | User Action |
+|-------|--------|--------|-------------|
+| **Phase 1** | Dispatch 2 agents in parallel | Two independent reports | Wait |
+| **Phase 2** | Collate findings, present to user | Collated report | Can `/revise common` |
+| **Phase 3** | Cross-check exclusive issues (background) | Validated exclusive issues | Can `/revise exclusive` or `/revise all` |
 
 **Confidence levels:**
 - **VERY HIGH:** Both agents found (high confidence - act on this)
-- **MODERATE:** One agent found (unique insight - consider carefully)
-- **INVESTIGATE:** Agents disagree (needs resolution)
+- **MODERATE:** One agent found (unique insight - needs cross-check)
+- **INVESTIGATE:** Agents disagree (resolved during collation)
+
+**Exclusive issue states (after cross-check):**
+- **VALIDATED:** Cross-check confirmed issue exists → implement
+- **INVALIDATED:** Cross-check found issue doesn't apply → skip
+- **UNCERTAIN:** Cross-check couldn't determine → user decides
 
 ## Why This Pattern Works
 
 **Higher quality through independence:**
 - Common findings = high confidence (both found)
-- Exclusive findings = unique insights one agent caught
-- Divergences = areas needing investigation
+- Exclusive findings = unique insights one agent caught → validated by cross-check
+- Divergences = resolved during collation
 
 **Context management:**
 - Two detailed reviews = lots of context
 - Collation agent does comparison work
+- Cross-check runs in background while user reviews
 - Main context gets clean summary
 
-**Confidence levels:**
-- Both found → Very likely real issue → Fix immediately
-- One found → Edge case or judgment call → Decide case-by-case
-- Disagree → Requires investigation → User makes call
+**Confidence progression:**
+- Both found → VERY HIGH → Fix immediately (`/revise common`)
+- One found → MODERATE → Cross-check validates → VALIDATED/INVALIDATED/UNCERTAIN
+- Disagree → INVESTIGATE → Resolved during collation
+
+**Parallel workflow:**
+- User gets collation results immediately
+- Can start `/revise common` while cross-check runs
+- Cross-check completes → `/revise exclusive` or `/revise all`
 
 ## The Three-Phase Process
 
@@ -136,9 +147,9 @@ You are [agent type] conducting an independent verification review.
 - Ground truth: coding standards, plan requirements
 - Criteria: meets requirements, follows standards, has tests
 
-### Phase 2: Collate Findings
+### Phase 2: Collate Findings and Present
 
-**Dispatch collation agent to compare the two reviews.**
+**Dispatch collation agent to compare the two reviews, then present to user immediately.**
 
 **Dispatch collation agent:**
 ```
@@ -173,14 +184,14 @@ Use Task tool with:
 4. **Identify exclusive issues** (only one found):
    - Issues found only by Agent #1
    - Issues found only by Agent #2
-   - Confidence: MODERATE (may be edge cases)
+   - Confidence: MODERATE (pending cross-check)
 
 5. **Identify divergences** (agents disagree):
    - Same location, different conclusions
    - Contradictory findings
 
-6. **IF divergences exist → Verify with plan-review agent:**
-   - Dispatch cipherpowers:plan-review-agent for each divergence
+6. **IF divergences exist → Verify with appropriate agent:**
+   - Dispatch verification agent for each divergence
    - Provide both perspectives and specific divergence point
    - Incorporate verification analysis into report
 
@@ -188,7 +199,7 @@ Use Task tool with:
    - Metadata section (complete all fields)
    - Executive summary (totals and breakdown)
    - Common issues (VERY HIGH confidence)
-   - Exclusive issues (MODERATE confidence)
+   - Exclusive issues (MODERATE confidence - pending cross-check)
    - Divergences (with verification analysis)
    - Recommendations (categorized by action type)
    - Overall assessment
@@ -200,23 +211,93 @@ Use Task tool with:
 - Usage notes for proper assessment
 ```
 
-### Phase 3: Present Findings to User
+**Present collated report to user immediately:**
 
-**Present collated report with clear action items:**
+```
+Collation complete. Report saved to: [path]
 
-1. **Common issues** (both found):
-   - These should be addressed immediately
-   - Very high confidence they're real problems
+**Summary:**
+- Common issues: X (VERY HIGH confidence) → Can `/revise common` now
+- Exclusive issues: X (MODERATE - cross-check starting)
+- Divergences: X (resolved/unresolved)
 
-2. **Exclusive issues** (one found):
-   - User decides case-by-case
-   - Review agent's reasoning
-   - May be edge cases or may be missed by other agent
+**Status:** Cross-check running in background...
+```
 
-3. **Divergences** (agents disagree):
-   - User investigates and makes final call
-   - May need additional verification
-   - May indicate ambiguity in requirements/standards
+**User can now `/revise common` while cross-check runs.**
+
+### Phase 3: Cross-check Exclusive Issues
+
+**Dispatch cross-check agent to validate exclusive issues against the codebase/implementation.**
+
+This phase runs in the background after presenting collation to user.
+
+**Purpose:** Exclusive issues have MODERATE confidence because only one reviewer found them. Cross-check validates whether the issue actually exists by checking against ground truth.
+
+**Dispatch cross-check agent:**
+```
+Use Task tool with:
+  subagent_type: "[appropriate agent for review type]"
+  description: "Cross-check exclusive issues"
+  prompt: "You are cross-checking exclusive issues from a dual-verification review.
+
+**Context:**
+Two independent reviewers performed a [review type] review. The collation identified
+issues found by only one reviewer (exclusive issues). Your task is to validate
+whether each exclusive issue actually exists.
+
+**Collation report:** [path to collation file]
+
+**Your task:**
+
+For EACH exclusive issue in the collation report:
+
+1. **Read the issue description** from the collation report
+2. **Verify against ground truth:**
+   - For doc reviews: Check if the claim is accurate against codebase
+   - For code reviews: Check if the issue exists in the implementation
+   - For plan reviews: Check if the concern is valid against requirements
+3. **Assign validation status:**
+   - VALIDATED: Issue confirmed to exist → should be addressed
+   - INVALIDATED: Issue does not apply → can be skipped
+   - UNCERTAIN: Cannot determine → escalate to user
+
+**Output format:**
+For each exclusive issue, provide:
+- Issue: [from collation]
+- Source: Reviewer #[1/2]
+- Validation: [VALIDATED/INVALIDATED/UNCERTAIN]
+- Evidence: [what you found that supports your conclusion]
+- Recommendation: [action to take]
+
+**Save to:** `.work/{YYYY-MM-DD}-verify-{type}-crosscheck-{HHmmss}.md`
+```
+
+**Agent selection for cross-check:**
+| Review Type | Cross-check Agent |
+|-------------|-------------------|
+| docs | cipherpowers:code-agent (verify against implementation) |
+| code | cipherpowers:code-agent (verify against codebase) |
+| plan | cipherpowers:plan-review-agent (verify against requirements) |
+| execute | cipherpowers:execute-review-agent (verify against plan) |
+
+**When cross-check completes:**
+
+```
+Cross-check complete. Report saved to: [path]
+
+**Exclusive Issues Status:**
+- VALIDATED: X issues (confirmed, should address)
+- INVALIDATED: X issues (can skip)
+- UNCERTAIN: X issues (user decides)
+
+**Ready for:** `/revise exclusive` or `/revise all`
+```
+
+**Update collation report with cross-check results:**
+- Read original collation file
+- Update exclusive issues section with validation status
+- Save updated collation (overwrite or append cross-check section)
 
 ## Parameterization
 
@@ -280,26 +361,33 @@ Phase 1: Dual Independent Review
   → Agent #1 finds: 3 BLOCKING issues, 7 NON-BLOCKING
   → Agent #2 finds: 4 BLOCKING issues, 5 NON-BLOCKING
 
-Phase 2: Collate Findings
+Phase 2: Collate Findings and Present
   → Dispatch review-collation-agent
   → Collator compares both reviews
-  → Produces collated report
+  → Present to user immediately:
 
-Collated Report:
-  Common Issues (High Confidence):
-    - 2 BLOCKING issues both found
-    - 3 NON-BLOCKING issues both found
+  Collated Report:
+    Common Issues (VERY HIGH):
+      - 2 BLOCKING issues both found
+      - 3 NON-BLOCKING issues both found
 
-  Exclusive Issues:
-    - Agent #1 only: 1 BLOCKING, 4 NON-BLOCKING
-    - Agent #2 only: 2 BLOCKING, 2 NON-BLOCKING
+    Exclusive Issues (MODERATE - cross-check starting):
+      - Agent #1 only: 1 BLOCKING, 4 NON-BLOCKING
+      - Agent #2 only: 2 BLOCKING, 2 NON-BLOCKING
 
-  Divergences: None
+    Divergences: None
 
-Phase 3: Present to User
-  → Show common BLOCKING issues (fix immediately)
-  → Show exclusive BLOCKING issues (user decides)
-  → Show all NON-BLOCKING for consideration
+  → User notified: "Can `/revise common` now. Cross-check running..."
+
+Phase 3: Cross-check Exclusive Issues (background)
+  → Dispatch plan-review-agent to validate exclusive issues
+  → For each exclusive issue, verify against requirements
+  → Results:
+    - VALIDATED: 2 issues confirmed
+    - INVALIDATED: 3 issues don't apply
+    - UNCERTAIN: 1 issue needs user decision
+
+  → User notified: "Cross-check complete. `/revise exclusive` or `/revise all`"
 ```
 
 ## Example Usage: Documentation Review
@@ -315,23 +403,31 @@ Phase 1: Dual Independent Review
   → Agent #1 finds: 13 issues (1 critical, 3 high, 6 medium, 3 low)
   → Agent #2 finds: 13 issues (4 critical, 1 high, 4 medium, 4 low)
 
-Phase 2: Collate Findings
+Phase 2: Collate Findings and Present
   → Dispatch review-collation-agent
   → Identifies: 7 common, 6 exclusive, 0 divergences
+  → Present to user immediately:
 
-Collated Report:
-  Common Issues (High Confidence): 7
-    - Missing mise commands (CRITICAL)
-    - Incorrect skill path (MEDIUM)
-    - Missing /verify command (HIGH)
+  Collated Report:
+    Common Issues (VERY HIGH): 7
+      - Missing mise commands (CRITICAL)
+      - Incorrect skill path (MEDIUM)
+      - Missing /verify command (HIGH)
 
-  Exclusive Issues: 6
-    - Agent #1 only: 3 issues
-    - Agent #2 only: 3 issues
+    Exclusive Issues (MODERATE - cross-check starting): 6
+      - Agent #1 only: 3 issues
+      - Agent #2 only: 3 issues
 
-Phase 3: Present to User
-  → Fix common issues immediately (high confidence)
-  → User decides on exclusive issues case-by-case
+  → User notified: "Can `/revise common` now. Cross-check running..."
+
+Phase 3: Cross-check Exclusive Issues (background)
+  → Dispatch code-agent to verify exclusive claims against codebase
+  → Results:
+    - VALIDATED: 4 issues (paths really don't exist, examples really broken)
+    - INVALIDATED: 2 issues (files exist, agent #1 missed them)
+    - UNCERTAIN: 0 issues
+
+  → User notified: "Cross-check complete. `/revise exclusive` or `/revise all`"
 ```
 
 ## Example Usage: Codebase Research
@@ -347,30 +443,38 @@ Phase 1: Dual Independent Research
   → Agent #1 finds: JWT middleware, session handling, role-based access
   → Agent #2 finds: OAuth integration, token refresh, permission checks
 
-Phase 2: Collate Findings
+Phase 2: Collate Findings and Present
   → Dispatch review-collation-agent
   → Identifies: 4 common findings, 3 unique insights, 1 divergence
+  → Resolves divergence during collation
+  → Present to user immediately:
 
-Collated Report:
-  Common Findings (High Confidence): 4
-    - JWT tokens used for API auth (both found)
-    - Middleware in src/auth/middleware.ts (both found)
-    - Role enum defines permissions (both found)
-    - Refresh tokens stored in Redis (both found)
+  Collated Report:
+    Common Findings (VERY HIGH): 4
+      - JWT tokens used for API auth (both found)
+      - Middleware in src/auth/middleware.ts (both found)
+      - Role enum defines permissions (both found)
+      - Refresh tokens stored in Redis (both found)
 
-  Unique Insights: 3
-    - Agent #1: Found legacy session fallback for admin routes
-    - Agent #2: Found OAuth config for SSO integration
-    - Agent #2: Found rate limiting on auth endpoints
+    Exclusive Findings (MODERATE - cross-check starting): 3
+      - Agent #1: Found legacy session fallback for admin routes
+      - Agent #2: Found OAuth config for SSO integration
+      - Agent #2: Found rate limiting on auth endpoints
 
-  Divergence: 1
-    - Token expiry: Agent #1 says 1 hour, Agent #2 says 24 hours
-    - → Verification: Config has 1h access + 24h refresh (both partially correct)
+    Divergence (RESOLVED):
+      - Token expiry: Agent #1 says 1 hour, Agent #2 says 24 hours
+      - → Verification: Config has 1h access + 24h refresh (both partially correct)
 
-Phase 3: Present to User
-  → Common findings = confident understanding
-  → Unique insights = additional context worth knowing
-  → Resolved divergence = clarified token strategy
+  → User notified: "Common findings ready. Cross-check running..."
+
+Phase 3: Cross-check Exclusive Findings (background)
+  → Dispatch Explore agent to verify exclusive claims
+  → Results:
+    - VALIDATED: All 3 findings confirmed in codebase
+    - INVALIDATED: 0
+    - UNCERTAIN: 0
+
+  → User notified: "Cross-check complete. All exclusive findings validated."
 ```
 
 ## Related Skills
@@ -379,6 +483,10 @@ Phase 3: Present to User
 - Comprehensive reviews before major actions
 - High-stakes decisions (execution, deployment, merge)
 - Quality assurance for critical content
+
+**Related commands:**
+- `/cipherpowers:verify` - Dispatches this skill for all verification types
+- `/cipherpowers:revise` - Implements findings from verification (common, exclusive, all scopes)
 
 **Other review skills:**
 - verifying-plans: Single plan-review-agent (faster, less thorough)
@@ -414,8 +522,10 @@ Phase 3: Present to User
 - Dispatch 2 agents in parallel for Phase 1 (efficiency)
 - Use identical prompts for both agents (fairness)
 - Dispatch collation agent for Phase 2 (context management)
-- Present clean summary to user in Phase 3 (usability)
-- Common issues = high confidence (both found)
-- Exclusive issues = requires judgment (one found)
-- Divergences = investigate (agents disagree)
+- Present collation to user immediately after Phase 2 (user can `/revise common`)
+- Dispatch cross-check agent for Phase 3 in background (parallel workflow)
+- Common issues = VERY HIGH confidence (both found) → implement immediately
+- Exclusive issues = MODERATE confidence → cross-check validates → VALIDATED/INVALIDATED/UNCERTAIN
+- Divergences = resolved during collation (verification agent determines correct perspective)
+- Cross-check enables parallel workflow: user starts `/revise common` while cross-check runs
 - Cost-benefit: Use for high-stakes, skip for trivial changes

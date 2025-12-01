@@ -2,7 +2,9 @@
 
 Generic dual-verification dispatcher for high-confidence verification across all verification types.
 
-**Core principle:** Agents cannot be trusted. Two independent agents + systematic collation = confidence.
+**Core principle:** Agents cannot be trusted. Two independent agents + systematic collation + cross-check = confidence.
+
+**Parallel workflow:** User can `/revise common` immediately after collation while cross-check validates exclusive issues in background.
 
 ## Usage
 
@@ -45,10 +47,19 @@ Skill(skill: "cipherpowers:dual-verification")
 
 3. **FOLLOW THE SKILL EXACTLY:**
    - Phase 1: Dispatch 2 specialized agents in parallel (see dispatch table)
-   - Phase 2: Dispatch review-collation-agent to compare findings
-   - Phase 3: Present collated findings to user with confidence levels
+   - Phase 2: Dispatch review-collation-agent to compare findings → present to user
+   - Phase 3: Dispatch cross-check agent to validate exclusive issues (background)
 
-4. **STOP when verification is complete.**
+4. **After Phase 2 (collation):**
+   - Present collation results to user immediately
+   - Announce: "Can `/revise common` now. Cross-check starting..."
+   - Dispatch cross-check agent (see cross-check table)
+
+5. **After Phase 3 (cross-check):**
+   - Present cross-check results
+   - Announce: "Cross-check complete. `/revise exclusive` or `/revise all` ready"
+
+6. **STOP when cross-check is complete.**
 
 ## Dispatch Table
 
@@ -64,6 +75,28 @@ Skill(skill: "cipherpowers:dual-verification")
 - If user specified `--model=X` → pass `model: X` to ALL dispatched agents
 - If no model specified → use default model from table above
 - Collation agent always uses `haiku` (simple comparison task)
+
+## Cross-check Dispatch Table
+
+| Type | Cross-check Agent | Purpose | Model |
+|------|-------------------|---------|-------|
+| code | cipherpowers:code-agent | Verify exclusive issues against codebase | haiku |
+| plan | cipherpowers:plan-review-agent | Verify exclusive concerns against requirements | haiku |
+| execute | cipherpowers:execute-review-agent | Verify exclusive deviations against plan | haiku |
+| research | Explore | Verify exclusive findings against sources | haiku |
+| docs | cipherpowers:code-agent | Verify exclusive claims against implementation | haiku |
+
+**Agent selection rationale:**
+- Cross-check uses a **different agent type** than original reviewers to get fresh perspective
+- `code-agent` for docs/code: Can read actual files to verify claims
+- `plan-review-agent` for plans: Applies same criteria as original review
+- `Explore` for research: Fast codebase search to validate findings
+- `haiku` model: Cross-check is verification, not deep analysis
+
+**Cross-check validates exclusive issues with states:**
+- **VALIDATED:** Issue confirmed to exist → implement via `/revise exclusive`
+- **INVALIDATED:** Issue doesn't apply → skip (auto-excluded from `/revise`)
+- **UNCERTAIN:** Cannot determine → user decides
 
 ## Verification Types
 
@@ -82,14 +115,18 @@ Skill(skill: "cipherpowers:dual-verification")
 ```
 /verify code [scope] [--model=<sonnet|opus|haiku>]
 
+Phase 1: Dual Review
 → Dispatches 1 code-review-agent and 1 code-agent in parallel
-  (with model parameter if specified, otherwise sonnet)
-→ Each agent independently reviews:
-  - Read code changes
-  - Run tests and checks
-  - Review against standards
-→ Dispatches review-collation-agent (always haiku)
-→ Produces collated report with confidence levels
+→ Each agent independently reviews code changes
+
+Phase 2: Collate and Present
+→ Dispatches review-collation-agent (haiku)
+→ Presents collation to user: "Can `/revise common` now"
+
+Phase 3: Cross-check (background)
+→ Dispatches code-agent to validate exclusive issues
+→ Updates collation with VALIDATED/INVALIDATED/UNCERTAIN
+→ Announces: "Cross-check complete. `/revise exclusive` ready"
 ```
 
 ### Plan Verification
@@ -105,11 +142,18 @@ Skill(skill: "cipherpowers:dual-verification")
 ```
 /verify plan [plan-file] [--model=<sonnet|opus|haiku>]
 
+Phase 1: Dual Review
 → Dispatches 1 plan-review-agent and 1 code-agent in parallel
-  (with model parameter if specified, otherwise sonnet)
 → Each agent independently evaluates against criteria
-→ Dispatches review-collation-agent (always haiku)
-→ Produces collated report with confidence levels
+
+Phase 2: Collate and Present
+→ Dispatches review-collation-agent (haiku)
+→ Presents collation to user: "Can `/revise common` now"
+
+Phase 3: Cross-check (background)
+→ Dispatches plan-review-agent to validate exclusive concerns
+→ Updates collation with VALIDATED/INVALIDATED/UNCERTAIN
+→ Announces: "Cross-check complete. `/revise exclusive` ready"
 ```
 
 ### Execute Verification
@@ -131,14 +175,18 @@ Skill(skill: "cipherpowers:dual-verification")
 ```
 /verify execute [batch-number] [plan-file] [--model=<sonnet|opus|haiku>]
 
+Phase 1: Dual Review
 → Dispatches 2 execute-review-agent agents in parallel
-  (with model parameter if specified, otherwise haiku)
-→ Each agent independently verifies:
-  - Read plan tasks for batch
-  - Read implementation changes
-  - Verify each task: COMPLETE / INCOMPLETE / DEVIATED
-→ Dispatches review-collation-agent (always haiku)
-→ Produces collated report with confidence levels
+→ Each agent verifies: COMPLETE / INCOMPLETE / DEVIATED
+
+Phase 2: Collate and Present
+→ Dispatches review-collation-agent (haiku)
+→ Presents collation to user: "Can `/revise common` now"
+
+Phase 3: Cross-check (background)
+→ Dispatches execute-review-agent to validate exclusive deviations
+→ Updates collation with VALIDATED/INVALIDATED/UNCERTAIN
+→ Announces: "Cross-check complete. `/revise exclusive` ready"
 ```
 
 ### Research Verification
@@ -160,17 +208,19 @@ Skill(skill: "cipherpowers:dual-verification")
 ```
 /verify research [topic] [--model=<sonnet|opus|haiku>]
 
+Phase 1: Dual Research
 → Dispatches 2 research-agent agents in parallel
-  (with model parameter if specified, otherwise sonnet)
-→ Each agent independently explores:
-  - Different entry points
-  - Multiple sources (codebase, web, docs)
-  - Different perspectives
-→ Dispatches review-collation-agent (always haiku)
-→ Produces collated report:
-  - Common findings (high confidence)
-  - Unique insights (worth knowing)
-  - Divergences (needs clarification)
+→ Each agent explores from different perspectives
+
+Phase 2: Collate and Present
+→ Dispatches review-collation-agent (haiku)
+→ Presents collation: common findings, exclusive insights, divergences
+→ User informed: "Common findings ready. Cross-check starting..."
+
+Phase 3: Cross-check (background)
+→ Dispatches Explore agent to validate exclusive findings
+→ Updates collation with VALIDATED/INVALIDATED/UNCERTAIN
+→ Announces: "Cross-check complete. All findings validated."
 ```
 
 ### Documentation Verification
@@ -187,48 +237,82 @@ Skill(skill: "cipherpowers:dual-verification")
 ```
 /verify docs [files] [--model=<sonnet|opus|haiku>]
 
+Phase 1: Dual Review
 → Dispatches 1 technical-writer and 1 code-agent in parallel
-  (with model parameter if specified, otherwise haiku)
 → Each agent independently verifies against codebase
-→ Dispatches review-collation-agent (always haiku)
-→ Produces collated report with confidence levels
+
+Phase 2: Collate and Present
+→ Dispatches review-collation-agent (haiku)
+→ Presents collation to user: "Can `/revise common` now"
+
+Phase 3: Cross-check (background)
+→ Dispatches code-agent to validate exclusive claims
+→ Updates collation with VALIDATED/INVALIDATED/UNCERTAIN
+→ Announces: "Cross-check complete. `/revise exclusive` ready"
 ```
 
 ## Why Dual Verification?
 
 **Problem:** Single agent can miss issues, hallucinate, or confirm biases.
 
-**Solution:** Two independent agents catch what one misses.
+**Solution:** Two independent agents + systematic collation + cross-check = confidence.
 
-**Confidence levels:**
-- **VERY HIGH:** Both agents found → Act on this
-- **MODERATE:** One agent found → Consider carefully
-- **INVESTIGATE:** Agents disagree → User decides
+**Confidence levels (after collation):**
+- **VERY HIGH:** Both agents found → `/revise common` immediately
+- **MODERATE:** One agent found → Pending cross-check validation
+- **INVESTIGATE:** Agents disagree → Resolved during collation
+
+**Exclusive issue states (after cross-check):**
+- **VALIDATED:** Cross-check confirmed → `/revise exclusive`
+- **INVALIDATED:** Doesn't apply → Auto-excluded from `/revise`
+- **UNCERTAIN:** Cannot determine → User decides
 
 **Example (research):**
 ```
 Agent #1: "Auth uses JWT with 1-hour expiry"
 Agent #2: "Auth uses JWT with 24-hour refresh tokens"
 
-→ Collation: Both partially correct (access vs refresh)
+→ Collation: Both partially correct (divergence resolved)
+→ Exclusive finding: Agent #2 found rate limiting
+→ Cross-check: VALIDATED (rate limiting exists in codebase)
 → Higher confidence understanding than single agent
 ```
 
 ## Integration with Other Commands
 
-Execute workflow uses verify for batch verification:
+**Verify → Revise workflow:**
+```
+/verify docs README.md CLAUDE.md
+  → Phase 1: Dual review
+  → Phase 2: Collation presented → Can `/revise common` now
+  → Phase 3: Cross-check runs in background
 
+/revise common
+  → Implements common issues (VERY HIGH confidence)
+  → Can run while cross-check is still running
+
+[Cross-check completes]
+  → "Cross-check complete. `/revise exclusive` ready"
+
+/revise exclusive
+  → Implements VALIDATED exclusive issues only
+  → Skips INVALIDATED issues automatically
+  → Prompts for UNCERTAIN issues
+```
+
+**Execute workflow uses verify for batch verification:**
 ```
 /execute workflow:
   → Batch 1 (3 tasks)
   → /verify code (quality/standards)
   → /verify execute (plan adherence)
-  → Fix all BLOCKING issues
+  → /revise common (fix high-confidence issues)
   → Repeat for next batch
 ```
 
 ## Related Commands
 
+- `/cipherpowers:revise` - Implement findings from verification (supports scope: common, exclusive, all)
 - `/cipherpowers:execute` - Plan execution workflow (uses /cipherpowers:verify for batch verification)
 
 ## Related Skills
@@ -248,7 +332,8 @@ Execute workflow uses verify for batch verification:
 ## Remember
 
 - All verification types use dual-verification pattern
-- Dispatch table determines which agents to use
-- Collation agent is always the same (generic)
-- Confidence levels guide user decisions
-- Agents cannot be trusted - that's why we use two
+- Phase 1: Dual review → Phase 2: Collate and present → Phase 3: Cross-check
+- User can `/revise common` immediately after Phase 2
+- Cross-check runs in background (Phase 3) while user works
+- Exclusive issues: VALIDATED (implement) / INVALIDATED (skip) / UNCERTAIN (user decides)
+- Agents cannot be trusted - that's why we use two + cross-check

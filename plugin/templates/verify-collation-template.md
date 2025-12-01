@@ -1,9 +1,9 @@
 ---
 name: Collation Report Template
-description: Structured format for collating two independent reviews with confidence levels and verification
+description: Structured format for collating two independent reviews with confidence levels, cross-check validation, and verification
 when_to_use: when collating dual-verification reviews (plan reviews, code reviews, documentation reviews)
 related_practices: code-review.md, development.md, testing.md
-version: 1.0.0
+version: 2.0.0
 ---
 
 # Collated Review Report - {Review Type}
@@ -16,14 +16,20 @@ version: 1.0.0
 - **Review Files:**
   - Review #1: [path to first review]
   - Review #2: [path to second review]
+- **Cross-check Status:** [PENDING / COMPLETE]
+- **Cross-check File:** [path to cross-check report, if complete]
 
 ## Executive Summary
 - **Total unique issues identified:** X
-- **Common issues (high confidence):** X
-- **Exclusive issues (requires judgment):** X
-- **Divergences (requires investigation):** X
+- **Common issues (VERY HIGH confidence):** X → `/revise common`
+- **Exclusive issues (pending cross-check):** X
+  - VALIDATED: X (confirmed)
+  - INVALIDATED: X (can skip)
+  - UNCERTAIN: X (user decides)
+- **Divergences (resolved during collation):** X
 
 **Overall Status:** [BLOCKED / APPROVED WITH CHANGES / APPROVED]
+**Revise Ready:** [common | all] (based on cross-check status)
 
 ## Common Issues (High Confidence)
 Both reviewers independently found these issues.
@@ -49,10 +55,12 @@ Both reviewers independently found these issues.
 - **Confidence:** VERY HIGH (both suggested independently)
 - **Benefit:** [how this would improve quality]
 
-## Exclusive Issues (Requires Judgment)
-Only one reviewer found these issues.
+## Exclusive Issues (Pending Cross-check)
+Only one reviewer found these issues. Cross-check will validate against ground truth.
 
-**Confidence: MODERATE** - One reviewer found these. May be valid edge cases or may require judgment to assess.
+**Confidence: MODERATE** - One reviewer found these. Cross-check validates whether they actually apply.
+
+**Cross-check Status:** [PENDING / COMPLETE]
 
 ### Found by Reviewer #1 Only
 
@@ -64,8 +72,12 @@ Only one reviewer found these issues.
 - **Description:** [what was found]
 - **Severity:** BLOCKING
 - **Reasoning:** [why reviewer flagged as blocking]
-- **Confidence:** MODERATE (requires judgment - only one reviewer found)
-- **Recommendation:** [Review reasoning and decide whether to address]
+- **Confidence:** MODERATE (pending cross-check)
+- **Cross-check:** [PENDING / VALIDATED / INVALIDATED / UNCERTAIN]
+- **Evidence:** [cross-check findings, if complete]
+  - Example VALIDATED: "Confirmed - file `src/auth.ts` has no rate limiting middleware"
+  - Example INVALIDATED: "File exists at `src/utils/helpers.ts:42`, reviewer missed it"
+  - Example UNCERTAIN: "Could not locate endpoint to verify claim"
 
 #### NON-BLOCKING / LOWER PRIORITY
 [List exclusive non-blocking issues from Reviewer #1, or "None"]
@@ -75,7 +87,9 @@ Only one reviewer found these issues.
 - **Description:** [what was suggested]
 - **Severity:** NON-BLOCKING
 - **Benefit:** [potential improvement]
-- **Confidence:** MODERATE (only one reviewer suggested)
+- **Confidence:** MODERATE (pending cross-check)
+- **Cross-check:** [PENDING / VALIDATED / INVALIDATED / UNCERTAIN]
+- **Evidence:** [cross-check findings, if complete]
 
 ### Found by Reviewer #2 Only
 
@@ -87,8 +101,9 @@ Only one reviewer found these issues.
 - **Description:** [what was found]
 - **Severity:** BLOCKING
 - **Reasoning:** [why reviewer flagged as blocking]
-- **Confidence:** MODERATE (requires judgment - only one reviewer found)
-- **Recommendation:** [Review reasoning and decide whether to address]
+- **Confidence:** MODERATE (pending cross-check)
+- **Cross-check:** [PENDING / VALIDATED / INVALIDATED / UNCERTAIN]
+- **Evidence:** [cross-check findings, if complete]
 
 #### NON-BLOCKING / LOWER PRIORITY
 [List exclusive non-blocking issues from Reviewer #2, or "None"]
@@ -98,7 +113,9 @@ Only one reviewer found these issues.
 - **Description:** [what was suggested]
 - **Severity:** NON-BLOCKING
 - **Benefit:** [potential improvement]
-- **Confidence:** MODERATE (only one reviewer suggested)
+- **Confidence:** MODERATE (pending cross-check)
+- **Cross-check:** [PENDING / VALIDATED / INVALIDATED / UNCERTAIN]
+- **Evidence:** [cross-check findings, if complete]
 
 ## Divergences (Requires Investigation)
 Reviewers disagree or have contradictory findings.
@@ -120,17 +137,26 @@ Reviewers disagree or have contradictory findings.
 
 ## Recommendations
 
-### Immediate Actions (Common BLOCKING)
-[Issues that should be addressed immediately - both reviewers found them with VERY HIGH confidence]
+### Immediate Actions → `/revise common`
+[Common issues - both reviewers found them with VERY HIGH confidence. Can start immediately.]
 
 - [ ] **[Issue]:** [brief action item]
 - [ ] **[Issue]:** [brief action item]
 
-### Judgment Required (Exclusive BLOCKING)
-[Issues where only one reviewer found blocking concerns - user should review reasoning and decide]
+### After Cross-check → `/revise exclusive`
+[Exclusive issues pending cross-check validation]
 
-- [ ] **[Issue]** (Reviewer #[1/2] only): [brief description]
-  - Review reasoning: [why this needs user judgment]
+**VALIDATED (implement):**
+- [ ] **[Issue]** (Reviewer #[1/2]): [brief description]
+  - Evidence: [what cross-check found]
+
+**INVALIDATED (skip):**
+- [ ] ~~**[Issue]**~~ (Reviewer #[1/2]): [brief description]
+  - Reason: [why cross-check invalidated]
+
+**UNCERTAIN (user decides):**
+- [ ] **[Issue]** (Reviewer #[1/2]): [brief description]
+  - Context: [what cross-check found but couldn't determine]
 
 ### For Consideration (NON-BLOCKING)
 [Improvement suggestions found by one or both reviewers]
@@ -138,13 +164,14 @@ Reviewers disagree or have contradictory findings.
 - [ ] **[Issue]:** [brief suggestion]
   - Benefit: [how this improves quality]
   - Found by: [Both / Reviewer #1 / Reviewer #2]
+  - Cross-check: [VALIDATED / INVALIDATED / UNCERTAIN / N/A for common]
 
-### Investigation Needed (Divergences)
-[Areas where reviewers disagree - verification analysis provided, but user makes final call]
+### Divergences (Resolved)
+[Areas where reviewers disagreed - resolved during collation]
 
 - [ ] **[Issue]:** [divergence description]
-  - Verification suggests: [recommendation from verification agent]
-  - User should: [decide based on verification / investigate further / clarify requirements]
+  - Resolution: [which perspective was correct]
+  - Action: [what to do based on resolution]
 
 ## Overall Assessment
 
@@ -166,16 +193,34 @@ Reviewers disagree or have contradictory findings.
 
 [What should happen next based on overall assessment]
 
+### Parallel Workflow (Recommended)
+
+1. **Now:** `/revise common` - Start implementing common issues immediately
+2. **Background:** Cross-check validates exclusive issues
+3. **When ready:** `/revise exclusive` - Implement validated exclusive issues
+4. **Or:** `/revise all` - Implement everything actionable
+
+### Sequential Workflow
+
 **If BLOCKED:**
-- Address all common BLOCKING issues (high confidence)
-- Review and decide on exclusive BLOCKING issues (moderate confidence)
-- Resolve divergences using verification recommendations
+1. `/revise common` - Address all common BLOCKING issues (VERY HIGH confidence)
+2. Wait for cross-check to complete
+3. Review UNCERTAIN exclusive issues (user decides)
+4. `/revise exclusive` - Address VALIDATED exclusive issues
 
 **If APPROVED WITH CHANGES:**
-- Consider addressing common NON-BLOCKING suggestions (high confidence)
-- Optionally review exclusive suggestions (moderate confidence)
-- User decides on divergences if any remain
+1. `/revise common` - Address common issues
+2. `/revise exclusive` - Address VALIDATED exclusive issues (optional)
+3. Review NON-BLOCKING suggestions for future
 
 **If APPROVED:**
 - Proceed with execution/merge
-- Optional: Note suggestions for future improvements
+- Optional: `/revise` for any improvements
+
+### Cross-check States
+
+| State | Meaning | Action |
+|-------|---------|--------|
+| VALIDATED | Cross-check confirmed issue exists | Implement via `/revise exclusive` |
+| INVALIDATED | Cross-check found issue doesn't apply | Skip (auto-excluded from `/revise`) |
+| UNCERTAIN | Cross-check couldn't determine | User reviews and decides |
