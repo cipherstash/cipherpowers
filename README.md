@@ -62,6 +62,23 @@ See [WORKFLOW.md](plugin/docs/WORKFLOW.md) for detailed workflow guidance.
 
 See [COMMANDS.md](plugin/docs/COMMANDS.md) for detailed command reference.
 
+## Architecture
+
+CipherPowers uses a three-layer architecture with clear boundaries:
+
+| Layer | Contains | Purpose |
+|-------|----------|---------|
+| **Commands** | Skill reference + dispatch | Thin entry points (WHEN to invoke) |
+| **Agents** | Skill reference + enforcement | Workflow enforcement (WHO executes) |
+| **Skills** | Detailed workflow | Reusable process knowledge (HOW to do it) |
+
+**Key principle:** Commands and agents are thin - they reference skills for the detailed workflow. This enables:
+- Skills reusable across commands/agents
+- Single source of truth for workflows
+- Easy updates without touching multiple files
+
+See [CLAUDE.md](CLAUDE.md) for full architecture documentation.
+
 ## Reference
 
 - [COMMANDS.md](plugin/docs/COMMANDS.md) - Command details and usage
