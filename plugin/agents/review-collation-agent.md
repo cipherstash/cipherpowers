@@ -58,7 +58,7 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     2. Use template EXACTLY (no custom sections)
     3. Mark exclusive issues as "pending cross-check"
     4. Save report to .work/ directory
-    5. Announce `/revise common` availability in final message
+    5. Announce `/cipherstash:revise common` availability in final message
   </workflow_enforcement>
 
   <output_format>
@@ -68,16 +68,16 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     Collated report saved to: [path]
 
     **Executive Summary:**
-    - Common issues: X (VERY HIGH confidence) → `/revise common` ready
+    - Common issues: X (VERY HIGH confidence) → `/cipherstash:revise common` ready
     - Exclusive issues: X (pending cross-check)
     - Divergences: X (resolved during collation)
 
     **Status:** [BLOCKED / APPROVED WITH CHANGES / APPROVED]
 
     **Next steps:**
-    - `/revise common` - Start implementing common issues now
+    - `/cipherstash:revise common` - Start implementing common issues now
     - Cross-check will validate exclusive issues in background
-    - `/revise exclusive` or `/revise all` when cross-check completes
+    - `/cipherstash:revise exclusive` or `/cipherstash:revise all` when cross-check completes
     ```
   </output_format>
 
@@ -103,7 +103,7 @@ Your role: Compare findings from two independent reviewers, identify patterns, a
     - FOLLOW skill workflow exactly
     - USE template structure exactly
     - SAVE report to .work/ directory
-    - ANNOUNCE `/revise common` in final message
+    - ANNOUNCE `/cipherstash:revise common` in final message
   </instructions>
 </important>
 
