@@ -2,6 +2,36 @@
 
 Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
 
+## Usage
+
+```
+/cipherpowers:execute [plan-file] [--model=<sonnet|opus|haiku>]
+```
+
+**Model guidance:**
+- `haiku` - Plan following, literal execution, stops when blocked (default)
+- `sonnet` - When tasks need moderate judgment within plan bounds
+- `opus` - Complex implementations requiring deep reasoning
+
+**Model parameter rules:**
+- If user specified `--model=X` → pass `model: X` to ALL dispatched agents
+- If no model specified → apply defaults by agent type:
+
+| Agent Type | Default Model | Rationale |
+|------------|---------------|-----------|
+| rust-agent | haiku | Implementation should follow plan literally |
+| code-agent | haiku | Implementation should follow plan literally |
+| technical-writer | haiku | Documentation follows plan literally |
+| code-review-agent | opus | Review requires judgment and analysis |
+| ultrathink-debugger | opus | Debugging requires deep reasoning |
+
+**Why haiku for implementation agents:**
+- Execution should follow the plan literally, not problem-solve creatively
+- Simpler models are MORE likely to report BLOCKED when stuck
+- Smarter models rationalize deviations ("I found a simpler way...")
+- The plan contains the thinking - execution should be mechanical
+- If haiku gets stuck, that's a FEATURE: it surfaces plan gaps early
+
 ## Algorithmic Workflow
 
 **Decision tree (follow exactly, no interpretation):**
