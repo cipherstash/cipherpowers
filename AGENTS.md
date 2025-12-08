@@ -2,9 +2,17 @@
 
 Claude Code plugin providing development workflow skills, commands, and agents for consistent team practices.
 
-## Quick Start
+## TL;DR (2 minutes)
 
-CipherPowers is a plugin - install via Claude Code marketplace or local installation.
+**Install:** `/plugin marketplace add cipherstash/cipherpowers && /plugin install cipherpowers@cipherpowers`
+
+**Core workflow:** `/cipherpowers:brainstorm` → `/cipherpowers:plan` → `/cipherpowers:execute`
+
+**Find skills:** `Skill(skill: "cipherpowers:skill-name")`
+
+---
+
+## Quick Start
 
 ### Key Commands
 

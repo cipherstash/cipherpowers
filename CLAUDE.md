@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code when working with this repository.
 
+## TL;DR
+
+**Architecture:** Skills (workflows) + Commands (dispatch) + Agents (enforce) + Standards (conventions)
+
+**Key paths:**
+- `plugin/skills/` - Invoke via `Skill(skill: "cipherpowers:skill-name")`
+- `plugin/templates/` - Start new components here
+- `docs/` - All documentation (BUILD/LOOKUP structure)
+
+**Key principle:** Commands and agents are thin (~30-50 lines). Workflow logic lives in skills.
+
+---
+
 ## CipherPowers
 
 Claude Code plugin providing development workflow skills, commands, and agents for consistent team practices.

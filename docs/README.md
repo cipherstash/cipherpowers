@@ -33,6 +33,25 @@ docs/
 
 **1 hour:** Work through the complete workflow with a real feature
 
+## By Role
+
+**Plugin User** - Just want to use commands
+1. [../README.md](../README.md) - Installation
+2. [LOOKUP/COMMANDS.md](LOOKUP/COMMANDS.md) - Command reference
+
+**Workflow Adopter** - Want to learn the methodology
+1. [BUILD/WORKFLOW.md](BUILD/WORKFLOW.md) - Core workflow
+2. [LOOKUP/SKILLS.md](LOOKUP/SKILLS.md) - Available skills
+
+**Contributor** - Want to extend the plugin
+1. [../CLAUDE.md](../CLAUDE.md) - Architecture
+2. `plugin/templates/` - Component templates
+
+**Team Lead** - Evaluating for team adoption
+1. [../README.md](../README.md) - Overview
+2. [BUILD/WORKFLOW.md](BUILD/WORKFLOW.md) - Workflow benefits
+3. [../CLAUDE.md](../CLAUDE.md) - Architecture decisions
+
 ## See Also
 
 - [INDEX.md](INDEX.md) - Full documentation index
