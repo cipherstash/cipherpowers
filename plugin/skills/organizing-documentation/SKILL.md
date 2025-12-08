@@ -181,10 +181,37 @@ Create reading paths for different roles with:
 - Time estimate
 - Key takeaway
 
+## Integration with Instruction Files
+
+AGENTS.md and CLAUDE.md should reference the docs/ structure using progressive disclosure:
+
+**Pattern:**
+1. Keep 2-3 sentence summary in instruction file
+2. Link to detailed doc: "See `docs/BUILD/00-START/` for prerequisites"
+3. AI fetches detailed docs only when needed
+
+**When reorganizing docs/:**
+- Update AGENTS.md/CLAUDE.md references to match new paths
+- Use `cipherpowers:maintaining-instruction-files` to verify instruction file quality
+- Verify links work after restructuring
+
+**Symlink strategy for multi-agent compatibility:**
+```bash
+# Create symbolic link for multi-agent support
+ln -s AGENTS.md CLAUDE.md
+
+# Verify symlink works
+ls -l CLAUDE.md  # Should show: CLAUDE.md -> AGENTS.md
+```
+
 ## Related Skills
 
-For specific documentation tasks:
+**Documentation workflow:**
+- **Maintain docs:** `${CLAUDE_PLUGIN_ROOT}skills/maintaining-docs-after-changes/SKILL.md`
+- **Instruction files:** `${CLAUDE_PLUGIN_ROOT}skills/maintaining-instruction-files/SKILL.md`
+- **Capture learning:** `${CLAUDE_PLUGIN_ROOT}skills/capturing-learning/SKILL.md`
 
+**Specialized documentation:**
 - **Research packages:** `${CLAUDE_PLUGIN_ROOT}skills/creating-research-packages/SKILL.md`
 - **Debugging docs:** `${CLAUDE_PLUGIN_ROOT}skills/documenting-debugging-workflows/SKILL.md`
 - **Quality gates:** `${CLAUDE_PLUGIN_ROOT}skills/creating-quality-gates/SKILL.md`

@@ -85,10 +85,27 @@ Create or update summary in appropriate location:
 - Common: `docs/work/summary.md` or iteration-specific file
 
 **For non-tracked work:**
-- Add to CLAUDE.md under relevant section
-- Or create dated file in `docs/learning/YYYY-MM-DD-topic.md`
 
-**Note:** When updating CLAUDE.md or AGENTS.md, use `cipherpowers:maintaining-instruction-files` skill to ensure size limits and quality.
+Decide where to capture based on these criteria:
+
+**Add to CLAUDE.md/AGENTS.md when:**
+- Universal lesson (applies to most tasks in this repo)
+- Instruction file is <200 lines (check with `wc -l`)
+- Quick pattern/anti-pattern (1-3 lines)
+- Example: "Always run tests before committing"
+
+**Create separate file `docs/learning/YYYY-MM-DD-topic.md` when:**
+- Instruction file is >200 lines (approaching limit)
+- Edge case or specific scenario (not universal)
+- Detailed explanation needed (>5 lines)
+- Example: debugging a specific integration issue
+
+**Bloat warning:** Retrospective content can quickly bloat instruction files. Prefer docs/learning/ for detailed write-ups. Only add to instruction files if the lesson is truly universal.
+
+**Before adding to instruction files:**
+1. Check current size: `wc -l CLAUDE.md`
+2. Ask: "Will this apply to most tasks?" If no → docs/learning/
+3. Use `cipherpowers:maintaining-instruction-files` skill for quality verification
 
 **Minimal structure:**
 ```markdown

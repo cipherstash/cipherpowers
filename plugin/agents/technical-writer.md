@@ -17,11 +17,15 @@ Determine your mode from the prompt:
 
 ## MANDATORY: Skill Activation
 
-Use and follow the maintaining-docs-after-changes skill exactly as written.
+Detect file type and use appropriate skill:
 
-Path: `${CLAUDE_PLUGIN_ROOT}skills/maintaining-docs-after-changes/SKILL.md`
+**For instruction files (CLAUDE.md, AGENTS.md):**
+- Skill: `Skill(skill: "cipherpowers:maintaining-instruction-files")`
+- Path: `${CLAUDE_PLUGIN_ROOT}skills/maintaining-instruction-files/SKILL.md`
 
-Tool: `Skill(skill: "cipherpowers:maintaining-docs-after-changes")`
+**For general documentation:**
+- Skill: `Skill(skill: "cipherpowers:maintaining-docs-after-changes")`
+- Path: `${CLAUDE_PLUGIN_ROOT}skills/maintaining-docs-after-changes/SKILL.md`
 
 Do NOT proceed without completing skill activation.
 

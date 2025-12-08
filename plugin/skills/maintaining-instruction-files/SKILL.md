@@ -20,6 +20,8 @@ Specialized workflow for AI instruction files (CLAUDE.md, AGENTS.md). Different 
 
 **Critical Infrastructure Warning:** Instruction files are NOT documentation - they're critical infrastructure that shapes every AI interaction. A single poorly-thought-out line can mislead the AI in every session. Never accept auto-generated instruction files without careful manual review and curation.
 
+**Terminology note:** These files are sometimes called "memory files" in multi-agent literature (as in agents-md-best-practices.md), but we use "instruction files" to emphasize their directive role in shaping AI behavior rather than storing information.
+
 ## When to Use
 
 **Use this skill when:**
@@ -74,6 +76,26 @@ wc -l AGENTS.md CLAUDE.md 2>/dev/null || wc -l CLAUDE.md
 - >300 lines: Must extract content to docs/
 
 **Optimization target:** Minimize instruction count, not just line count. Fewer well-chosen instructions outperform many rules. Aim for the minimum guidance that covers essential context.
+
+**What counts as "one instruction"?**
+
+Multiple instructions (counted separately by AI):
+```markdown
+- Always run tests before committing
+- Always run linting before committing
+- Always run type checking before committing
+```
+
+Single instruction (counted as one):
+```markdown
+- Run all quality checks before committing: `npm run test && npm run lint && npm run typecheck`
+```
+
+**Consolidation strategies:**
+- Combine related checks into one command
+- Group by workflow stage instead of tool
+- Use scripts that run multiple checks
+- Reference skills instead of listing steps
 
 ### 2. Universal Relevance
 
@@ -159,6 +181,45 @@ Use project API patterns. Skill `cipherpowers:api-patterns` provides detailed gu
 - Detailed guidance available when actually needed
 - Context window used efficiently
 - Guidance can be updated in one place (the skill/tool)
+
+**More examples:**
+
+**Wrong:** Putting git workflow in instruction file
+```markdown
+## Git Workflow
+1. Create feature branch from main
+2. Make atomic commits with conventional format
+3. Run tests before committing
+4. Create PR with template
+5. Request review from team lead
+6. Address feedback and re-request
+7. Squash merge after approval
+```
+
+**Right:** Reference commit skill
+```markdown
+## Git Workflow
+
+Use `/cipherpowers:commit` for atomic commits. Skill: `cipherpowers:commit-workflow`
+```
+
+**Wrong:** Listing all debugging techniques
+```markdown
+## Debugging
+- Use debugger breakpoints for step-through
+- Add logging statements at key points
+- Check error messages and stack traces
+- Review recent changes in git log
+- Test with minimal reproduction case
+[... 20 more techniques]
+```
+
+**Right:** Reference debugging skill
+```markdown
+## Debugging
+
+Use `cipherpowers:systematic-debugging` for investigation workflow.
+```
 
 ### 6. Multi-Agent Neutral
 
@@ -267,6 +328,29 @@ Recommend migrating to Pattern A or B.
 3. Either:
    - Create symlink: `ln -s AGENTS.md CLAUDE.md`
    - Or keep CLAUDE.md with `@AGENTS.md` include
+
+### Creating a Symlink
+
+**On Unix/Linux/macOS:**
+```bash
+# Create symbolic link (use this for git repos)
+ln -s AGENTS.md CLAUDE.md
+
+# Verify it works
+ls -l CLAUDE.md  # Should show: CLAUDE.md -> AGENTS.md
+cat CLAUDE.md    # Should show AGENTS.md content
+```
+
+**Important:**
+- Use symbolic links (soft links), not hard links
+- Commit the symlink to git (works cross-platform)
+- Test that both files are recognized by Claude Code
+
+**Verification checklist:**
+- [ ] `ls -l CLAUDE.md` shows symlink arrow (->)
+- [ ] `cat CLAUDE.md` displays AGENTS.md content
+- [ ] Both files recognized by Claude Code
+- [ ] Symlink committed to git
 
 ### Platform-Specific Tuning
 
