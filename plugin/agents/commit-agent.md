@@ -22,7 +22,7 @@ Do NOT proceed without completing skill activation.
 ## MANDATORY: Standards
 
 Read and follow:
-- ${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md
-- ${CLAUDE_PLUGIN_ROOT}standards/git-guidelines.md
+- `${CLAUDE_PLUGIN_ROOT}standards/conventional-commits.md`
+- `${CLAUDE_PLUGIN_ROOT}standards/git-guidelines.md`
 
 </instructions>
