@@ -88,6 +88,8 @@ Create or update summary in appropriate location:
 - Add to CLAUDE.md under relevant section
 - Or create dated file in `docs/learning/YYYY-MM-DD-topic.md`
 
+**Note:** When updating CLAUDE.md or AGENTS.md, use `cipherpowers:maintaining-instruction-files` skill to ensure size limits and quality.
+
 **Minimal structure:**
 ```markdown
 ## [Work Item / Feature Name]
