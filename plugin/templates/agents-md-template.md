@@ -28,7 +28,7 @@ Template for creating AGENTS.md files - the open standard for AI coding assistan
   Note: This project uses the open AGENTS.md standard for AI coding assistant instructions.
   This file works with Claude Code, GitHub Copilot, Cursor, Cody, and other AI assistants.
   A symlinked or extended CLAUDE.md may exist for Claude-specific features.
-  See: https://github.com/anthropics/agents-md-spec (or relevant spec link)
+  See: https://docs.anthropic.com/en/docs/claude-code (Claude Code documentation)
 -->
 
 # Project Name

@@ -99,3 +99,10 @@ Note: Tests and checks are assumed to pass. This review focuses on code quality.
 - [ ] Requirements met exactly (no scope creep)
 - [ ] No unnecessary reinvention (appropriate use of existing libraries/patterns)
 
+
+## Next Steps
+
+1. Address BLOCKING issues (if any)
+2. Consider NON-BLOCKING suggestions
+3. Ready to merge when status is APPROVED or APPROVED WITH SUGGESTIONS
+

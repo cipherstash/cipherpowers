@@ -96,7 +96,7 @@ Agents follow a thin skill-delegation pattern demonstrated by code-review-agent:
 - **Pure delegation:** Workflow logic lives in skills, not agents
 - **Standard structure:**
   - YAML frontmatter (name, description, color)
-  - `<important><instructions>` wrapper
+  - `<instructions>` wrapper
   - Skill activation section
   - Standards references
   - Context reading requirements
