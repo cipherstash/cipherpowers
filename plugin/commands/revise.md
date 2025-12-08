@@ -1,8 +1,11 @@
+---
+description: Implement findings from verification reports
+argument-hint: [scope] [collation-file]
+---
+
 # Revise
 
 Implement findings from verification reports. Works with collation reports produced by `/verify`.
-
-**Core principle:** Separate what to fix (verify) from how to fix it (revise).
 
 ## Usage
 
@@ -10,56 +13,26 @@ Implement findings from verification reports. Works with collation reports produ
 /cipherpowers:revise [scope] [collation-file]
 ```
 
-**Scope options:**
-- `common` - Implement common issues only (immediate)
-- `exclusive` - Implement VALIDATED exclusive issues (after cross-check)
-- `all` - Implement all actionable (default)
+- `$1` - scope: `common`, `exclusive`, `all` (default: all)
+- `$2` - collation file path (optional)
 
-## Algorithmic Workflow
+## Scope Reference
 
-**Decision tree (follow exactly, no interpretation):**
+| Scope      | Use Case                                                          |
+|------------|-------------------------------------------------------------------|
+| common     | Findings agreed by both reviewers (can proceed immediately)       |
+| exclusive  | Findings unique to one reviewer (requires cross-check completion) |
+| all        | All findings (both common and exclusive)                          |
 
-1. Is this a revise request?
-   - YES → Continue to step 2
-   - NO → This command was invoked incorrectly
+<instructions>
+## Instructions
 
-2. **MANDATORY: Skill Activation**
+## MANDATORY: Skill Activation
 
-**Load skill context:**
-@${CLAUDE_PLUGIN_ROOT}skills/revising-findings/SKILL.md
+Use and follow the revising-findings skill exactly as written.
 
-**Step 1 - EVALUATE:** State YES/NO for skill activation:
-- Skill: "cipherpowers:revising-findings"
-- Applies to this task: YES/NO (reason)
+Path: `${CLAUDE_PLUGIN_ROOT}skills/revising-findings/SKILL.md`
+Tool: `Skill(skill: "cipherpowers:revising-findings")`
 
-**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
-```
-Skill(skill: "cipherpowers:revising-findings")
-```
-
-⚠️ Do NOT proceed without completing skill evaluation and activation.
-
-3. **FOLLOW THE SKILL EXACTLY:**
-   - Locate collation report
-   - Check cross-check status (for exclusive/all)
-   - Build implementation list
-   - Handle UNCERTAIN issues
-   - Dispatch implementation agents
-   - Verify implementation
-
-4. **STOP when revise is complete.**
-
-## Related Commands
-
-- `/cipherpowers:verify` - Generate collation reports (prerequisite)
-
-## Related Skills
-
-- `revising-findings` - Core implementation workflow
-- `dual-verification` - Verification pattern producing collation reports
-
-## Remember
-
-- `/revise common` works immediately after collation
-- `/revise exclusive` requires cross-check complete
-- Skill contains detailed workflow - follow it exactly
+Do NOT proceed without completing skill activation.
+</instructions>

@@ -34,17 +34,17 @@ HEAD_SHA=$(git rev-parse HEAD)
 Use Task tool with cipherpowers:code-review-agent type, fill template at `${CLAUDE_PLUGIN_ROOT}templates/code-review-request.md`
 
 **Placeholders:**
-- `{WHAT_WAS_IMPLEMENTED}` - What you just built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
+- `{DESCRIPTION}` - Brief description of implementation
+- `{REQUIREMENTS}` - Plan reference or requirements
 - `{BASE_SHA}` - Starting commit
 - `{HEAD_SHA}` - Ending commit
-- `{DESCRIPTION}` - Brief summary
 
 **3. Act on feedback:**
 - Fix Critical issues immediately
 - Fix Important issues before proceeding
 - Note Minor issues for later
 - Push back if reviewer is wrong (with reasoning)
+
 
 ## Example
 

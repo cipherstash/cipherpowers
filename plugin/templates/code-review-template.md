@@ -1,28 +1,22 @@
 ---
 name: Code Review Template
-description: Structured format for saving code review feedback with severity-based categorization
+description: Structured format for saving code review feedback.
 when_to_use: when conducting code reviews and saving structured feedback to work directories
-related_practices: code-review.md
 version: 1.0.0
 ---
 
 # Code Review - {Date}
 
-## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]
+## Status: [BLOCKED | APPROVED WITH SUGGESTIONS | APPROVED]
 
 <!--
 Status guidance:
 - BLOCKED: Has BLOCKING issues that must be fixed before merge
-- APPROVED WITH NON-BLOCKING SUGGESTIONS: Ready to merge, but consider addressing suggestions
+- APPROVED WITH (NON-BLOCKING) SUGGESTIONS: Ready to merge, but consider addressing suggestions
 - APPROVED: Clean, ready to merge with no issues
 
 Note: Tests and checks are assumed to pass. This review focuses on code quality.
 -->
-
-
-## Next Steps
-[Actions required]
-
 
 ## BLOCKING (Must Fix Before Merge)
 

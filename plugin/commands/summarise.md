@@ -1,18 +1,28 @@
+---
+description: Retrospective summary capturing decisions and lessons learned
+---
+
 # Summarise
 
 Create a retrospective summary of completed work, capturing decisions, lessons learned, and insights.
 
+## Usage
+
+```
+/cipherpowers:summarise
+```
+
+No arguments required.
+
+<instructions>
 ## Instructions
 
-Activate the capturing-learning skill to guide the retrospective:
+## MANDATORY: Skill Activation
 
-```
-Skill(skill: "cipherpowers:capturing-learning")
-```
+Use and follow the capturing-learning skill exactly as written.
 
-The skill provides:
-- **Step 1**: Review the work (git diff, changes made)
-- **Step 2**: Capture learning (decisions, approaches, issues, time)
-- **Step 3**: Save and link (to .work/ directory or CLAUDE.md)
+Path: `${CLAUDE_PLUGIN_ROOT}skills/capturing-learning/SKILL.md`
+Tool: `Skill(skill: "cipherpowers:capturing-learning")`
 
-**Key Principle:** Exhaustion after completion is when capture matters most. The harder the work, the more valuable the lessons.
+Do NOT proceed without completing skill activation.
+</instructions>
