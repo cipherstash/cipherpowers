@@ -84,12 +84,24 @@ Commands and agents that dispatch to skills or provide project-specific workflow
 - Reference skills for methodology
 - Receive context from commands
 
-**Agent-Centric Architecture:**
-CipherPowers uses an agent-centric model where agents contain the complete workflow:
-- **Authority Principle**: Imperative language, non-negotiable steps
-- **Commitment Principle**: Announcements and checklists create accountability
-- **Scarcity Principle**: Immediate requirements and completion criteria
-- **Social Proof Principle**: Failure modes and rationalization defenses
+**Agent Pattern (Thin Skill Delegation):**
+
+Agents follow a thin skill-delegation pattern demonstrated by code-review-agent:
+
+- **~30-50 lines each** (down from ~200-300 lines)
+- **Pure delegation:** Workflow logic lives in skills, not agents
+- **Standard structure:**
+  - YAML frontmatter (name, description, color)
+  - `<important><instructions>` wrapper
+  - Skill activation section
+  - Standards references
+  - Context reading requirements
+  - Save workflow (for verification agents)
+
+Enforcement lives in skills, not duplicated in agents. This achieves:
+- 83% reduction in agent code
+- Single source of truth for workflows
+- Easier maintenance and updates
 
 **Templates:**
 - `./plugin/templates/agent-template.md` - Agent structure with persuasion principles
@@ -290,7 +302,7 @@ Use the full variable syntax:
 
 **Skill Discovery:**
 - Skills are automatically discovered by Claude Code
-- Use the Skill tool in conversations: `Skill(command: "cipherpowers:skill-name")`
+- Use the Skill tool in conversations: `Skill(skill: "cipherpowers:skill-name")`
 - No manual discovery scripts needed
 - All skills in `./plugin/skills/` are automatically available
 
