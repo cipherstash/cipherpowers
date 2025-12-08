@@ -1,35 +1,37 @@
-# CipherPowers Documentation Index
+# Documentation Index
 
-Master index with purpose annotations for all project documentation.
+Master index with purpose annotations.
 
-## Root Documentation
+## Root Files
 
 | File | Purpose | Audience |
 |------|---------|----------|
-| [README.md](../README.md) | Project overview, installation, quick start | All users |
-| [CLAUDE.md](../CLAUDE.md) | Claude Code guidance, architecture overview | Claude Code |
-| [AGENTS.md](../AGENTS.md) | Universal AI assistant instructions | All AI assistants |
+| [README.md](../README.md) | Project overview, installation | All users |
+| [CLAUDE.md](../CLAUDE.md) | Claude Code guidance, architecture | Claude Code |
+| [AGENTS.md](../AGENTS.md) | Universal AI instructions | All AI assistants |
 
-## Plugin Reference (`plugin/docs/`)
-
-Detailed documentation for CipherPowers plugin components.
+## BUILD - Guides for Building Features
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| [WORKFLOW.md](../plugin/docs/WORKFLOW.md) | Brainstorm → Plan → Execute workflow | Starting new features |
-| [COMMANDS.md](../plugin/docs/COMMANDS.md) | All slash commands reference | Looking up command syntax |
-| [SKILLS.md](../plugin/docs/SKILLS.md) | Complete skills catalog | Finding the right skill |
-| [AGENTS.md](../plugin/docs/AGENTS.md) | Specialized agents reference | Understanding agent roles |
+| [WORKFLOW.md](BUILD/WORKFLOW.md) | Brainstorm → Plan → Execute workflow | Starting new features |
+| [configuring-project-commands.md](BUILD/configuring-project-commands.md) | Tool-agnostic command setup | Setting up new projects |
 
-## Project Documentation (`docs/`)
+## UNDERSTAND - Deep Dives
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| [configuring-project-commands.md](configuring-project-commands.md) | Tool-agnostic command configuration | Setting up new projects |
+| (architecture docs) | System design explanations | Learning how things work |
+
+## LOOKUP - Quick References
+
+| File | Purpose | When to Use |
+|------|---------|-------------|
+| [COMMANDS.md](LOOKUP/COMMANDS.md) | All slash commands | Looking up command syntax |
+| [SKILLS.md](LOOKUP/SKILLS.md) | Complete skills catalog | Finding the right skill |
+| [AGENTS.md](LOOKUP/AGENTS.md) | Specialized agents reference | Understanding agent roles |
 
 ## Plugin Internals
-
-For plugin development and contribution:
 
 | Location | Purpose |
 |----------|---------|
@@ -39,16 +41,16 @@ For plugin development and contribution:
 | `plugin/standards/` | Project conventions and practices |
 | `plugin/templates/` | Templates for new components |
 
-## Navigation by Task
+## Navigation by Role
 
-**Starting with CipherPowers:**
-1. [README.md](../README.md) - Overview and installation
-2. [WORKFLOW.md](../plugin/docs/WORKFLOW.md) - Learn the workflow
+**New user:**
+1. [README.md](../README.md) - Overview
+2. [BUILD/WORKFLOW.md](BUILD/WORKFLOW.md) - Learn the workflow
 
-**Using CipherPowers daily:**
-- [COMMANDS.md](../plugin/docs/COMMANDS.md) - Command reference
-- [SKILLS.md](../plugin/docs/SKILLS.md) - Available skills
+**Daily use:**
+- [LOOKUP/COMMANDS.md](LOOKUP/COMMANDS.md) - Command reference
+- [LOOKUP/SKILLS.md](LOOKUP/SKILLS.md) - Available skills
 
-**Contributing to CipherPowers:**
-- [CLAUDE.md](../CLAUDE.md) - Architecture and development
-- `plugin/templates/` - Templates for new components
+**Contributing:**
+- [CLAUDE.md](../CLAUDE.md) - Architecture
+- `plugin/templates/` - Component templates

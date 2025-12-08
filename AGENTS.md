@@ -79,5 +79,5 @@ For Claude-specific features and detailed plugin architecture, see @CLAUDE.md.
 
 ## See Also
 
-- `plugin/docs/` - Detailed plugin documentation
-- `docs/` - Project documentation (BUILD/FIX/UNDERSTAND/LOOKUP structure)
+- `docs/` - All documentation (BUILD/UNDERSTAND/LOOKUP structure)
+- `docs/INDEX.md` - Full documentation index

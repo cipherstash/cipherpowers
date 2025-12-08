@@ -8,11 +8,11 @@ Claude Code plugin providing development workflow skills, commands, and agents f
 
 **Architecture:** Three-layer plugin separating skills (reusable workflows), automation (commands/agents), and documentation (standards/practices).
 
-See `plugin/docs/` for detailed documentation:
-- `plugin/docs/WORKFLOW.md` - Brainstorm → Plan → Execute workflow
-- `plugin/docs/SKILLS.md` - Complete skills reference
-- `plugin/docs/AGENTS.md` - Specialized agents reference
-- `plugin/docs/COMMANDS.md` - Available commands
+See `docs/` for detailed documentation (organized by intent):
+- `docs/BUILD/WORKFLOW.md` - Brainstorm → Plan → Execute workflow
+- `docs/LOOKUP/SKILLS.md` - Complete skills reference
+- `docs/LOOKUP/AGENTS.md` - Specialized agents reference
+- `docs/LOOKUP/COMMANDS.md` - Available commands
 
 ## Multi-Agent Compatibility
 
@@ -25,7 +25,7 @@ CipherPowers uses mise for task orchestration. See `mise.toml` for available tas
 - **Run**: N/A - This is a plugin, not a runnable application
 - **check-has-changes**: `mise run check-has-changes`
 
-The plugin is tool-agnostic and works with any build/test tooling. See `docs/configuring-project-commands.md` for details.
+The plugin is tool-agnostic and works with any build/test tooling. See `docs/BUILD/configuring-project-commands.md` for details.
 
 ## Architecture Overview
 
@@ -38,7 +38,7 @@ Reusable workflows documented as testable, discoverable guides.
 - Include rich `when_to_use` frontmatter for discovery
 - Follow consistent SKILL.md structure
 
-See `plugin/docs/SKILLS.md` for complete skills reference.
+See `docs/LOOKUP/SKILLS.md` for complete skills reference.
 
 ### 2. Automation Layer (`plugin/commands/`, `plugin/agents/`)
 
@@ -46,7 +46,7 @@ Commands dispatch to skills; agents enforce workflows.
 
 **Commands:** Thin dispatchers - `/cipherpowers:brainstorm`, `/cipherpowers:plan`, `/cipherpowers:execute`, `/cipherpowers:code-review`, `/cipherpowers:commit`, `/cipherpowers:verify`, `/cipherpowers:summarise`
 
-**Agents:** Follow thin skill-delegation pattern (~30-50 lines each). See `plugin/docs/AGENTS.md` for complete reference.
+**Agents:** Follow thin skill-delegation pattern (~30-50 lines each). See `docs/LOOKUP/AGENTS.md` for complete reference.
 
 ### 3. Documentation Layer (`plugin/standards/`, `plugin/examples/`)
 
@@ -62,7 +62,7 @@ Standards, guidelines, and reference materials supporting skills.
 
 ## Directory Structure
 
-**`./docs/`** - Project documentation (not shipped with plugin)
+**`./docs/`** - All documentation (BUILD/UNDERSTAND/LOOKUP structure)
 **`./plugin/`** - Plugin content shipped to users:
 - `plugin/skills/` - Organization-specific skills
 - `plugin/commands/` - Slash commands
@@ -70,7 +70,6 @@ Standards, guidelines, and reference materials supporting skills.
 - `plugin/standards/` - Project conventions and practices
 - `plugin/templates/` - Templates for agents, practices, skills
 - `plugin/hooks/` - Gate configuration
-- `plugin/docs/` - Extended documentation
 
 ## Skills and Practices Discovery
 

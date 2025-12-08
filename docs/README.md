@@ -1,39 +1,40 @@
-# Project Documentation
+# CipherPowers Documentation
 
-This directory contains documentation **about the CipherPowers project itself** - not the plugin that ships to users.
+All project documentation organized by developer intent.
 
-## What's Here
+## Quick Navigation
 
-| File | Purpose |
-|------|---------|
-| [INDEX.md](INDEX.md) | Master documentation index with purpose annotations |
-| [configuring-project-commands.md](configuring-project-commands.md) | Guide for tool-agnostic command configuration |
+| I want to... | Go to |
+|--------------|-------|
+| **Build** something | [BUILD/](BUILD/) |
+| **Understand** how things work | [UNDERSTAND/](UNDERSTAND/) |
+| **Look up** a reference | [LOOKUP/](LOOKUP/) |
 
-## What's NOT Here
+## Structure
 
-**Plugin documentation** lives in `plugin/docs/`:
-- [WORKFLOW.md](../plugin/docs/WORKFLOW.md) - Core workflow guide
-- [COMMANDS.md](../plugin/docs/COMMANDS.md) - Command reference
-- [SKILLS.md](../plugin/docs/SKILLS.md) - Skills catalog
-- [AGENTS.md](../plugin/docs/AGENTS.md) - Agent reference
+```
+docs/
+├── BUILD/           # Guides for building features
+│   ├── WORKFLOW.md  # Brainstorm → Plan → Execute
+│   └── configuring-project-commands.md
+├── UNDERSTAND/      # Deep dives and architecture
+│   └── (architecture docs)
+└── LOOKUP/          # Quick references (<30 sec lookups)
+    ├── COMMANDS.md  # Command reference
+    ├── SKILLS.md    # Skills catalog
+    └── AGENTS.md    # Agent reference
+```
 
-## docs/ vs plugin/docs/
+## By Time Budget
 
-| Directory | Ships with Plugin | Purpose |
-|-----------|-------------------|---------|
-| `docs/` | No | Project development documentation |
-| `plugin/docs/` | Yes | User-facing reference documentation |
+**5 minutes:** Read [BUILD/WORKFLOW.md](BUILD/WORKFLOW.md) for the core workflow
 
-## For End-User Projects
+**20 minutes:** Browse [LOOKUP/](LOOKUP/) for commands, skills, and agents
 
-If you're using CipherPowers in your own project and want to organize documentation:
-
-1. Use the `cipherpowers:organizing-documentation` skill
-2. Follow the BUILD/FIX/UNDERSTAND/LOOKUP structure
-3. See `plugin/skills/organizing-documentation/SKILL.md` for the complete guide
+**1 hour:** Work through the complete workflow with a real feature
 
 ## See Also
 
 - [INDEX.md](INDEX.md) - Full documentation index
 - [../CLAUDE.md](../CLAUDE.md) - Architecture overview
-- [../plugin/docs/README.md](../plugin/docs/README.md) - Plugin documentation hub
+- [../AGENTS.md](../AGENTS.md) - Universal AI instructions
