@@ -34,11 +34,11 @@ Do NOT proceed without completing skill activation.
 
 | Type     | Agents                         | Model  |
 |----------|--------------------------------|--------|
-| code     | code-review-agent + code-agent | sonnet |
-| plan     | plan-review-agent + code-agent | sonnet |
-| execute  | execute-review-agent ×2        | sonnet |
-| research | research-agent ×2              | sonnet |
-| docs     | technical-writer + code-agent  | haiku  |
+| code     | code-review-agent + code-agent | opus   |
+| plan     | plan-review-agent + code-agent | opus   |
+| execute  | execute-review-agent ×2        | opus   |
+| research | research-agent ×2              | opus   |
+| docs     | technical-writer + code-agent  | opus   |
 
 Specify `model` to use a different model from the agent default.
 Agents use their own default model unless `model` is specified.
