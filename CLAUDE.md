@@ -13,6 +13,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CipherPowers is a Claude Code plugin providing a comprehensive toolkit for development teams. Built on a three-layer plugin architecture, it separates skills (reusable workflows), automation (commands and agents), and documentation (practices and standards) to ensure team-wide consistency and maintainability.
 
+## Multi-Agent Compatibility
+
+CipherPowers provides both `AGENTS.md` (universal, multi-agent compatible) and `CLAUDE.md` (Claude-specific extended documentation). For contributing or maintaining instruction files, use the `cipherpowers:maintaining-instruction-files` skill.
+
 ## Development Commands
 
 CipherPowers itself uses mise for task orchestration. These commands are used throughout the plugin's development workflow.
