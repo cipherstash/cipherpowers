@@ -32,6 +32,9 @@ Do NOT proceed without completing skill activation.
 
 ## Dispatch Defaults
 
+<!-- Default to opus: dual-verification analysis benefits from higher reasoning capability
+     for complex pattern recognition across independent reviews. Worth the cost for quality gates. -->
+
 | Type     | Agents                         | Model  |
 |----------|--------------------------------|--------|
 | code     | code-review-agent + code-agent | opus   |

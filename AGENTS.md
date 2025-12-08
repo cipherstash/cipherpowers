@@ -69,8 +69,15 @@ plugin/
 - `CLAUDE_PLUGIN_ROOT` - Path to plugin installation (auto-set)
 - `CIPHERPOWERS_MARKETPLACE_ROOT` - Optional marketplace path
 
+## Extended Documentation
+
+**When to use which file:**
+- **AGENTS.md** (this file) - Use when configuring non-Claude AI assistants (Cursor, GitHub Copilot, Windsurf, etc.). Provides universal context that works with any AI assistant.
+- **CLAUDE.md** - Use when working with Claude Code for extended features, detailed architecture, and comprehensive plugin documentation optimized for Claude's extended context window.
+
+For Claude-specific features and detailed plugin architecture, see @CLAUDE.md.
+
 ## See Also
 
-- `CLAUDE.md` - Extended Claude-specific documentation
 - `plugin/docs/` - Detailed plugin documentation
 - `docs/` - Project documentation (BUILD/FIX/UNDERSTAND/LOOKUP structure)
