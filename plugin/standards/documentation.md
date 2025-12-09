@@ -1,68 +1,83 @@
 ---
-name: Documentation Practices
-description: Maintain clear, consistent, and complete documentation with proper formatting, structure, and examples to help users understand the code.
-when_to_use: when creating or updating documentation to ensure it is well-structured, comprehensive, and user-friendly
+name: Documentation Standards
+description: Rules for documentation formatting, structure, and organization
+when_to_use: when creating or updating documentation
 applies_to: all projects
-related_practices: development.md
-version: 1.0.0
+related_skills:
+  - organizing-documentation
+  - maintaining-docs-after-changes
+  - maintaining-instruction-files
+  - capturing-learning
+version: 2.0.0
 ---
 
-# Documentation practices
+# Documentation standards
 
-##  Documentation formatting and structure
+## Structure
 
-1. Maintain consistent documentation style:
-  - Use clear headings and sections
-  - Include code examples where helpful
-  - Use status indicators (✅, ⚠️, ❌) consistently
-  - Maintain proper Markdown formatting
-  - Use sentence case for all titles and headings
+| Directory | Purpose |
+|-----------|---------|
+| `BUILD/` | How to create |
+| `FIX/` | How to resolve (by symptom) |
+| `UNDERSTAND/` | How it works |
+| `LOOKUP/` | Quick reference (<30s) |
 
-2. Ensure documentation completeness:
-  - Cover all implemented features
-  - Include usage examples
-  - Document API changes or additions
-  - Include troubleshooting guidance for common issues
+## Formatting
 
-3. Help users understand the code
-  - Provide clear, concise examples
-  - Explain usage
-  - Structure logically, grouping related topics together
+- Sentence case for headings
+- Maximum nesting: 3 levels
+- Status indicators: ✅ good, ⚠️ caution, ❌ avoid
 
-4. Use readable formatting patterns:
-  - For definition lists or titled items, separate titles from descriptions:
-    ```markdown
-    1. **Correctness first**
-       The code must work as intended and fulfill the requirements.
-    ```
-  - This makes titles stand out and improves scannability
+## Instruction files
 
-## README guidelines
+| Size | Status |
+|------|--------|
+| <200 lines | ✅ |
+| 200-300 | ⚠️ |
+| >300 | ❌ |
 
-The project README.md should include:
-  - a short paragraph to explain what and why
-  - getting started
-  - essential dependencies
-  - task and/or command reference
-  - practical code usage examples
-  - trouble shooting
-  - links and cross-references to related documentation
-  - project structure
-  - tech stack
-  - license
+## Naming
 
-- keep the README concise
-  - consider splitting large README files into several smaller files
-  - link to specialised or focussed docs for deep coverage of specific topics
-  - additional README file names should use the prefix `README_*`
-  - examples:
-   - `README_ARCHITECTURE.md`
-   - `README_CONTRIBUTING.md`
-  - essentials should always go in the `README.md`
-  - all additional README files should be referenced and linked in the `README.md`
-  - good candidates for a dedicated README file
-    - deep coverage of specific topics
-    - architecture
-    - design notes
-    - internal details
-    - contribution guidelines
+| Pattern | Example |
+|---------|---------|
+| ALLCAPS | `SUMMARY.md` |
+| Numeric prefix | `00-START/` |
+| lowercase-dashes | `api-patterns.md` |
+| README_* | `README_ARCHITECTURE.md` |
+
+## Navigation
+
+- Every docs/ directory: INDEX.md with purpose column
+- Cross-reference with relative links
+- Moved content: leave redirect
+
+## Anti-patterns
+
+| Don't | Do |
+|-------|-----|
+| Nest >3 levels | Flatten or split |
+| Duplicate content | Reference |
+| Tutorials in LOOKUP | Move to BUILD/ |
+| FIX by root cause | Organize by symptom |
+| Skip INDEX.md | Always create |
+| "Document later" | Document with code |
+
+## README checklist
+
+- What and why
+- Getting started
+- Dependencies
+- Commands/tasks
+- Examples
+- Troubleshooting
+- Project structure
+- License
+
+## Related skills
+
+| Skill | Use case |
+|-------|----------|
+| `organizing-documentation` | Set up docs structure |
+| `maintaining-docs-after-changes` | Sync after code changes |
+| `maintaining-instruction-files` | CLAUDE.md / AGENTS.md |
+| `capturing-learning` | Retrospectives |
