@@ -1,5 +1,11 @@
 # CipherPowers Commands Reference
 
+## TL;DR
+
+**Three essential commands:** `/cipherpowers:plan` (create implementation tasks), `/cipherpowers:execute` (run with code review checkpoints), `/cipherpowers:verify [type]` (dual-verify plans, code, execution, docs, or research)
+
+---
+
 Complete reference for all CipherPowers commands. Each command integrates with specialized skills and agents to ensure consistent, high-quality workflows.
 
 ## Planning Commands

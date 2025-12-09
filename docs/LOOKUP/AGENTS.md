@@ -1,5 +1,11 @@
 # CipherPowers Agents Reference
 
+## TL;DR
+
+**Agents are specialized subagents automatically dispatched by commands** - code-agent and rust-agent handle development, code-review-agent and plan-review-agent handle review, technical-writer handles documentation, and research-agent handles research verification.
+
+---
+
 Specialized subagents that handle specific tasks with enforced workflows.
 
 ## Development Agents

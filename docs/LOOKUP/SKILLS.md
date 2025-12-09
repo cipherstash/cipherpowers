@@ -1,5 +1,11 @@
 # CipherPowers Skills Reference
 
+## TL;DR
+
+**Invoke skills with the Skill tool:** `Skill(skill: "cipherpowers:skill-name")` - Skills are automatically discovered by Claude Code and provide reusable workflows for development, planning, review, and documentation tasks.
+
+---
+
 Skills are automatically discovered by Claude Code. Invoke with the Skill tool: `Skill(skill: "cipherpowers:skill-name")`
 
 For detailed information about each skill, use the Skill tool or read the skill's SKILL.md file in `./plugin/skills/`.
