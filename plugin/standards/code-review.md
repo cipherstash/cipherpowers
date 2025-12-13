@@ -2,7 +2,7 @@
 name: Code Reviews
 description: Foster a culture of high-quality, maintainable, and secure code through structured reviews that prioritize feedback based on impact and provide clear, actionable suggestions.
 when_to_use: when reviewing code changes before merge to ensure correctness, clarity, security, and maintainability
-related_practices: testing.md, development.md
+related_practices: development.md
 version: 1.0.0
 ---
 

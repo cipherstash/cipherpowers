@@ -20,10 +20,4 @@ Tool: `Skill(skill: "cipherpowers:following-plans")`
 
 Do NOT proceed without completing skill activation.
 
-## MANDATORY: Context
-
-Read before starting:
-- @README.md
-- @CLAUDE.md
-
 </instructions>

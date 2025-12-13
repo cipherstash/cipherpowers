@@ -2,7 +2,7 @@
 name: Plan Review Template
 description: Structured format for evaluating implementation plan quality before execution
 when_to_use: when reviewing implementation plans to ensure they address all quality criteria
-related_practices: code-review.md, development.md, testing.md
+related_practices: code-review.md, development.md
 version: 1.0.0
 ---
 

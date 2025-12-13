@@ -24,7 +24,6 @@ Do NOT proceed without completing skill activation.
 Read and follow:
 - ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 - ${CLAUDE_PLUGIN_ROOT}principles/development.md
-- ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
 ## Save Workflow
 

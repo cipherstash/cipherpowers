@@ -26,7 +26,6 @@ Read before starting:
 - @README.md
 - @CLAUDE.md
 - ${CLAUDE_PLUGIN_ROOT}principles/development.md
-- ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 
 ## MANDATORY: Rust Standards
 

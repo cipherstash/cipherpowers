@@ -31,7 +31,6 @@ Read before starting:
 
 ## MANDATORY: Standards
 
-- ${CLAUDE_PLUGIN_ROOT}principles/testing.md
 - ${CLAUDE_PLUGIN_ROOT}principles/development.md
 
 </instructions>
