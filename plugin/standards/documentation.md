@@ -28,6 +28,18 @@ version: 2.0.0
 - Maximum nesting: 3 levels
 - Status indicators: ✅ good, ⚠️ caution, ❌ avoid
 
+## Code references
+
+Reference code by stable identifiers, not line numbers.
+
+| Instead of | Use |
+|------------|-----|
+| `src/main.rs:280-360` | `src/handlers.rs` - `handle_movement_command` function |
+| `components.rs:46` | `DOUBLE_CLICK_THRESHOLD_SECS` constant |
+| `systems.rs:117` | `calculate_transfer_windows_system` |
+
+**Stable patterns:** Symbol names, module paths, grep patterns, test names.
+
 ## Instruction files
 
 | Size | Status |
@@ -61,6 +73,7 @@ version: 2.0.0
 | FIX by root cause | Organize by symptom |
 | Skip INDEX.md | Always create |
 | "Document later" | Document with code |
+| Line numbers (`:42`) | Symbol names, module paths |
 
 ## README checklist
 
