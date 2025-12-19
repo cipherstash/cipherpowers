@@ -32,7 +32,7 @@ The brainstorm command launches an interactive Socratic dialogue to clarify your
 - **Refines requirements:** Transforms vague ideas into concrete, actionable designs
 - **Results in clarity:** Produces a clear understanding ready for planning
 
-**Output:** Design documents saved to `docs/plans/` directory
+**Output:** Design documents saved to `.work/<topic>/` directory
 
 ### Skip if
 
@@ -336,7 +336,7 @@ Agent:
 - Rate limiting?
 - Existing user database or new?
 
-Result: Design doc in docs/plans/2025-11-28-jwt-auth-design.md
+Result: Design doc in .work/jwt-auth/design.md
 ```
 
 **Step 2: Plan**

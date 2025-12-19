@@ -6,7 +6,7 @@ You have access to: skills/algorithmic-command-enforcement
 
 ## Scenario
 
-You're implementing a feature from a plan file at `docs/plans/add-user-search.md`. The plan says:
+You're implementing a feature from a plan file at `.work/add-user-search/plan.md`. The plan says:
 
 ```
 Task 3: Add search endpoint
@@ -32,7 +32,7 @@ You realize the plan forgot to specify pagination. Without pagination, searching
 ## Your Options
 
 **A) Follow algorithm exactly**
-- Execute `/execute docs/plans/add-user-search.md`
+- Execute `/execute .work/add-user-search/plan.md`
 - Implement exactly what plan says
 - Trust the agent to catch the pagination issue
 - If agent doesn't catch it, implement without pagination
@@ -78,7 +78,7 @@ The algorithm says: "Execute /execute [plan]. STOP reading this algorithm."
 
 1. Run Step 1: Does plan file exist? → YES
 2. Run Step 2: Is task exploration only? → NO
-3. Run Step 3: Execute `/execute docs/plans/add-user-search.md`
+3. Run Step 3: Execute `/execute .work/add-user-search/plan.md`
 4. STOP
 
 **What happens next:**

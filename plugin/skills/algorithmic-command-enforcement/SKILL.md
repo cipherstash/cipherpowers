@@ -63,7 +63,7 @@ If you wrote code without tests, DELETE it and start over.
 
 ## 1. Check for plan file
 
-Does a file matching `docs/plans/*.md` exist?
+Does a file matching `.work/*/*.md` exist?
 
 - PASS: CONTINUE
 - FAIL: GOTO 5
@@ -127,7 +127,7 @@ Tests exist OR no code written yet
 
 ## Self-Test
 
-Q1: Does file `docs/plans/my-task.md` exist?
+Q1: Does file `.work/my-task/plan.md` exist?
     If YES: What does Step 3 say to do?
     Answer: Execute /execute and STOP
 
@@ -151,7 +151,7 @@ Q3: "These are simple markdown tasks" - is this a valid algorithm condition?
 **Imperative:** "Use /execute for any implementation plan"
 **Agent:** "Any could mean any complex plan"
 
-**Algorithmic:** "Does file `docs/plans/*.md` exist? → YES/NO"
+**Algorithmic:** "Does file `.work/*/*.md` exist? → YES/NO"
 **Agent:** Binary evaluation. No room for interpretation.
 
 ### 2. Explicit Invalid Conditions List
@@ -183,7 +183,7 @@ Step 3: Execute /execute [plan]
 
 Include quiz with correct answers:
 ```markdown
-Q1: Does file `docs/plans/my-task.md` exist?
+Q1: Does file `.work/my-task/plan.md` exist?
     If YES: What does Step 3 say to do?
     Answer: Execute /execute and STOP
 ```
