@@ -1,7 +1,8 @@
 ---
-name: test-paths
 description: Test file path resolution in plugin agents
 ---
+
+# Test Paths
 
 This command tests whether file references work correctly in plugin agent contexts.
 

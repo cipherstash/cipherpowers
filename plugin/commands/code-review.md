@@ -1,88 +1,43 @@
+---
+description: Code review with structured feedback
+argument-hint: [scope] [model]
+---
+
 # Code Review
 
-Thorough code review with test verification and structured feedback.
+Code review with structured feedback using specialised code-review-agent.
 
 ## Usage
 
 ```
-/cipherpowers:code-review [--model=<sonnet|opus|haiku>]
+/cipherpowers:code-review [scope] [model]
 ```
 
-**Model guidance:**
-- `opus` - Deep analysis, security-critical code, complex architecture
-- `sonnet` - Balanced quality/speed (default if not specified)
-- `haiku` - Quick reviews, simple changes
+- `$1` - scope (optional, defaults to all changes)
+- `$2` - model override: `haiku`, `sonnet`, `opus` (optional)
+
+
+<instructions>
+## Instructions
 
 ## MANDATORY: Skill Activation
 
-**Load skill context:**
-@${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md
+Use and follow the requesting-code-review skill exactly as written.
 
-**Step 1 - EVALUATE:** State YES/NO for skill activation:
-- Skill: "cipherpowers:conducting-code-review"
-- Applies to this task: YES/NO (reason)
+Path: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md`
 
-**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
-```
-Skill(skill: "cipherpowers:conducting-code-review")
-```
+Tool: `Skill(skill: "cipherpowers:requesting-code-review")`
 
-⚠️ Do NOT proceed without completing skill evaluation and activation.
+Do NOT proceed without completing skill activation.
+</instructions>
 
----
 
-## Algorithmic Dispatch
+## Dispatch Defaults
 
-**Decision tree (follow exactly, no interpretation):**
+| Task Type   | Agent               | Model  |
+|-------------|---------------------|--------|
+| code-revew  | code-review-agent   | opus   |
 
-1. Is this a code review request?
-   - YES → Continue to step 2
-   - NO → This command was invoked incorrectly
+Specify `model` to use a different model from the agent default.
+Agents use their own default model unless `model` is specified.
 
-2. Have you already dispatched to code-review-agent agent?
-   - YES → Wait for agent to complete
-   - NO → Continue to step 3
-
-3. **DISPATCH TO AGENT NOW:**
-
-```
-Use Task tool with:
-  subagent_type: "cipherpowers:code-review-agent"
-  model: [from --model arg if provided, otherwise omit to use default]
-  description: "Code review workflow"
-  prompt: """
-  [User's original request or task context]
-
-  Follow the conducting-code-review skill exactly as written.
-
-  Review the recent changes and provide structured feedback.
-  """
-```
-
-**Model parameter rules:**
-- If user specified `--model=X` → pass `model: X` to Task tool
-- If no model specified → omit model parameter (agent default applies)
-
-4. **STOP. Do not proceed in main context.**
-
-## Why Algorithmic Dispatch?
-
-- **100% reliability**: No interpretation, no rationalization
-- **Agent enforcement**: Persuasion principles prevent rubber-stamping
-- **Consistent quality**: Every review runs tests, checks all severity levels
-- **Skill integration**: Agent reads conducting-code-review skill automatically
-
-## What the Agent Does
-
-The code-review-agent agent implements:
-- Identify code to review (git commands)
-- Review against practice standards (ALL severity levels)
-- Save structured feedback to work directory
-- No approval without thorough review
-
-**Note:** Tests and checks are assumed to pass. The reviewer focuses on code quality, not test execution.
-
-**References:**
-- Agent: `${CLAUDE_PLUGIN_ROOT}agents/code-review-agent.md`
-- Skill: `${CLAUDE_PLUGIN_ROOT}skills/conducting-code-review/SKILL.md`
-- Standards: `${CLAUDE_PLUGIN_ROOT}standards/code-review.md`

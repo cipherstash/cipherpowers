@@ -266,7 +266,7 @@ Show status, dates, and version at document start:
 **Required metadata:**
 - Status indicator
 - Last verified date
-- Version (if applicable, e.g., `Bevy Version: 0.15.x`)
+- Version (if applicable, e.g., `Bevy Version: 0.17.x`)
 - Read time estimate
 
 ## Legacy Archive Pattern

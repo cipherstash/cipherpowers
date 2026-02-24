@@ -47,8 +47,7 @@ Use verifying-plans when:
 
 Read these to understand quality standards:
 - `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` - Quality standards apply to plans too
-- `${CLAUDE_PLUGIN_ROOT}standards/development.md` - Simplicity, consistency, documentation
-- `${CLAUDE_PLUGIN_ROOT}principles/testing.md` - TDD and testing principles
+- `${CLAUDE_PLUGIN_ROOT}principles/development.md` - Development principles (includes testing)
 
 ### Step-by-Step Workflow
 

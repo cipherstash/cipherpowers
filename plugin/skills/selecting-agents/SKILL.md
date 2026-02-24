@@ -90,19 +90,49 @@ When selecting agents (manually or automatically), you must analyze the **task r
 
 ## Development Agents
 
-### rust-agent
-**When to use:** Rust development tasks requiring TDD and code review discipline
+### rust-exec-agent (for /execute)
+**When to use:** Rust tasks during plan execution via `/cipherpowers:execute`
 
 **Scenarios:**
-- Implementing new Rust features
-- Refactoring Rust code
-- Performance optimization
-- Systems programming tasks
-- Any Rust development work
+- Executing plan tasks that involve Rust code
+- Literal plan following without creative problem-solving
+- When blocked behavior is preferred over workarounds
+
+**Key characteristic:** Minimal context (147 words), follows plans literally, reports BLOCKED when stuck
+
+### rust-agent (for ad-hoc work)
+**When to use:** Rust development outside of plan execution
+
+**Scenarios:**
+- Ad-hoc Rust development (not part of a plan)
+- When full TDD and code review workflow is needed
+- Exploratory Rust work requiring judgment
 
 **Skills used:** `test-driven-development`, `testing-anti-patterns`, `code-review-reception`
 
-**Key characteristic:** Enforces TDD, mandatory code review, project task usage
+**Key characteristic:** Full workflow with TDD, code review, extensive guidance (~5000+ words with @ expansion)
+
+### code-exec-agent (for /execute)
+**When to use:** Non-Rust tasks during plan execution via `/cipherpowers:execute`
+
+**Scenarios:**
+- Executing plan tasks that involve non-Rust code
+- Literal plan following without creative problem-solving
+- When blocked behavior is preferred over workarounds
+
+**Key characteristic:** Minimal context (~150 words), follows plans literally, reports BLOCKED when stuck
+
+### code-agent (for ad-hoc work)
+**When to use:** Development outside of plan execution
+
+**Scenarios:**
+- Ad-hoc development (not part of a plan)
+- When full TDD and code review workflow is needed
+- Exploratory work requiring judgment
+
+**Skills used:** `test-driven-development`, `testing-anti-patterns`, `code-review-reception`
+
+**Key characteristic:** Full workflow with TDD, code review, extensive guidance (~5000+ words with @ expansion)
 
 ## Review Agents
 
@@ -175,6 +205,9 @@ When selecting agents (manually or automatically), you must analyze the **task r
 - Use **technical-writer** when code changes
 - Use **/summarise command** when work completes
 - Use **ultrathink-debugger** for complex debugging (not simple bugs)
-- Use **rust-agent** for all Rust development
+- Use **rust-exec-agent** for Rust tasks during `/execute` (minimal context, literal execution)
+- Use **code-exec-agent** for non-Rust tasks during `/execute` (minimal context, literal execution)
+- Use **rust-agent** for ad-hoc Rust development (full workflow)
+- Use **code-agent** for ad-hoc development (full workflow)
 - Use **code-review-agent** before merging code
 - Use **plan-review-agent** before executing plans

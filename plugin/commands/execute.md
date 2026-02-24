@@ -1,64 +1,50 @@
+---
+description: Execute implementation plans in batches with specialised agents
+argument-hint: [plan-file] [agent] [model]
+---
+
 # Execute
 
-Execute implementation plans with automatic agent selection, batch-level code review, and retrospective completion.
+Execute implementation plans.
 
-## Algorithmic Workflow
+## Usage
 
-**Decision tree (follow exactly, no interpretation):**
-
-1. Is this a plan execution request?
-   - YES → Continue to step 2
-   - NO → This command was invoked incorrectly
-
-2. Does a plan exist to execute?
-   - YES → Continue to step 3
-   - NO → Run `/cipherpowers:plan` first to create implementation plan, then return here
-
-3. **MANDATORY: Skill Activation**
-
-**Load skill context:**
-@${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md
-
-**Step 1 - EVALUATE:** State YES/NO for skill activation:
-- Skill: "cipherpowers:executing-plans"
-- Applies to this task: YES/NO (reason)
-
-**Step 2 - ACTIVATE:** If YES, use Skill tool NOW:
 ```
-Skill(skill: "cipherpowers:executing-plans")
+/cipherpowers:execute [plan-file] [agent] [model]
 ```
 
-⚠️ Do NOT proceed without completing skill evaluation and activation.
+- `$1` - plan file path (default: searches for plan in working directory)
+- `$2` - agent to use (default: selected by task type from plan)
+- `$3` - model: `haiku`, `sonnet`, `opus` (default: per agent below)
 
-4. **FOLLOW THE SKILL EXACTLY:**
-   - The skill defines the complete execution methodology
-   - Automatic agent selection (hybrid keyword/LLM analysis)
-   - Batch execution (3 tasks per batch)
-   - Code review after each batch
-   - Retrospective capture when complete
+<instructions>
+## Instructions
 
-5. **STOP when execution is complete.**
+## MANDATORY: Skill Activation
 
-## Why Algorithmic Workflow?
+Use and follow the executing-plans skill exactly as written.
 
-- **100% reliability**: No interpretation, no skipping plan creation
-- **Skill integration**: Automatic discovery via Skill tool
-- **Agent orchestration**: Skill handles agent selection and dispatch
-- **Quality gates**: Code review checkpoints prevent cascading issues
+Path: `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md`
+Tool: `Skill(skill: "cipherpowers:executing-plans")`
 
-## What the Skill Does
+Do NOT proceed without completing skill activation.
+</instructions>
 
-The executing-plans skill provides:
-- Load and parse implementation plan
-- Automatic agent selection (rust-agent, ultrathink-debugger, etc.)
-- Batch execution with review checkpoints
-- Code review after each batch (automatic dispatch to code-review-agent)
-- Retrospective capture when work completes
-- Integration with selecting-agents skill
 
-**References:**
-- Skill: `${CLAUDE_PLUGIN_ROOT}skills/executing-plans/SKILL.md`
-- Agent Selection: `${CLAUDE_PLUGIN_ROOT}skills/selecting-agents/SKILL.md`
-- Code Review: Automatic dispatch to cipherpowers:code-review-agent
-- Integration: Seamless workflow → `/cipherpowers:brainstorm` → `/cipherpowers:plan` → `/cipherpowers:execute`
+## Dispatch Defaults
+
+When no agent is specified, task type determines the agent:
+
+| Task Type   | Agent               | Model  |
+|-------------|---------------------|--------|
+| rust code   | rust-exec-agent     | haiku  |
+| code        | code-exec-agent     | haiku  |
+| code-revew  | code-review-agent   | opus   |
+| docs        | technical-writer    | opus   |
+| debugging   | ultrathink-debugger | opus   |
+
+Specify `agent` to use a different agent (e.g., `rust-agent` instead of `rust-exec-agent`).
+
+Specify `model` to use a different model from the agent default.
+Agents use their own default model unless `model` is specified.
 

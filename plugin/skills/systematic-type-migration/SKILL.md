@@ -279,8 +279,7 @@ cargo check --all-targets
 ## Related Practices
 
 **Before using this skill:**
-- Read: `${CLAUDE_PLUGIN_ROOT}principles/development.md` - Code structure principles
-- Read: `${CLAUDE_PLUGIN_ROOT}principles/testing.md` - Testing principles
+- Read: `${CLAUDE_PLUGIN_ROOT}principles/development.md` - Development principles (includes testing)
 
 **After migration:**
 - Use: `${CLAUDE_PLUGIN_ROOT}skills/requesting-code-review/SKILL.md` - Request code review

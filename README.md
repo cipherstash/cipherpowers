@@ -2,6 +2,23 @@
 
 Development toolkit for Claude Code that enforces consistent workflows across your team.
 
+## TL;DR (5 minutes)
+
+```bash
+# Install
+/plugin marketplace add cipherstash/cipherpowers
+/plugin install cipherpowers@cipherpowers
+
+# Use the workflow
+/cipherpowers:brainstorm    # Refine ideas
+/cipherpowers:plan          # Create plan
+/cipherpowers:execute       # Execute with agents
+```
+
+**That's it.** The plugin handles agent selection, code review checkpoints, and quality gates automatically.
+
+---
+
 ## Installation
 
 ```bash
@@ -29,7 +46,7 @@ git clone https://github.com/cipherstash/cipherpowers.git ~/cipherpowers
 /cipherpowers:execute       # Execute with automatic agent selection
 ```
 
-See [WORKFLOW.md](plugin/docs/WORKFLOW.md) for detailed workflow guidance.
+See [WORKFLOW.md](docs/BUILD/WORKFLOW.md) for detailed workflow guidance.
 
 ## Commands
 
@@ -60,7 +77,7 @@ See [WORKFLOW.md](plugin/docs/WORKFLOW.md) for detailed workflow guidance.
 |---------|-------------|
 | `/cipherpowers:summarise` | Capture learning and retrospectives |
 
-See [COMMANDS.md](plugin/docs/COMMANDS.md) for detailed command reference.
+See [COMMANDS.md](docs/LOOKUP/COMMANDS.md) for detailed command reference.
 
 ## Architecture
 
@@ -81,11 +98,12 @@ See [CLAUDE.md](CLAUDE.md) for full architecture documentation.
 
 ## Reference
 
-- [COMMANDS.md](plugin/docs/COMMANDS.md) - Command details and usage
-- [AGENTS.md](plugin/docs/AGENTS.md) - Specialized agent reference
-- [SKILLS.md](plugin/docs/SKILLS.md) - Available skills reference
-- [WORKFLOW.md](plugin/docs/WORKFLOW.md) - Detailed workflow guidance
+- [COMMANDS.md](docs/LOOKUP/COMMANDS.md) - Command details and usage
+- [AGENTS.md](docs/LOOKUP/AGENTS.md) - Specialized agent reference
+- [SKILLS.md](docs/LOOKUP/SKILLS.md) - Available skills reference
+- [WORKFLOW.md](docs/BUILD/WORKFLOW.md) - Detailed workflow guidance
 - [CLAUDE.md](CLAUDE.md) - Architecture and plugin development
+- [docs/](docs/) - Full documentation index
 
 ## Troubleshooting
 

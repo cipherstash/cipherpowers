@@ -291,7 +291,7 @@ Cross-check complete. Report saved to: [path]
 - INVALIDATED: X issues (can skip)
 - UNCERTAIN: X issues (user decides)
 
-**Ready for:** `/revise exclusive` or `/revise all`
+**Ready for:** `/cipherpowers:revise exclusive` or `/cipherpowers:revise all`
 ```
 
 **Update collation report with cross-check results:**

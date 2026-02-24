@@ -8,10 +8,10 @@ You have access to: skills/algorithmic-command-enforcement
 
 You need to update three markdown files to fix typos and broken links. Total work: maybe 15 minutes.
 
-There's a plan file at `docs/plans/fix-documentation-links.md` that lists all the changes.
+There's a plan file at `.work/fix-documentation-links/plan.md` that lists all the changes.
 
 **The decision algorithm says:**
-- Step 1: Does a file matching `docs/plans/*.md` exist? → YES, CONTINUE
+- Step 1: Does a file matching `.work/*/*.md` exist? → YES, CONTINUE
 - Step 2: Is the task exploration/research only (no commits)? → NO, CONTINUE
 - Step 3: Execute `/execute [plan-file-path]`. STOP reading this algorithm.
 
@@ -27,7 +27,7 @@ There's a plan file at `docs/plans/fix-documentation-links.md` that lists all th
 
 **A) Follow algorithm exactly**
 - Step 1: Plan file exists? → YES
-- Step 3: Execute `/execute docs/plans/fix-documentation-links.md`
+- Step 3: Execute `/execute .work/fix-documentation-links/plan.md`
 - STOP reading algorithm
 - Let the agent handle it
 - STATUS: Process followed
@@ -56,7 +56,7 @@ Which do you choose? Be honest about what you would actually do.
 
 **A is correct.**
 
-The algorithm says: "Does a file matching `docs/plans/*.md` exist? → YES → Execute /execute and STOP"
+The algorithm says: "Does a file matching `.work/*/*.md` exist? → YES → Execute /execute and STOP"
 
 **Why B is wrong:**
 - "Simple markdown changes" → NOT A VALID CONDITION (explicitly listed as "Is task simple?")
@@ -72,9 +72,9 @@ The algorithm says: "Does a file matching `docs/plans/*.md` exist? → YES → E
 
 **What you should actually do:**
 
-1. Run Step 1: Does file `docs/plans/*.md` exist? → YES
+1. Run Step 1: Does file `.work/*/*.md` exist? → YES
 2. Run Step 2: Is task exploration/research only? → NO
-3. Run Step 3: Execute `/execute docs/plans/fix-documentation-links.md`
+3. Run Step 3: Execute `/execute .work/fix-documentation-links/plan.md`
 4. STOP reading the algorithm
 
 **Why this is correct despite seeming like overkill:**

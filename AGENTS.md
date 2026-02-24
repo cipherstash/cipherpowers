@@ -1,0 +1,91 @@
+# CipherPowers
+
+Claude Code plugin providing development workflow skills, commands, and agents for consistent team practices.
+
+## TL;DR (2 minutes)
+
+**Install:** `/plugin marketplace add cipherstash/cipherpowers && /plugin install cipherpowers@cipherpowers`
+
+**Core workflow:** `/cipherpowers:brainstorm` → `/cipherpowers:plan` → `/cipherpowers:execute`
+
+**Find skills:** `Skill(skill: "cipherpowers:skill-name")`
+
+---
+
+## Quick Start
+
+### Key Commands
+
+- `/cipherpowers:brainstorm` - Interactive design refinement
+- `/cipherpowers:plan` - Create implementation plans
+- `/cipherpowers:execute` - Execute plans with agents
+- `/cipherpowers:code-review` - Structured code review
+- `/cipherpowers:commit` - Atomic commits with conventional format
+- `/cipherpowers:verify` - Dual-verification workflows
+- `/cipherpowers:summarise` - Capture learning retrospectives
+
+### Development Commands
+
+```bash
+mise run check-has-changes   # Verify uncommitted changes
+mise run check-tests-exist   # Verify tests exist
+mise run check-docs-updated  # Verify docs updated
+mise run check-atomic-commit # Verify atomic commit
+```
+
+## Architecture
+
+Three-layer plugin architecture:
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| Skills | `plugin/skills/` | Reusable workflows (TDD, code review, debugging) |
+| Automation | `plugin/commands/`, `plugin/agents/` | Commands dispatch to skills; agents enforce workflows |
+| Standards | `plugin/standards/`, `plugin/principles/` | Project conventions and guidelines |
+
+**Key principle:** Skills define HOW (workflows), practices define WHAT (standards), commands/agents orchestrate.
+
+## Plugin Structure
+
+```
+plugin/
+├── skills/          # Reusable workflows
+├── commands/        # Slash commands
+├── agents/          # Specialized subagents
+├── standards/       # Project conventions
+├── principles/      # Core philosophies
+├── templates/       # Templates for new content
+├── hooks/           # Gate configurations
+└── scripts/         # Shell scripts
+```
+
+## Critical Guidelines
+
+**For plugin development:**
+- Skills follow TDD: test with subagents before writing
+- Agents are thin (~30-50 lines): delegate to skills
+- Use `${CLAUDE_PLUGIN_ROOT}` for all plugin references
+- Commands dispatch to skills/agents, don't contain logic
+
+**For using CipherPowers:**
+- Discover skills via Skill tool: `Skill(skill: "cipherpowers:skill-name")`
+- Check available commands via `/help`
+- Follow skill announcements and workflows
+
+## Environment Variables
+
+- `CLAUDE_PLUGIN_ROOT` - Path to plugin installation (auto-set)
+- `CIPHERPOWERS_MARKETPLACE_ROOT` - Optional marketplace path
+
+## Extended Documentation
+
+**When to use which file:**
+- **AGENTS.md** (this file) - Use when configuring non-Claude AI assistants (Cursor, GitHub Copilot, Windsurf, etc.). Provides universal context that works with any AI assistant.
+- **CLAUDE.md** - Use when working with Claude Code for extended features, detailed architecture, and comprehensive plugin documentation optimized for Claude's extended context window.
+
+For Claude-specific features and detailed plugin architecture, see @CLAUDE.md.
+
+## See Also
+
+- `docs/` - All documentation (BUILD/UNDERSTAND/LOOKUP structure)
+- `docs/INDEX.md` - Full documentation index

@@ -19,5 +19,8 @@ settings.local.json
 # Git worktrees
 .worktrees/
 
+# Working documents
+.work/
+
 # Rust build artifacts
 **/target/

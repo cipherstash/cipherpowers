@@ -34,10 +34,10 @@ For each task:
    - What technology? (Rust vs other languages)
 
    **Agent selection:**
-   - Rust implementation → `cipherpowers:rust-agent`
+   - Rust implementation → `cipherpowers:rust-exec-agent` (minimal context for literal execution)
+   - General implementation → `cipherpowers:code-exec-agent` (minimal context for literal execution)
    - Complex, multi-layered debugging → `cipherpowers:ultrathink-debugger`
    - Documentation updates → `cipherpowers:technical-writer`
-   - General implementation → `general-purpose`
 
    **IMPORTANT:** Analyze the task semantically. Don't just match keywords.
    - ❌ "don't use ultrathink" → ultrathink-debugger (keyword match)

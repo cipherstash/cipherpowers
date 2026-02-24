@@ -2,7 +2,7 @@
 name: Conducting Code Review
 description: Complete workflow for conducting thorough code reviews with structured feedback
 when_to_use: when conducting code review, when another agent asks you to review code, after being dispatched by requesting-code-review skill
-version: 3.1.0
+version: 4.0.0
 ---
 
 # Conducting Code Review
@@ -68,41 +68,35 @@ ${CLAUDE_PLUGIN_ROOT}standards/code-review.md
 
 **1. Check Status section exists**
 
-Does your review have `## Status: [BLOCKED | APPROVED WITH NON-BLOCKING SUGGESTIONS | APPROVED]`?
+Does your review have `## Status: [BLOCKED | APPROVED WITH SUGGESTIONS | APPROVED]`?
 - NO → STOP. Delete draft. Start over with template.
 - YES → CONTINUE
 
-**2. Check Next Steps section exists**
-
-Does your review have `## Next Steps`?
-- NO → STOP. Delete draft. Start over with template.
-- YES → CONTINUE
-
-**3. Check BLOCKING section exists**
+**2. Check BLOCKING section exists**
 
 Does your review have `## BLOCKING (Must Fix Before Merge)`?
 - NO → STOP. Delete draft. Start over with template.
 - YES → CONTINUE
 
-**4. Check NON-BLOCKING section exists**
+**3. Check NON-BLOCKING section exists**
 
 Does your review have `## NON-BLOCKING (May Be Deferred)`?
 - NO → STOP. Delete draft. Start over with template.
 - YES → CONTINUE
 
-**5. Check Checklist section exists**
+**4. Check Checklist section exists**
 
 Does your review have `## Checklist` with all 6 categories?
 - NO → STOP. Delete draft. Start over with template.
 - YES → CONTINUE
 
-**6. Check for prohibited custom sections**
+**5. Check for prohibited custom sections**
 
-Have you added ANY sections not listed above (examples of PROHIBITED sections: Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues with subsections, Test Results, Check Results)?
+Have you added ANY sections not listed above (examples of PROHIBITED sections: Strengths, Code Quality Metrics, Assessment, Recommendations, Requirements Verification, Comparison to Previous Reviews, Reviewer Notes, Sign-Off, Review Summary, Issues with subsections, Test Results, Check Results, Next Steps)?
 - YES → STOP. Delete custom sections. Use template exactly.
 - NO → CONTINUE
 
-**7. Save review file**
+**6. Save review file**
 
 All required sections present, no custom sections → Save to work directory.
 </EXTREMELY-IMPORTANT>
@@ -110,7 +104,7 @@ All required sections present, no custom sections → Save to work directory.
 **File naming:** See `${CLAUDE_PLUGIN_ROOT}standards/code-review.md` for `.work` directory location and naming convention (`{YYYY-MM-DD}-review-{N}.md`).
 
 **Additional context allowed:**
-You may add supplementary details AFTER the Checklist section (verification commands run, files changed, commit hashes). But the 5 required sections above are mandatory and must appear first in the exact order shown.
+You may add supplementary details AFTER the Checklist section (verification commands run, files changed, commit hashes). But the 4 required sections above are mandatory and must appear first in the exact order shown.
 
 
 ## What NOT to Skip

@@ -2,7 +2,7 @@
 name: Collation Report Template
 description: Structured format for collating two independent reviews with confidence levels, cross-check validation, and verification
 when_to_use: when collating dual-verification reviews (plan reviews, code reviews, documentation reviews)
-related_practices: code-review.md, development.md, testing.md
+related_practices: code-review.md, development.md
 version: 2.0.0
 ---
 

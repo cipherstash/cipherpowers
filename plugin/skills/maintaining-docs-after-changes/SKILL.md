@@ -75,7 +75,8 @@ CLAUDE.md instructions about "don't proactively create documentation" apply to N
 
 2. **Check existing documentation:**
    - README.md (main project docs)
-   - CLAUDE.md (AI assistant guidance)
+   - CLAUDE.md (AI assistant guidance) - use `cipherpowers:maintaining-instruction-files` for size/quality
+   - AGENTS.md (multi-agent instructions) - use `cipherpowers:maintaining-instruction-files` for size/quality
    - README_*.md (specialized documentation)
    - docs/ directory (practices, examples, plans)
    - Any project-specific doc locations
