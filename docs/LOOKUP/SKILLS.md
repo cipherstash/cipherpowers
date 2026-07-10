@@ -55,6 +55,9 @@ Use when completing tasks, implementing major features, or before merging to ver
 ### receiving-code-review
 Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
 
+### pr-feedback-triage
+Audit already-merged PRs for review feedback that was never acted on - verifies each concern against origin/main, then reconciles survivors with Linear (files new tickets, enhances matched ones, merges duplicates). Requires the Linear MCP server.
+
 ### validating-review-feedback
 Validate code review feedback against implementation plan to prevent scope creep and derailment
 
